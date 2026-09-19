@@ -1,0 +1,480 @@
+{
+  "schema_version": 1,
+  "id": "620d2cdae9d1",
+  "query": "research about electron",
+  "model": "qwen3.5:4b",
+  "embedding_model": "BAAI/bge-small-en-v1.5",
+  "created_at": "2026-09-19T16:02:19.977065+00:00",
+  "updated_at": "2026-09-19T16:04:13.070744+00:00",
+  "node": "ready",
+  "status": "ready",
+  "intent": {
+    "kind": "topic",
+    "value": "research about electron",
+    "keywords": [
+      "electron"
+    ],
+    "recent": false
+  },
+  "candidates": [
+    {
+      "arxiv_id": "hep-th/0505137v1",
+      "title": "A geometrical meaning to the electron mass from breakdown of Lorentz invariance",
+      "authors": [
+        "Fabio Cardone",
+        "Alessio Marrani",
+        "Roberto Mignani"
+      ],
+      "abstract": "We discuss the problem of the electron mass in the framework of Deformed Special Relativity (DSR), a generalization of Special Relativity based on a deformed Minkowski space (i.e. a four-dimensional space-time with metric coefficients depending on the energy). We show that, by such a formalism, it is possible to derive the value of the electron mass from the space-time geometry via the experimental knowledge of the parameter of local Lorentz invariance breakdown, and of the Minkowskian threshold energy $E_{0,em}$ for the electromagnetic interaction. We put forward the suggestion that mass generation can be related, in DSR, to the possible dependence of mass on the metric background (relativity of mass).",
+      "published": "2005-05-16T12:42:07Z",
+      "updated": "2005-05-16T12:42:07Z",
+      "categories": [
+        "hep-th",
+        "gr-qc"
+      ],
+      "url": "https://arxiv.org/abs/hep-th/0505137v1",
+      "pdf_url": "https://arxiv.org/pdf/hep-th/0505137v1",
+      "relevance": 0.7841
+    },
+    {
+      "arxiv_id": "1401.3078v2",
+      "title": "Ultrafast Electron Dynamics in the Topological Insulator Bi2Se3 Studied by Time-Resolved Photoemission Spectroscopy",
+      "authors": [
+        "Jonathan A. Sobota",
+        "Shuolong Yang",
+        "Dominik Leuenberger",
+        "Alexander F. Kemper",
+        "James G. Analytis",
+        "Ian R. Fisher",
+        "Patrick S. Kirchmann",
+        "Thomas P. Devereaux",
+        "Zhi-Xun Shen"
+      ],
+      "abstract": "We characterize the topological insulator Bi$_2$Se$_3$ using time- and angle- resolved photoemission spectroscopy. By employing two-photon photoemission, a complete picture of the unoccupied electronic structure from the Fermi level up to the vacuum level is obtained. We demonstrate that the unoccupied states host a second, Dirac surface state which can be resonantly excited by 1.5 eV photons. We then study the ultrafast relaxation processes following optical excitation. We find that they culminate in a persistent non-equilibrium population of the first Dirac surface state, which is maintained by a meta-stable population of the bulk conduction band. Finally, we perform a temperature-dependent study of the electron-phonon scattering processes in the conduction band, and find the unexpected result that their rates decrease with increasing sample temperature. We develop a model of phonon emission and absorption from a population of electrons, and show that this counter-intuitive trend is the natural consequence of fundamental electron-phonon scattering processes. This analysis serves as an important reminder that the decay rates extracted by time-resolved photoemission are not in general equal to single electron scattering rates, but include contributions from filling and emptying processes from a continuum of states.",
+      "published": "2014-01-14T06:16:36Z",
+      "updated": "2014-02-06T18:56:13Z",
+      "categories": [
+        "cond-mat.mtrl-sci",
+        "cond-mat.mes-hall"
+      ],
+      "url": "https://arxiv.org/abs/1401.3078v2",
+      "pdf_url": "https://arxiv.org/pdf/1401.3078v2",
+      "relevance": 0.78
+    },
+    {
+      "arxiv_id": "cond-mat/0310718v2",
+      "title": "Effect of discrete impurities on electron transport in ultra-short MOSFET using 3D Monte Carlo simulation",
+      "authors": [
+        "P. Dollfus",
+        "A. Bournel",
+        "S. Galdin",
+        "S. Barraud",
+        "P. Hesto"
+      ],
+      "abstract": "This paper discusses the influence of the channel impurity distribution on the transport and the drive current in short-gate MOSFET. In this purpose, a careful description of electron-ion interaction suitable for the case of discrete impurities has been implemented in a 3D particle Monte Carlo simulator. This transport model is applied to the investigation of 50 nm MOSFET operation. The results show that a small change in the number of doping impurities or in the position of a single discrete impurity in the inversion layer may significantly influence the drain current. This effect is not only related to threshold voltage fluctuations but also to variations in transport properties in the inversion layer, especially at high drain voltage. The results are analyzed in terms of local fluctuations of electron velocity and current density. In a set of fifteen simulated devices the drive current Ion, determined at VGS = VDS = 0.6 V, is found to vary in a range of 23% according to the position of channel impurities.",
+      "published": "2003-10-30T08:51:58Z",
+      "updated": "2004-02-23T12:58:55Z",
+      "categories": [
+        "cond-mat.mes-hall"
+      ],
+      "url": "https://arxiv.org/abs/cond-mat/0310718v2",
+      "pdf_url": "https://arxiv.org/pdf/cond-mat/0310718v2",
+      "relevance": 0.7747
+    },
+    {
+      "arxiv_id": "2102.03929v1",
+      "title": "A flexible 300 mm integrated Si MOS platform for electron- and hole-spin qubits exploration",
+      "authors": [
+        "R. Li",
+        "N. I. Dumoulin Stuyck",
+        "S. Kubicek",
+        "J. Jussot",
+        "B. T. Chan",
+        "F. A. Mohiyaddin",
+        "A. Elsayed",
+        "M. Shehata",
+        "G. Simion",
+        "C. Godfrin",
+        "Y. Canvel",
+        "Ts. Ivanov",
+        "L. Goux",
+        "B. Govoreanu",
+        "I. P. Radu"
+      ],
+      "abstract": "We report on a flexible 300 mm process that optimally combines optical and electron beam lithography to fabricate silicon spin qubits. It enables on-the-fly layout design modifications while allowing devices with either n- or p-type ohmic implants, a pitch smaller than 100 nm, and uniform critical dimensions down to 30 nm with a standard deviation ~ 1.6 nm. Various n- and p-type qubits are characterized in a dilution refrigerator at temperatures ~ 10 mK. Electrical measurements demonstrate well-defined quantum dots, tunable tunnel couplings, and coherent spin control, which are essential requirements for the implementation of a large-scale quantum processor.",
+      "published": "2021-02-07T21:56:59Z",
+      "updated": "2021-02-07T21:56:59Z",
+      "categories": [
+        "cond-mat.mes-hall",
+        "physics.app-ph",
+        "quant-ph"
+      ],
+      "url": "https://arxiv.org/abs/2102.03929v1",
+      "pdf_url": "https://arxiv.org/pdf/2102.03929v1",
+      "relevance": 0.7375
+    },
+    {
+      "arxiv_id": "cond-mat/0211289v1",
+      "title": "Surface effects on the electronic energy loss of charged particles entering a metal surface",
+      "authors": [
+        "A. Garcia-Lekue",
+        "J. M. Pitarke"
+      ],
+      "abstract": "Surface effects on the electronic energy loss of charged particles entering a metal surface are investigated within linear-response theory, in the framework of time-dependent density functional theory. Interesting phenomena occur in the loss spectra originated by the boundary (bregenzung) effect, which is as a consequence of the orthogonality of surface and bulk excitation modes. Our calculations indicate that the presence of a non-abrupt electron-density profile at the surface severely affects the nature of surface excitations, as deduced from comparison with simplified models.",
+      "published": "2002-11-14T15:23:14Z",
+      "updated": "2002-11-14T15:23:14Z",
+      "categories": [
+        "cond-mat.mtrl-sci"
+      ],
+      "url": "https://arxiv.org/abs/cond-mat/0211289v1",
+      "pdf_url": "https://arxiv.org/pdf/cond-mat/0211289v1",
+      "relevance": 0.7068
+    },
+    {
+      "arxiv_id": "cond-mat/0011267v1",
+      "title": "The electronic structure of cuprates from high energy spectroscopy",
+      "authors": [
+        "Mark S. Golden",
+        "Christian Duerr",
+        "Andreas Koitzsch",
+        "Sibylle Legner",
+        "Zhiwei Hu",
+        "Sergey Borisenko",
+        "Martin Knupfer",
+        "Joerg Fink"
+      ],
+      "abstract": "We report studies of the electronic structure and elementary excitations of doped and undoped cuprate chains, ladders and planes. Using high energy spectroscopies such as x-ray absorption, core level photoemission and angle resolved photoemission spectroscopy, important information regarding the charge distribution and hole dynamics can be obtained. The comparison of the experimental data with suitable theoretical models sets constraints on the parameters entering into the model calculations, and offers insight into the important physical quantities governing the electronic structure of these materials. Recurring themes include the importance of the dimensionality of the Cu-O network (1D->2D) and the crucial role played by the spin-background in determining the dynamics of low-lying excitations in these strongly correlated systems.",
+      "published": "2000-11-15T16:19:15Z",
+      "updated": "2000-11-15T16:19:15Z",
+      "categories": [
+        "cond-mat.supr-con",
+        "cond-mat.str-el"
+      ],
+      "url": "https://arxiv.org/abs/cond-mat/0011267v1",
+      "pdf_url": "https://arxiv.org/pdf/cond-mat/0011267v1",
+      "relevance": 0.474
+    },
+    {
+      "arxiv_id": "1711.09828v1",
+      "title": "Electronic and magnetic properties of the graphene densely decorated with 3d metallic adatoms",
+      "authors": [
+        "Malgorzata Wawrzyniak-Adamczewska"
+      ],
+      "abstract": "The electronic properties of graphene decorated with Ni, Co, Cu and Zn adatoms is studied with the density functional theory approach. Within the analysis the spin-orbit interaction is taken into account. We focus on the case when the indicated $3d$ metallic adatoms form a perfect, close-packed single-atomic layer above the graphene surface. The two configurations are examined, namely the adatoms in the on-top, and the hollow positions on graphene. First, we verify that the metallic adatoms in the close-packed structure do not form a covalent bonds with the graphene substrate. However, due to the proximity of the metallic adatoms to the graphene, the charge transfer from the adatom layer to the graphene takes place, and in consequence the graphene becomes $n$-doped. The observed charge transfer results from the arising hybridization between the graphene $2p$ and transition metal $3d$ orbitals. The proximity of metallic adatoms modifies the magnetic state of the graphene. This effect is especially pronounced for the decoration with magnetic atoms, when the magnetic moments on the graphene sublattices are induced. The analysis of the band structure demonstrates that the charge transfer, as well as the induced magnetism on graphene, modify the graphene electronic properties near high symmetry points, especially the Dirac cones. The presence of the metallic adatoms breaks graphene $K-K^{'}$ symmetry and splits the bands due to the exchange coupling. We show that for the hollow configuration the gap opening arises at the $K(K^{'})$-point due to the Rashba-like spin-orbit interaction, while in the case of the on-top configuration the energy gap opens mainly due to the staggered potential. We also mapped the parameters of an effective Hamiltonian on the results obtained with the density functional theory approach.",
+      "published": "2017-11-27T16:56:22Z",
+      "updated": "2017-11-27T16:56:22Z",
+      "categories": [
+        "physics.app-ph"
+      ],
+      "url": "https://arxiv.org/abs/1711.09828v1",
+      "pdf_url": "https://arxiv.org/pdf/1711.09828v1",
+      "relevance": 0.4665
+    },
+    {
+      "arxiv_id": "1912.06461v1",
+      "title": "A sparse spin qubit array with integrated control electronics",
+      "authors": [
+        "Jelmer M. Boter",
+        "Juan P. Dehollain",
+        "Jeroen P. G. van Dijk",
+        "Toivo Hensgens",
+        "Richard Versluis",
+        "James S. Clarke",
+        "Menno Veldhorst",
+        "Fabio Sebastiano",
+        "Lieven M. K. Vandersypen"
+      ],
+      "abstract": "Current implementations of quantum computers suffer from large numbers of control lines per qubit, becoming unmanageable with system scale up. Here, we discuss a sparse spin-qubit architecture featuring integrated control electronics significantly reducing the off-chip wire count. This quantum-classical hardware integration closes the feasibility gap towards a CMOS quantum computer.",
+      "published": "2019-12-13T13:18:45Z",
+      "updated": "2019-12-13T13:18:45Z",
+      "categories": [
+        "quant-ph",
+        "cond-mat.mes-hall",
+        "physics.app-ph"
+      ],
+      "url": "https://arxiv.org/abs/1912.06461v1",
+      "pdf_url": "https://arxiv.org/pdf/1912.06461v1",
+      "relevance": 0.4259
+    }
+  ],
+  "paper": {
+    "arxiv_id": "hep-th/0505137v1",
+    "title": "A geometrical meaning to the electron mass from breakdown of Lorentz invariance",
+    "authors": [
+      "Fabio Cardone",
+      "Alessio Marrani",
+      "Roberto Mignani"
+    ],
+    "abstract": "We discuss the problem of the electron mass in the framework of Deformed Special Relativity (DSR), a generalization of Special Relativity based on a deformed Minkowski space (i.e. a four-dimensional space-time with metric coefficients depending on the energy). We show that, by such a formalism, it is possible to derive the value of the electron mass from the space-time geometry via the experimental knowledge of the parameter of local Lorentz invariance breakdown, and of the Minkowskian threshold energy $E_{0,em}$ for the electromagnetic interaction. We put forward the suggestion that mass generation can be related, in DSR, to the possible dependence of mass on the metric background (relativity of mass).",
+    "published": "2005-05-16T12:42:07Z",
+    "updated": "2005-05-16T12:42:07Z",
+    "categories": [
+      "hep-th",
+      "gr-qc"
+    ],
+    "url": "https://arxiv.org/abs/hep-th/0505137v1",
+    "pdf_url": "https://arxiv.org/pdf/hep-th/0505137v1",
+    "relevance": 0.7841
+  },
+  "collection": "paper_02edea82a5fca3112db8c664",
+  "pdf_sha256": "65176ad2e3434e7d28acd577fdcf1dacdde8e719a142bfc59f1d3943859ec5ff",
+  "pages": 15,
+  "chunk_count": 44,
+  "briefing": {
+    "summary": {
+      "text": "The authors propose that the electron mass can be derived from space-time geometry within Deformed Special Relativity (DSR) by utilizing experimental knowledge of local Lorentz invariance breakdown and a Minkowskian threshold energy.",
+      "evidence": [
+        {
+          "chunk_id": "ae766c886b044ee6",
+          "quote": "We discuss the problem of the electron mass in the framework of Deformed Special Relativity (DSR), a generalization of Special Relativity based on a deformed Minkowski space (i.e. a four-dimensional space-time with metric coefficients depending on the energy)."
+        },
+        {
+          "chunk_id": "ae766c886b044ee6",
+          "quote": "We show that, by such a formalism, it is possible to derive the value of the electron mass from the space-time geometry via the experimental knowledge of the parameter of local Lorentz invariance breakdown, and of the Minkowskian threshold energy E for the electromagnetic interaction."
+        }
+      ]
+    },
+    "problem": {
+      "text": "The origin of particle mass remains an open theoretical problem, as the Standard Model cannot explain why particles bear specific masses, and the electron's mass origin is still mysterious despite the successes of the Dirac equation.",
+      "evidence": [
+        {
+          "chunk_id": "2776d0e620ca42d9",
+          "quote": "1 - Introduction The problem of the mass spectrum of the known particles (leptons and hadrons) is still an open one from the theoretical side."
+        },
+        {
+          "chunk_id": "2776d0e620ca42d9",
+          "quote": "As a matter of fact, the Standard Model of electromagnetic, weak and strong interactions is unable to say why a given particle does bear that given (experimental) mass."
+        },
+        {
+          "chunk_id": "2776d0e620ca42d9",
+          "quote": "On this respect, even the first, best known and familiar particle, the electron, is still a mysterious object."
+        }
+      ]
+    },
+    "method": [
+      {
+        "text": "The DSR formalism is treated as a five-dimensional theory where the deformed Minkowski space is embedded in a larger Riemannian manifold with energy as the fifth dimension.",
+        "evidence": [
+          {
+            "chunk_id": "b608695a51ff6d02",
+            "quote": "Moreover, it was shown that the DSR formalism is actually a five-dimensional one, in the sense that the deformed Minkowski space can be naturally embedded in a larger Riemannian manifold, with energy as fifth dimension(13) ."
+          },
+          {
+            "chunk_id": "b608695a51ff6d02",
+            "quote": "On this respect, the DSR formalism is a kind of generalized (non-compactified) Kaluza-Klein theory, and resembles, in some aspects, the so-called ''Space-Time-Mass'' (STM) theory (in which the fifth dimension is the rest mass), proposed by Wesson(15) and studied in detail by a number of Authors(16). ~ By putting ds2=0 ,"
+          }
+        ]
+      },
+      {
+        "text": "Source wording (automatic review requested inspection): “so-called ''Space-Time-Mass'' (STM) theory (in which the fifth dimension is the rest mass), proposed by Wesson(15) and studied in detail by a number of Authors(16). ~ By putting ds2=0 , we get the maximal causal velocity in M (3,21) æ ö r b (E) b (E) b (E) u(E) º ç ç c 0 ,c 0 ,c 0 ÷ ÷ (2.3) è b (E) b (E) b (E) ø 1 2 3 (i.e. the analogous of the light speed in SR) for the interaction represented by the deformed metric considered.” “In DSR the relativistic energy, for a particle of mass m subjected to a given interaction and moving along xˆ ,has the form(3): i E = m u2 (E)g ~ (E) == m c2 b2 0 (E) g ~ (E) (2.4) i b2 (E) i where u is the i-th component of the maximal velocity (2.3) of the interaction considered, i and g ~ (E) º ( 1- b ~ 2 ) - 1 2 = ê é 1- ç ç æ v i b i (E) ÷ ÷ ö”",
+        "evidence": [
+          {
+            "chunk_id": "e262f915c39643e2",
+            "quote": "so-called ''Space-Time-Mass'' (STM) theory (in which the fifth dimension is the rest mass), proposed by Wesson(15) and studied in detail by a number of Authors(16). ~ By putting ds2=0 , we get the maximal causal velocity in M (3,21) æ ö r b (E) b (E) b (E) u(E) º ç ç c 0 ,c 0 ,c 0 ÷ ÷ (2.3) è b (E) b (E) b (E) ø 1 2 3 (i.e. the analogous of the light speed in SR) for the interaction represented by the deformed metric considered."
+          },
+          {
+            "chunk_id": "e262f915c39643e2",
+            "quote": "In DSR the relativistic energy, for a particle of mass m subjected to a given interaction and moving along xˆ ,has the form(3): i E = m u2 (E)g ~ (E) == m c2 b2 0 (E) g ~ (E) (2.4) i b2 (E) i where u is the i-th component of the maximal velocity (2.3) of the interaction considered, i and g ~ (E) º ( 1- b ~ 2 ) - 1 2 = ê é 1- ç ç æ v i b i (E) ÷ ÷ ö"
+          }
+        ]
+      },
+      {
+        "text": "An electromagnetic experiment is utilized to detect a nonzero Lorentz force, providing experimental evidence for the breakdown of local Lorentz invariance.",
+        "evidence": [
+          {
+            "chunk_id": "35b4d8178987e0d2",
+            "quote": "end of the past century, a new electromagnetic experiment was proposed(24), aimed at directly testing LLI."
+          },
+          {
+            "chunk_id": "35b4d8178987e0d2",
+            "quote": "The results obtained by such a method in two experimental runs(25) admit as the most natural interpretation the fact that local Lorentz invariance is in.fact broken."
+          }
+        ]
+      },
+      {
+        "text": "Source wording (automatic review requested inspection): “The value of the (isotropic) LLI breaking factor determined by this electromagnetic experiment is(25) d @ 4·10-11 (3.2) and represents the present lowest limit to d.” “In order to establish a connection with the electron mass, we can define the LLI breakdown parameter for a given interaction, d , as int m - m m d º in,int. in,grav. =1- in,grav. (3.3) int m m in,int. in,int. where m is the inertial mass of the particle”",
+        "evidence": [
+          {
+            "chunk_id": "35b4d8178987e0d2",
+            "quote": "The value of the (isotropic) LLI breaking factor determined by this electromagnetic experiment is(25) d @ 4·10-11 (3.2) and represents the present lowest limit to d."
+          },
+          {
+            "chunk_id": "35b4d8178987e0d2",
+            "quote": "In order to establish a connection with the electron mass, we can define the LLI breakdown parameter for a given interaction, d , as int m - m m d º in,int. in,grav. =1- in,grav. (3.3) int m m in,int. in,int. where m is the inertial mass of the particle"
+          }
+        ]
+      },
+      {
+        "text": "Source wording (automatic review requested inspection): “interaction, d , as int m - m m d º in,int. in,grav. =1- in,grav. (3.3) int m m in,int. in,int. where m is the inertial mass of the particle considered with respect to the given in.,int. interaction5 .” “In other words, we assume that the local deformation of space-time corresponding to the interaction considered, and described by the metric (2.1), gives rise to a local violation of the Principle of Equivalence for interactions different from the gravitational one.”",
+        "evidence": [
+          {
+            "chunk_id": "09763ff24ce49150",
+            "quote": "interaction, d , as int m - m m d º in,int. in,grav. =1- in,grav. (3.3) int m m in,int. in,int. where m is the inertial mass of the particle considered with respect to the given in.,int. interaction5 ."
+          },
+          {
+            "chunk_id": "09763ff24ce49150",
+            "quote": "In other words, we assume that the local deformation of space-time corresponding to the interaction considered, and described by the metric (2.1), gives rise to a local violation of the Principle of Equivalence for interactions different from the gravitational one."
+          }
+        ]
+      }
+    ],
+    "results": [
+      {
+        "text": "It is shown that the value of the electron mass can be derived from space-time geometry via the experimental knowledge of the LLI breakdown parameter and the Minkowskian threshold energy, suggesting that mass generation may be related to the dependence of mass on the metric background.",
+        "evidence": [
+          {
+            "chunk_id": "ae766c886b044ee6",
+            "quote": "We show that, by such a formalism, it is possible to derive the value of the electron mass from the space-time geometry via the experimental knowledge of the parameter of local Lorentz invariance breakdown, and of the Minkowskian threshold energy E for the electromagnetic interaction."
+          },
+          {
+            "chunk_id": "ae766c886b044ee6",
+            "quote": "We put forward the suggestion that mass 0,e.m. generation can be related, in DSR, to the possible dependence of mass on the metric background (relativity of mass)."
+          }
+        ]
+      }
+    ],
+    "limitations": [],
+    "limitations_note": "No explicit limitations were identified in the selected evidence; this does not establish that the paper has none.",
+    "follow_up_questions": [
+      "How does the specific value of the LLI breakdown parameter (4·10^-11) quantitatively determine the electron mass in the proposed DSR framework?",
+      "What is the role of the Minkowskian threshold energy E in the derivation of the electron mass?",
+      "Does the proposed model imply a specific relationship between the electron mass and the fifth dimension representing energy?"
+    ]
+  },
+  "briefing_evidence_ids": [
+    "ae766c886b044ee6",
+    "2776d0e620ca42d9",
+    "b608695a51ff6d02",
+    "e262f915c39643e2",
+    "35b4d8178987e0d2",
+    "d8a4e0b789372b32",
+    "7618552348fa3a16",
+    "09763ff24ce49150"
+  ],
+  "exchanges": [
+    {
+      "question": "Which theoretical framework does this paper use to discuss the electron mass?",
+      "retrieval_query": "Which theoretical framework does this paper use to discuss the electron mass?",
+      "answer": {
+        "status": "answered",
+        "claims": [
+          {
+            "text": "The paper discusses the electron mass within the framework of Deformed Special Relativity (DSR), a generalization of Special Relativity based on a deformed Minkowski space.",
+            "evidence": [
+              {
+                "chunk_id": "ae766c886b044ee6",
+                "quote": "We discuss the problem of the electron mass in the framework of Deformed Special Relativity (DSR), a generalization of Special Relativity based on a deformed Minkowski space (i.e. a four-dimensional space-time with metric coefficients depending on the energy)."
+              },
+              {
+                "chunk_id": "1a09b8d685f1ab28",
+                "quote": "In this paper, we want to show that the electron mass m can be obtained from e arguments related to the breakdown of local Lorentz invariance, in the framework of a generalization of Special Relativity (Deformed Special Relativity, DSR), based on a “deformation” of the Minkowski space (i.e. with metric coefficients depending on the energy) ."
+              }
+            ]
+          },
+          {
+            "text": "The authors suggest that mass generation in DSR relates to the dependence of mass on the metric background and attribute a geometrical meaning to the electron mass by expressing it in terms of the parameter d of local Lorentz invariance breakdown.",
+            "evidence": [
+              {
+                "chunk_id": "ae766c886b044ee6",
+                "quote": "We put forward the suggestion that mass 0,e.m. generation can be related, in DSR, to the possible dependence of mass on the metric background (relativity of mass)."
+              },
+              {
+                "chunk_id": "1a09b8d685f1ab28",
+                "quote": "This allows one to attribute to m a geometrical meaning, by expressing it in e terms of the parameter d of LLI breakdown."
+              }
+            ]
+          }
+        ],
+        "explanation": ""
+      },
+      "retrieved_ids": [
+        "3fdd5d907ea32594",
+        "2776d0e620ca42d9",
+        "ae766c886b044ee6",
+        "1a09b8d685f1ab28",
+        "63806a16a60f1a72",
+        "021c86622c90fc7b",
+        "4a64397120c263aa"
+      ],
+      "elapsed_seconds": 10.531,
+      "created_at": "2026-09-19T16:04:13.070710+00:00"
+    }
+  ],
+  "warnings": [
+    "arXiv returned HTTP 406 for the parameterized topic request; an equivalent canonical API query succeeded with the same terms and sort intent.",
+    "Automatic support review replaced 3 briefing paraphrase(s) with visibly labeled source wording. Inspect those passages; the reviewer is fallible."
+  ],
+  "events": [
+    {
+      "node": "understand",
+      "status": "completed",
+      "seconds": 0.0,
+      "detail": "",
+      "at": "2026-09-19T16:02:19.979056+00:00"
+    },
+    {
+      "node": "retrieve",
+      "status": "completed",
+      "seconds": 3.031,
+      "detail": "",
+      "at": "2026-09-19T16:02:23.011479+00:00"
+    },
+    {
+      "node": "select",
+      "status": "completed",
+      "seconds": 0.641,
+      "detail": "",
+      "at": "2026-09-19T16:02:23.656329+00:00"
+    },
+    {
+      "node": "fetch",
+      "status": "completed",
+      "seconds": 3.087,
+      "detail": "",
+      "at": "2026-09-19T16:02:26.745146+00:00"
+    },
+    {
+      "node": "parse",
+      "status": "completed",
+      "seconds": 0.413,
+      "detail": "",
+      "at": "2026-09-19T16:02:27.162486+00:00"
+    },
+    {
+      "node": "index",
+      "status": "completed",
+      "seconds": 2.543,
+      "detail": "",
+      "at": "2026-09-19T16:02:29.707555+00:00"
+    },
+    {
+      "node": "brief",
+      "status": "completed",
+      "seconds": 50.234,
+      "detail": "",
+      "at": "2026-09-19T16:03:19.942727+00:00"
+    },
+    {
+      "node": "validate",
+      "status": "completed",
+      "seconds": 0.001,
+      "detail": "",
+      "at": "2026-09-19T16:03:19.945888+00:00"
+    },
+    {
+      "node": "qa.retrieve",
+      "status": "completed",
+      "seconds": 0.097,
+      "detail": "7 passages",
+      "at": "2026-09-19T16:04:02.636929+00:00"
+    },
+    {
+      "node": "qa.answer",
+      "status": "completed",
+      "seconds": 10.531,
+      "detail": "answered",
+      "at": "2026-09-19T16:04:13.070730+00:00"
+    }
+  ],
+  "error": null
+}

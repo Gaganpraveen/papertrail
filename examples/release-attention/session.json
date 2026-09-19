@@ -1,0 +1,374 @@
+{
+  "schema_version": 1,
+  "id": "0d03c77529e0",
+  "query": "https://arxiv.org/abs/1706.03762v7",
+  "model": "qwen3.5:4b",
+  "embedding_model": "BAAI/bge-small-en-v1.5",
+  "created_at": "2026-09-19T16:06:03.865815+00:00",
+  "updated_at": "2026-09-19T16:09:37.045968+00:00",
+  "node": "ready",
+  "status": "ready",
+  "intent": {
+    "kind": "paper",
+    "value": "1706.03762v7",
+    "keywords": [],
+    "recent": false
+  },
+  "candidates": [
+    {
+      "arxiv_id": "1706.03762v7",
+      "title": "Attention Is All You Need",
+      "authors": [
+        "Ashish Vaswani",
+        "Noam Shazeer",
+        "Niki Parmar",
+        "Jakob Uszkoreit",
+        "Llion Jones",
+        "Aidan N. Gomez",
+        "Lukasz Kaiser",
+        "Illia Polosukhin"
+      ],
+      "abstract": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks in an encoder-decoder configuration. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-to-German translation task, improving over the existing best results, including ensembles by over 2 BLEU. On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature. We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data.",
+      "published": "2017-06-12T17:57:34Z",
+      "updated": "2023-08-02T00:41:18Z",
+      "categories": [
+        "cs.CL",
+        "cs.LG"
+      ],
+      "url": "https://arxiv.org/abs/1706.03762v7",
+      "pdf_url": "https://arxiv.org/pdf/1706.03762v7",
+      "relevance": 0.0
+    }
+  ],
+  "paper": {
+    "arxiv_id": "1706.03762v7",
+    "title": "Attention Is All You Need",
+    "authors": [
+      "Ashish Vaswani",
+      "Noam Shazeer",
+      "Niki Parmar",
+      "Jakob Uszkoreit",
+      "Llion Jones",
+      "Aidan N. Gomez",
+      "Lukasz Kaiser",
+      "Illia Polosukhin"
+    ],
+    "abstract": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks in an encoder-decoder configuration. The best performing models also connect the encoder and decoder through an attention mechanism. We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train. Our model achieves 28.4 BLEU on the WMT 2014 English-to-German translation task, improving over the existing best results, including ensembles by over 2 BLEU. On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature. We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data.",
+    "published": "2017-06-12T17:57:34Z",
+    "updated": "2023-08-02T00:41:18Z",
+    "categories": [
+      "cs.CL",
+      "cs.LG"
+    ],
+    "url": "https://arxiv.org/abs/1706.03762v7",
+    "pdf_url": "https://arxiv.org/pdf/1706.03762v7",
+    "relevance": 0.0
+  },
+  "collection": "paper_4cd07ab63aadf7aa2b88cc9e",
+  "pdf_sha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+  "pages": 15,
+  "chunk_count": 55,
+  "briefing": {
+    "summary": {
+      "text": "The authors propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely. Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train.",
+      "evidence": [
+        {
+          "chunk_id": "c8b5eec8c07826e6",
+          "quote": "We propose a new simple network architecture, the Transformer, based solely on attention mechanisms, dispensing with recurrence and convolutions entirely."
+        },
+        {
+          "chunk_id": "c8b5eec8c07826e6",
+          "quote": "Experiments on two machine translation tasks show these models to be superior in quality while being more parallelizable and requiring significantly less time to train."
+        }
+      ]
+    },
+    "problem": {
+      "text": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks that include an encoder and a decoder. To the best of our knowledge, however, the Transformer is the first transduction model relying entirely on self-attention to compute representations of its input and output without using sequencealigned RNNs or convolution.",
+      "evidence": [
+        {
+          "chunk_id": "c8b5eec8c07826e6",
+          "quote": "The dominant sequence transduction models are based on complex recurrent or convolutional neural networks that include an encoder and a decoder."
+        },
+        {
+          "chunk_id": "dd6a4c88f12ba735",
+          "quote": "To the best of our knowledge, however, the Transformer is the first transduction model relying entirely on self-attention to compute representations of its input and output without using sequencealigned RNNs or convolution."
+        }
+      ]
+    },
+    "method": [
+      {
+        "text": "The best performing models also connect the encoder and decoder through an attention mechanism. Self-attention, sometimes called intra-attention is an attention mechanism relating different positions of a single sequence in order to compute a representation of the sequence.",
+        "evidence": [
+          {
+            "chunk_id": "c8b5eec8c07826e6",
+            "quote": "The best performing models also connect the encoder and decoder through an attention mechanism."
+          },
+          {
+            "chunk_id": "fb192913431d74fa",
+            "quote": "Self-attention, sometimes called intra-attention is an attention mechanism relating different positions of a single sequence in order to compute a representation of the sequence."
+          }
+        ]
+      },
+      {
+        "text": "The Transformer follows this overall architecture using stacked self-attention and point-wise, fully connected layers for both the encoder and decoder. Most competitive neural sequence transduction models have an encoder-decoder structure.",
+        "evidence": [
+          {
+            "chunk_id": "ca349beccf97bb9f",
+            "quote": "The Transformer follows this overall architecture using stacked self-attention and point-wise, fully connected layers for both the encoder and decoder, shown in the left and right halves of Figure 1, respectively."
+          },
+          {
+            "chunk_id": "7be5f4ca916f91a9",
+            "quote": "Most competitive neural sequence transduction models have an encoder-decoder structure [5, 2, 35]."
+          }
+        ]
+      },
+      {
+        "text": "Not only do individual attention heads clearly learn to perform different tasks, many appear to exhibit behavior related to the syntactic and semantic structure of the sentences.",
+        "evidence": [
+          {
+            "chunk_id": "ae0f3bf0ce432534",
+            "quote": "Not only do individual attention heads clearly learn to perform different tasks, many appear to exhibit behavior related to the syntactic and semantic structure of the sentences."
+          }
+        ]
+      }
+    ],
+    "results": [
+      {
+        "text": "Source wording (automatic review requested inspection): “Our model achieves 28.4 BLEU on the WMT 2014 Englishto-German translation task, improving over the existing best results, including ensembles, by over 2 BLEU.” “On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature.”",
+        "evidence": [
+          {
+            "chunk_id": "c8b5eec8c07826e6",
+            "quote": "Our model achieves 28.4 BLEU on the WMT 2014 Englishto-German translation task, improving over the existing best results, including ensembles, by over 2 BLEU."
+          },
+          {
+            "chunk_id": "c8b5eec8c07826e6",
+            "quote": "On the WMT 2014 English-to-French translation task, our model establishes a new single-model state-of-the-art BLEU score of 41.8 after training for 3.5 days on eight GPUs, a small fraction of the training costs of the best models from the literature."
+          }
+        ]
+      },
+      {
+        "text": "We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data.",
+        "evidence": [
+          {
+            "chunk_id": "c8b5eec8c07826e6",
+            "quote": "We show that the Transformer generalizes well to other tasks by applying it successfully to English constituency parsing both with large and limited training data. ∗Equal contribution."
+          }
+        ]
+      }
+    ],
+    "limitations": [],
+    "limitations_note": "No explicit limitations were identified in the selected evidence; this does not establish that the paper has none.",
+    "follow_up_questions": [
+      "How does the Transformer handle input and output modalities other than text?",
+      "What are the specific computational costs of using multi-headed attention compared to separable convolutions?",
+      "How does the model perform when generating sequences in a non-auto-regressive manner?"
+    ]
+  },
+  "briefing_evidence_ids": [
+    "c8b5eec8c07826e6",
+    "dd6a4c88f12ba735",
+    "fb192913431d74fa",
+    "ca349beccf97bb9f",
+    "7be5f4ca916f91a9",
+    "ae0f3bf0ce432534",
+    "e1c821986d8d5e43",
+    "b37abe7f7725f407",
+    "93ac8870ae64cd0c",
+    "612520d250023739"
+  ],
+  "exchanges": [
+    {
+      "question": "How many GPUs were used, and how long was the big model trained?",
+      "retrieval_query": "How many GPUs were used, and how long was the big model trained?",
+      "answer": {
+        "status": "answered",
+        "claims": [
+          {
+            "text": "The big model was trained for 3.5 days on 8 P100 GPUs.",
+            "evidence": [
+              {
+                "chunk_id": "b37abe7f7725f407",
+                "quote": "Training took 3.5 days on 8 P100 GPUs."
+              }
+            ]
+          },
+          {
+            "text": "The big models were trained for 300,000 steps (3.5 days).",
+            "evidence": [
+              {
+                "chunk_id": "abf6f22b8f92a712",
+                "quote": "The big models were trained for 300,000 steps (3.5 days)."
+              }
+            ]
+          }
+        ],
+        "explanation": ""
+      },
+      "retrieved_ids": [
+        "abf6f22b8f92a712",
+        "e1c821986d8d5e43",
+        "b37abe7f7725f407",
+        "0d2a4eae730e188f",
+        "15757ad196420295",
+        "052e280ac78332d0",
+        "612520d250023739"
+      ],
+      "elapsed_seconds": 9.599,
+      "created_at": "2026-09-19T16:07:55.787349+00:00"
+    },
+    {
+      "question": "What was the total training cost in US dollars?",
+      "retrieval_query": "What was the total training cost in US dollars?",
+      "answer": {
+        "status": "insufficient_evidence",
+        "claims": [],
+        "explanation": "I could not find enough evidence in the retrieved passages to answer this question."
+      },
+      "retrieved_ids": [
+        "abf6f22b8f92a712",
+        "74f8db603263a9ff",
+        "8e65840738173935",
+        "b37abe7f7725f407",
+        "93d2686d0c0247ed",
+        "a3d64752b5cce068",
+        "0d2a4eae730e188f"
+      ],
+      "elapsed_seconds": 2.471,
+      "created_at": "2026-09-19T16:08:15.328842+00:00"
+    },
+    {
+      "question": "How many warmup steps were used for the learning rate?",
+      "retrieval_query": "How many warmup steps were used for the learning rate?",
+      "answer": {
+        "status": "answered",
+        "claims": [
+          {
+            "text": "We used warmup_steps = 4000.",
+            "evidence": [
+              {
+                "chunk_id": "a3d64752b5cce068",
+                "quote": "We used warmup_steps = 4000."
+              }
+            ]
+          }
+        ],
+        "explanation": ""
+      },
+      "retrieved_ids": [
+        "a3d64752b5cce068",
+        "abf6f22b8f92a712",
+        "0d2a4eae730e188f",
+        "e1c821986d8d5e43",
+        "b37abe7f7725f407",
+        "a5e30be99fb8ff20",
+        "612520d250023739"
+      ],
+      "elapsed_seconds": 6.047,
+      "created_at": "2026-09-19T16:09:37.045948+00:00"
+    }
+  ],
+  "warnings": [
+    "Automatic support review replaced 1 briefing paraphrase(s) with visibly labeled source wording. Inspect those passages; the reviewer is fallible."
+  ],
+  "events": [
+    {
+      "node": "understand",
+      "status": "completed",
+      "seconds": 0.0,
+      "detail": "",
+      "at": "2026-09-19T16:06:03.868028+00:00"
+    },
+    {
+      "node": "retrieve",
+      "status": "completed",
+      "seconds": 0.27,
+      "detail": "",
+      "at": "2026-09-19T16:06:04.140100+00:00"
+    },
+    {
+      "node": "select",
+      "status": "completed",
+      "seconds": 0.0,
+      "detail": "",
+      "at": "2026-09-19T16:06:04.141862+00:00"
+    },
+    {
+      "node": "fetch",
+      "status": "completed",
+      "seconds": 3.023,
+      "detail": "",
+      "at": "2026-09-19T16:06:07.168548+00:00"
+    },
+    {
+      "node": "parse",
+      "status": "completed",
+      "seconds": 0.779,
+      "detail": "",
+      "at": "2026-09-19T16:06:07.950757+00:00"
+    },
+    {
+      "node": "index",
+      "status": "completed",
+      "seconds": 0.018,
+      "detail": "",
+      "at": "2026-09-19T16:06:07.970029+00:00"
+    },
+    {
+      "node": "brief",
+      "status": "completed",
+      "seconds": 51.946,
+      "detail": "",
+      "at": "2026-09-19T16:06:59.916831+00:00"
+    },
+    {
+      "node": "validate",
+      "status": "completed",
+      "seconds": 0.001,
+      "detail": "",
+      "at": "2026-09-19T16:06:59.921003+00:00"
+    },
+    {
+      "node": "qa.retrieve",
+      "status": "completed",
+      "seconds": 0.086,
+      "detail": "7 passages",
+      "at": "2026-09-19T16:07:46.274359+00:00"
+    },
+    {
+      "node": "qa.answer",
+      "status": "completed",
+      "seconds": 9.599,
+      "detail": "answered",
+      "at": "2026-09-19T16:07:55.787359+00:00"
+    },
+    {
+      "node": "qa.retrieve",
+      "status": "completed",
+      "seconds": 0.094,
+      "detail": "7 passages",
+      "at": "2026-09-19T16:08:12.952306+00:00"
+    },
+    {
+      "node": "qa.answer",
+      "status": "completed",
+      "seconds": 2.471,
+      "detail": "insufficient_evidence",
+      "at": "2026-09-19T16:08:15.328851+00:00"
+    },
+    {
+      "node": "qa.retrieve",
+      "status": "completed",
+      "seconds": 0.114,
+      "detail": "7 passages",
+      "at": "2026-09-19T16:09:31.112764+00:00"
+    },
+    {
+      "node": "qa.answer",
+      "status": "completed",
+      "seconds": 6.047,
+      "detail": "answered",
+      "at": "2026-09-19T16:09:37.045960+00:00"
+    }
+  ],
+  "error": null
+}
