@@ -1,3 +1,4 @@
+import math
 import os
 from dataclasses import dataclass
 from pathlib import Path
@@ -10,9 +11,14 @@ class Settings:
     ollama_url: str = "http://127.0.0.1:11434"
     embedding_model: str = "BAAI/bge-small-en-v1.5"
     model_timeout: float = 240.0
+    operation_timeout: float = 240.0
     max_pdf_bytes: int = 30 * 1024 * 1024
     max_pages: int = 100
     candidates: int = 8
+
+    def __post_init__(self):
+        if not math.isfinite(self.operation_timeout) or self.operation_timeout <= 0:
+            raise ValueError("PAPERTRAIL_OPERATION_TIMEOUT must be a positive number of seconds.")
 
     @classmethod
     def from_env(cls, data_dir: Path | None = None, model: str | None = None) -> "Settings":
@@ -21,4 +27,5 @@ class Settings:
             model=model or os.getenv("PAPERTRAIL_MODEL", "qwen3.5:4b"),
             ollama_url=os.getenv("PAPERTRAIL_OLLAMA_URL", "http://127.0.0.1:11434"),
             model_timeout=float(os.getenv("PAPERTRAIL_MODEL_TIMEOUT", "240")),
+            operation_timeout=float(os.getenv("PAPERTRAIL_OPERATION_TIMEOUT", "240")),
         )

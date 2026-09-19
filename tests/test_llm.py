@@ -359,3 +359,125 @@ def test_qa_support_rejection_retries_once_and_never_uses_extractive_fallback(ch
         assert "Do not repeat the rejected claim" in repair_messages[-1]["content"]
     finally:
         llm.close()
+
+
+def test_streamed_response_is_assembled_before_validation_and_timed():
+    events, requests = [], []
+    draft = '{"status":"insufficient_evidence","claims":[]}'
+
+    def handler(request):
+        requests.append(json.loads(request.content))
+        lines = [
+            {"message": {"content": draft[:20]}, "done": False},
+            {"message": {"content": draft[20:]}, "done": False},
+            {
+                "message": {"content": ""},
+                "done": True,
+                "eval_count": 12,
+                "load_duration": 1000000,
+                "prompt_eval_duration": 2000000,
+                "eval_duration": 3000000,
+            },
+        ]
+        return httpx.Response(
+            200,
+            headers={"content-type": "application/x-ndjson"},
+            text="\n".join(json.dumps(line) for line in lines),
+        )
+
+    llm = Ollama(
+        "http://localhost", "test", client=httpx.Client(transport=httpx.MockTransport(handler))
+    )
+    llm.observer = events.append
+    try:
+        result = llm.answer("An unsupported question?", [], [])
+        assert result.status == "insufficient_evidence"
+        assert requests[0]["stream"] is True
+        assert [(e.node, e.status) for e in events] == [
+            ("qa.generate", "running"),
+            ("qa.generate", "completed"),
+        ]
+        assert json.loads(events[-1].detail)["server_seconds"]["eval_duration"] == 0.003
+        assert llm.total_tokens == 12
+    finally:
+        llm.close()
+
+
+def test_interrupted_stream_closes_transport_and_never_accepts_partial_json():
+    class InterruptedStream(httpx.SyncByteStream):
+        closed = False
+
+        def __iter__(self):
+            yield b'{"message":{"content":"{\\"status\\":\\"insufficient_evidence\\",\\"claims\\":[]}"},"done":false}\n'
+
+        def close(self):
+            self.closed = True
+
+    stream, events, accepted = InterruptedStream(), [], []
+    llm = Ollama(
+        "http://localhost",
+        "test",
+        client=httpx.Client(
+            transport=httpx.MockTransport(
+                lambda request: httpx.Response(
+                    200, headers={"content-type": "application/x-ndjson"}, stream=stream
+                )
+            )
+        ),
+    )
+    llm.observer = events.append
+    try:
+        with pytest.raises(ModelError, match="interrupted"):
+            llm.generate(DraftAnswer, "question", accepted.append)
+        assert stream.closed and accepted == [] and llm.calls == 0
+        assert events[-1].status == "failed"
+    finally:
+        llm.close()
+
+
+def test_warmup_has_separate_visible_loading_stage():
+    requests, events = [], []
+
+    def handler(request):
+        requests.append((request.url.path, json.loads(request.content)))
+        return httpx.Response(200, json={"done": True})
+
+    llm = Ollama(
+        "http://localhost", "test", client=httpx.Client(transport=httpx.MockTransport(handler))
+    )
+    llm.observer = events.append
+    try:
+        llm.warmup()
+        assert requests[0][0] == "/api/generate"
+        assert requests[0][1]["options"]["num_ctx"] == 32768
+        assert "prompt" not in requests[0][1]
+        assert [(e.node, e.status) for e in events] == [
+            ("model.load", "running"),
+            ("model.load", "completed"),
+        ]
+        assert llm.calls == 0
+    finally:
+        llm.close()
+
+
+def test_failed_validation_is_reported_for_each_bounded_attempt():
+    events = []
+    llm = Ollama(
+        "http://localhost",
+        "test",
+        client=httpx.Client(
+            transport=httpx.MockTransport(
+                lambda request: httpx.Response(200, json={"message": {"content": '{"bad":true}'}})
+            )
+        ),
+    )
+    llm.observer = events.append
+    try:
+        with pytest.raises(GroundingError, match="twice"):
+            llm.generate(DraftAnswer, "question", lambda result: None)
+        rejected = [event for event in events if event.status == "rejected"]
+        assert len(rejected) == 2
+        assert all(event.node == "brief.validate" and event.detail for event in rejected)
+        assert llm.calls == 2
+    finally:
+        llm.close()

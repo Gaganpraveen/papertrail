@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "created_at": "2026-09-19T15:41:56.038558+00:00",
+  "created_at": "2026-09-19T18:14:06.082179+00:00",
   "evaluation_kind": "developer_constructed_smoke_eval_not_held_out",
   "dataset": {
     "path": "evals/attention-questions.json",
@@ -8,7 +8,7 @@
     "methodology": "Ten answerable questions and three unanswerable controls constructed by the developer after inspecting this exact parsed paper. Gold snippets are copied from the extracted text with whitespace normalized; page numbers are one-based PDF pages. These are neither blind nor held-out labels, are not exhaustive relevance judgments, and do not estimate quality across papers or users. Unanswerable labels reflect absence from the inspected source, not a claim that the question has no answer elsewhere."
   },
   "session": {
-    "id": "4ca1290ef789",
+    "id": "e830d31be1c4",
     "status": "ready",
     "paper": {
       "arxiv_id": "1706.03762v7",
@@ -34,31 +34,14 @@
       "pdf_url": "https://arxiv.org/pdf/1706.03762v7",
       "relevance": 0.0
     },
-    "collection": "paper_4cd07ab63aadf7aa2b88cc9e",
+    "collection": "paper_dceb9893e9da895e7359d02a",
     "pdf_sha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
-    "parsed_json_sha256": "fb5f72b18596172d732b9a45b8170b78bf26335a2fdba518e5e1017dd020208d",
+    "parsed_json_sha256": "c707acc3ac18531c63ea708952892b6bde826469f434393d0f1d22080685228d",
     "pages": 15,
     "chunks": 55,
     "eligible_nonreference_chunks": 45,
     "embedding_model": "BAAI/bge-small-en-v1.5",
-    "answer_model": "qwen3.5:4b",
-    "ollama_model": {
-      "name": "qwen3.5:4b",
-      "digest": "2a654d98e6fba55d452b7043684e9b57a947e393bbffa62485a7aac05ee4eefd",
-      "size": 3389983735,
-      "details": {
-        "parent_model": "",
-        "format": "gguf",
-        "family": "qwen35",
-        "families": [
-          "qwen35"
-        ],
-        "parameter_size": "4.7B",
-        "quantization_level": "Q4_K_M",
-        "context_length": 262144,
-        "embedding_length": 2560
-      }
-    }
+    "answer_model": "qwen3.5:4b"
   },
   "environment": {
     "python": "3.12.14",
@@ -80,7 +63,7 @@
     "support_match": "at least one normalized gold snippet occurs inside a retrieved passage",
     "retrieval_denominator": "answerable questions only; unanswerable cases excluded",
     "timing": "single sequential pass; includes lazy initialization; not a latency benchmark",
-    "answers": "hybrid top 5 only, direct Ollama.answer, empty previous questions",
+    "answers": "not run",
     "status_agreement": "expected answered/insufficient_evidence only; not answer correctness",
     "provenance": "application quote/ID/numeric checks; does not prove semantic entailment",
     "support_review": "same-model screening inside Ollama.answer; not an independent judge",
@@ -161,7 +144,7 @@
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.073132
+          "seconds": 0.08548
         },
         "bm25": {
           "support_hit_at_5": 1,
@@ -175,7 +158,7 @@
               "section": "1 Introduction",
               "score": 0.01639344262295082,
               "dense_score": null,
-              "lexical_score": 14.857702033396704,
+              "lexical_score": 16.79185534663813,
               "matched_gold_indices": [
                 0
               ]
@@ -187,41 +170,41 @@
               "section": "1 Introduction",
               "score": 0.016129032258064516,
               "dense_score": null,
-              "lexical_score": 8.768012279210865,
+              "lexical_score": 6.243253860307577,
               "matched_gold_indices": []
             },
             {
               "rank": 3,
-              "chunk_id": "9fe31808134ce24b",
-              "page": 7,
-              "section": "4 Why Self-Attention",
+              "chunk_id": "49d422707fe7c327",
+              "page": 10,
+              "section": "6.3 English Constituency Parsing",
               "score": 0.015873015873015872,
               "dense_score": null,
-              "lexical_score": 6.871045646000293,
+              "lexical_score": 5.5171944580539805,
               "matched_gold_indices": []
             },
             {
               "rank": 4,
-              "chunk_id": "c8b5eec8c07826e6",
-              "page": 1,
-              "section": "Abstract",
+              "chunk_id": "ae0f3bf0ce432534",
+              "page": 7,
+              "section": "4 Why Self-Attention",
               "score": 0.015625,
               "dense_score": null,
-              "lexical_score": 6.707166640835332,
+              "lexical_score": 5.063134039315463,
               "matched_gold_indices": []
             },
             {
               "rank": 5,
-              "chunk_id": "7be5f4ca916f91a9",
-              "page": 2,
-              "section": "3 Model Architecture",
+              "chunk_id": "c8b5eec8c07826e6",
+              "page": 1,
+              "section": "Abstract",
               "score": 0.015384615384615385,
               "dense_score": null,
-              "lexical_score": 6.390579513963336,
+              "lexical_score": 3.952747462543308,
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.00109
+          "seconds": 0.001804
         },
         "hybrid": {
           "support_hit_at_5": 1,
@@ -235,7 +218,7 @@
               "section": "1 Introduction",
               "score": 0.03278688524590164,
               "dense_score": 0.8779442230110496,
-              "lexical_score": 14.857702033396704,
+              "lexical_score": 16.79185534663813,
               "matched_gold_indices": [
                 0
               ]
@@ -247,7 +230,7 @@
               "section": "1 Introduction",
               "score": 0.03225806451612903,
               "dense_score": 0.8590679773469707,
-              "lexical_score": 8.768012279210865,
+              "lexical_score": 6.243253860307577,
               "matched_gold_indices": []
             },
             {
@@ -255,77 +238,34 @@
               "chunk_id": "c8b5eec8c07826e6",
               "page": 1,
               "section": "Abstract",
-              "score": 0.03149801587301587,
+              "score": 0.03125763125763126,
               "dense_score": 0.7956584881234788,
-              "lexical_score": 6.707166640835332,
+              "lexical_score": 3.952747462543308,
               "matched_gold_indices": []
             },
             {
               "rank": 4,
-              "chunk_id": "9fe31808134ce24b",
-              "page": 7,
-              "section": "4 Why Self-Attention",
-              "score": 0.029957522915269395,
-              "dense_score": 0.7581679563426709,
-              "lexical_score": 6.871045646000293,
+              "chunk_id": "93ac8870ae64cd0c",
+              "page": 10,
+              "section": "7 Conclusion",
+              "score": 0.03055037313432836,
+              "dense_score": 0.7889991305639783,
+              "lexical_score": 2.9419035694439497,
               "matched_gold_indices": []
             },
             {
               "rank": 5,
-              "chunk_id": "a5e30be99fb8ff20",
-              "page": 6,
-              "section": "4 Why Self-Attention",
-              "score": 0.029631255487269532,
-              "dense_score": 0.7785434998597488,
-              "lexical_score": 4.891916555951945,
+              "chunk_id": "49d422707fe7c327",
+              "page": 10,
+              "section": "6.3 English Constituency Parsing",
+              "score": 0.03036576949620428,
+              "dense_score": 0.7717233214199166,
+              "lexical_score": 5.5171944580539805,
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.005163
+          "seconds": 0.006037
         }
-      },
-      "answer_check": {
-        "status": "answered",
-        "status_agrees": true,
-        "answer": {
-          "status": "answered",
-          "claims": [
-            {
-              "text": "The inherent sequential nature of recurrent models, where hidden states depend on the previous state, precludes parallelization within training examples.",
-              "evidence": [
-                {
-                  "chunk_id": "673fd97ac5619cbc",
-                  "quote": "This inherently t t−1 sequential nature precludes parallelization within training examples, which becomes critical at longer sequence lengths, as memory constraints limit batching across examples."
-                }
-              ]
-            },
-            {
-              "text": "Recurrent models factor computation along symbol positions, generating hidden states as a function of the previous hidden state and the input for position t.",
-              "evidence": [
-                {
-                  "chunk_id": "673fd97ac5619cbc",
-                  "quote": "Recurrent models typically factor computation along the symbol positions of the input and output sequences."
-                },
-                {
-                  "chunk_id": "673fd97ac5619cbc",
-                  "quote": "Aligning the positions to steps in computation time, they generate a sequence of hidden states h , as a function of the previous hidden state h and the input for position t."
-                }
-              ]
-            }
-          ],
-          "explanation": ""
-        },
-        "grounding_rejected": false,
-        "grounding_rejection_reason": null,
-        "provenance": {
-          "check": "passed",
-          "claim_count": 2,
-          "quote_count": 3,
-          "semantic_correctness": "not_scored"
-        },
-        "seconds": 19.262389,
-        "model_calls": 4,
-        "generated_tokens": 629
       }
     },
     {
@@ -402,7 +342,7 @@
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.012385
+          "seconds": 0.00424
         },
         "bm25": {
           "support_hit_at_5": 1,
@@ -416,7 +356,7 @@
               "section": "3.1 Encoder and Decoder Stacks",
               "score": 0.01639344262295082,
               "dense_score": null,
-              "lexical_score": 10.32075453265725,
+              "lexical_score": 13.404739742755506,
               "matched_gold_indices": [
                 0
               ]
@@ -428,41 +368,41 @@
               "section": "3.2.3 Applications of Attention in our Model",
               "score": 0.016129032258064516,
               "dense_score": null,
-              "lexical_score": 10.301294468980624,
+              "lexical_score": 8.69410638486141,
               "matched_gold_indices": []
             },
             {
               "rank": 3,
-              "chunk_id": "9fe31808134ce24b",
-              "page": 7,
-              "section": "4 Why Self-Attention",
+              "chunk_id": "81fa42d5a0bb3179",
+              "page": 3,
+              "section": "3.1 Encoder and Decoder Stacks",
               "score": 0.015873015873015872,
               "dense_score": null,
-              "lexical_score": 8.321622602041998,
+              "lexical_score": 6.518682566576673,
               "matched_gold_indices": []
             },
             {
               "rank": 4,
-              "chunk_id": "81fa42d5a0bb3179",
-              "page": 3,
-              "section": "3.1 Encoder and Decoder Stacks",
+              "chunk_id": "93ac8870ae64cd0c",
+              "page": 10,
+              "section": "7 Conclusion",
               "score": 0.015625,
               "dense_score": null,
-              "lexical_score": 8.2397393332135,
+              "lexical_score": 5.978982049350268,
               "matched_gold_indices": []
             },
             {
               "rank": 5,
-              "chunk_id": "fb192913431d74fa",
-              "page": 2,
-              "section": "2 Background",
+              "chunk_id": "ca349beccf97bb9f",
+              "page": 3,
+              "section": "3 Model Architecture",
               "score": 0.015384615384615385,
               "dense_score": null,
-              "lexical_score": 6.0581757284234525,
+              "lexical_score": 5.861544521327364,
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.001131
+          "seconds": 0.001677
         },
         "hybrid": {
           "support_hit_at_5": 1,
@@ -476,74 +416,54 @@
               "section": "3.1 Encoder and Decoder Stacks",
               "score": 0.03278688524590164,
               "dense_score": 0.7573684382366552,
-              "lexical_score": 10.32075453265725,
+              "lexical_score": 13.404739742755506,
               "matched_gold_indices": [
                 0
               ]
             },
             {
               "rank": 2,
+              "chunk_id": "93ac8870ae64cd0c",
+              "page": 10,
+              "section": "7 Conclusion",
+              "score": 0.03149801587301587,
+              "dense_score": 0.7198004291769017,
+              "lexical_score": 5.978982049350268,
+              "matched_gold_indices": []
+            },
+            {
+              "rank": 3,
               "chunk_id": "456ee87055038b75",
               "page": 5,
               "section": "3.2.3 Applications of Attention in our Model",
               "score": 0.03128054740957967,
               "dense_score": 0.70705489523418,
-              "lexical_score": 10.301294468980624,
-              "matched_gold_indices": []
-            },
-            {
-              "rank": 3,
-              "chunk_id": "93ac8870ae64cd0c",
-              "page": 10,
-              "section": "7 Conclusion",
-              "score": 0.030798389007344232,
-              "dense_score": 0.7198004291769017,
-              "lexical_score": 5.868809784524502,
+              "lexical_score": 8.69410638486141,
               "matched_gold_indices": []
             },
             {
               "rank": 4,
-              "chunk_id": "81fa42d5a0bb3179",
-              "page": 3,
-              "section": "3.1 Encoder and Decoder Stacks",
-              "score": 0.029513888888888888,
-              "dense_score": 0.6942657610195286,
-              "lexical_score": 8.2397393332135,
+              "chunk_id": "9a4b4c620df72b88",
+              "page": 6,
+              "section": "3.5 Positional Encoding",
+              "score": 0.029910714285714284,
+              "dense_score": 0.7159770806594256,
+              "lexical_score": 3.4568178505002036,
               "matched_gold_indices": []
             },
             {
               "rank": 5,
-              "chunk_id": "9a4b4c620df72b88",
-              "page": 6,
-              "section": "3.5 Positional Encoding",
-              "score": 0.0293236301369863,
-              "dense_score": 0.7159770806594256,
-              "lexical_score": 3.988393788061338,
+              "chunk_id": "81fa42d5a0bb3179",
+              "page": 3,
+              "section": "3.1 Encoder and Decoder Stacks",
+              "score": 0.02976190476190476,
+              "dense_score": 0.6942657610195286,
+              "lexical_score": 6.518682566576673,
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.005392
+          "seconds": 0.00594
         }
-      },
-      "answer_check": {
-        "status": "insufficient_evidence",
-        "status_agrees": false,
-        "answer": {
-          "status": "insufficient_evidence",
-          "claims": [],
-          "explanation": "A draft answer failed evidence validation; no unverified answer is shown."
-        },
-        "grounding_rejected": true,
-        "grounding_rejection_reason": "The model output failed schema/evidence validation twice. No unverified answer was accepted. Support review rejected: Claim 'To preserve the auto-regressive property, the model prevents leftward information flow in the decoder by masking out all values in the input of the scaled dot-product attention mechanism.': The second quotation is truncated and does not complete the statement about masking out values, making it impossible to verify the claim that all values are masked out.",
-        "provenance": {
-          "check": "no_claims_to_check",
-          "claim_count": 0,
-          "quote_count": 0,
-          "semantic_correctness": "not_scored"
-        },
-        "seconds": 17.226835,
-        "model_calls": 4,
-        "generated_tokens": 556
       }
     },
     {
@@ -620,7 +540,7 @@
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.01281
+          "seconds": 0.004162
         },
         "bm25": {
           "support_hit_at_5": 1,
@@ -634,19 +554,19 @@
               "section": "3.2.2 Multi-Head Attention",
               "score": 0.01639344262295082,
               "dense_score": null,
-              "lexical_score": 9.990549029772597,
+              "lexical_score": 6.309210409770639,
               "matched_gold_indices": [
                 0
               ]
             },
             {
               "rank": 2,
-              "chunk_id": "ae0f3bf0ce432534",
-              "page": 7,
-              "section": "4 Why Self-Attention",
+              "chunk_id": "dd6a4c88f12ba735",
+              "page": 2,
+              "section": "2 Background",
               "score": 0.016129032258064516,
               "dense_score": null,
-              "lexical_score": 8.605844144300681,
+              "lexical_score": 4.4411465240370624,
               "matched_gold_indices": []
             },
             {
@@ -656,7 +576,7 @@
               "section": "6.2 Model Variations",
               "score": 0.015873015873015872,
               "dense_score": null,
-              "lexical_score": 7.472572671815216,
+              "lexical_score": 4.241053162640803,
               "matched_gold_indices": []
             },
             {
@@ -666,7 +586,7 @@
               "section": "3.2.2 Multi-Head Attention",
               "score": 0.015625,
               "dense_score": null,
-              "lexical_score": 5.336779958341388,
+              "lexical_score": 3.948815063100089,
               "matched_gold_indices": []
             },
             {
@@ -676,11 +596,11 @@
               "section": "3.2 Attention",
               "score": 0.015384615384615385,
               "dense_score": null,
-              "lexical_score": 5.3085886500048405,
+              "lexical_score": 3.851234198473213,
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.001113
+          "seconds": 0.001635
         },
         "hybrid": {
           "support_hit_at_5": 1,
@@ -694,7 +614,7 @@
               "section": "3.2.2 Multi-Head Attention",
               "score": 0.03278688524590164,
               "dense_score": 0.7690851451856215,
-              "lexical_score": 9.990549029772597,
+              "lexical_score": 6.309210409770639,
               "matched_gold_indices": [
                 0
               ]
@@ -706,85 +626,42 @@
               "section": "3.2.2 Multi-Head Attention",
               "score": 0.031754032258064516,
               "dense_score": 0.7475402165743938,
-              "lexical_score": 5.336779958341388,
+              "lexical_score": 3.948815063100089,
               "matched_gold_indices": []
             },
             {
               "rank": 3,
-              "chunk_id": "ae0f3bf0ce432534",
-              "page": 7,
-              "section": "4 Why Self-Attention",
-              "score": 0.03128054740957967,
-              "dense_score": 0.7127091412107495,
-              "lexical_score": 8.605844144300681,
-              "matched_gold_indices": []
-            },
-            {
-              "rank": 4,
               "chunk_id": "ca5cf59944526c2f",
               "page": 4,
               "section": "3.2 Attention",
               "score": 0.03125763125763126,
               "dense_score": 0.7424842501659467,
-              "lexical_score": 5.3085886500048405,
+              "lexical_score": 3.851234198473213,
               "matched_gold_indices": []
             },
             {
-              "rank": 5,
+              "rank": 4,
               "chunk_id": "612520d250023739",
               "page": 9,
               "section": "6.2 Model Variations",
               "score": 0.03125763125763126,
               "dense_score": 0.7233716397092516,
-              "lexical_score": 7.472572671815216,
+              "lexical_score": 4.241053162640803,
+              "matched_gold_indices": []
+            },
+            {
+              "rank": 5,
+              "chunk_id": "fb192913431d74fa",
+              "page": 2,
+              "section": "2 Background",
+              "score": 0.03007688828584351,
+              "dense_score": 0.7099860286237916,
+              "lexical_score": 3.4755763028918465,
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.00522
+          "seconds": 0.005494
         }
-      },
-      "answer_check": {
-        "status": "answered",
-        "status_agrees": true,
-        "answer": {
-          "status": "answered",
-          "claims": [
-            {
-              "text": "Multi-head attention allows the model to jointly attend to information from different representation subspaces at different positions, whereas a single attention head inhibits this capability.",
-              "evidence": [
-                {
-                  "chunk_id": "93d2686d0c0247ed",
-                  "quote": "Multi-head attention allows the model to jointly attend to information from different representation subspaces at different positions."
-                },
-                {
-                  "chunk_id": "93d2686d0c0247ed",
-                  "quote": "With a single attention head, averaging inhibits this."
-                }
-              ]
-            },
-            {
-              "text": "Individual attention heads learn to perform different tasks, with many exhibiting behavior related to the syntactic and semantic structure of sentences.",
-              "evidence": [
-                {
-                  "chunk_id": "ae0f3bf0ce432534",
-                  "quote": "Not only do individual attention heads clearly learn to perform different tasks, many appear to exhibit behavior related to the syntactic and semantic structure of the sentences."
-                }
-              ]
-            }
-          ],
-          "explanation": ""
-        },
-        "grounding_rejected": false,
-        "grounding_rejection_reason": null,
-        "provenance": {
-          "check": "passed",
-          "claim_count": 2,
-          "quote_count": 3,
-          "semantic_correctness": "not_scored"
-        },
-        "seconds": 9.325789,
-        "model_calls": 2,
-        "generated_tokens": 288
       }
     },
     {
@@ -852,21 +729,21 @@
             },
             {
               "rank": 5,
-              "chunk_id": "64810c08e56e864f",
-              "page": 5,
-              "section": "3.4 Embeddings and Softmax",
+              "chunk_id": "64efc8fd6c5e3052",
+              "page": 1,
+              "section": "Abstract",
               "score": 0.015384615384615385,
-              "dense_score": 0.7807560322127476,
+              "dense_score": 0.7816407275587833,
               "lexical_score": null,
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.008249
+          "seconds": 0.004923
         },
         "bm25": {
           "support_hit_at_5": 1,
-          "reciprocal_rank_at_5": 0.3333333333333333,
-          "first_support_rank": 3,
+          "reciprocal_rank_at_5": 0.5,
+          "first_support_rank": 2,
           "ranks": [
             {
               "rank": 1,
@@ -875,39 +752,39 @@
               "section": "6.2 Model Variations",
               "score": 0.01639344262295082,
               "dense_score": null,
-              "lexical_score": 15.043759312881146,
+              "lexical_score": 17.169024399925462,
               "matched_gold_indices": []
             },
             {
               "rank": 2,
-              "chunk_id": "df7298b984dcfac5",
+              "chunk_id": "9a4b4c620df72b88",
               "page": 6,
               "section": "3.5 Positional Encoding",
               "score": 0.016129032258064516,
               "dense_score": null,
-              "lexical_score": 10.5157674408441,
-              "matched_gold_indices": []
-            },
-            {
-              "rank": 3,
-              "chunk_id": "9a4b4c620df72b88",
-              "page": 6,
-              "section": "3.5 Positional Encoding",
-              "score": 0.015873015873015872,
-              "dense_score": null,
-              "lexical_score": 10.140822982670237,
+              "lexical_score": 11.941123867164741,
               "matched_gold_indices": [
                 0
               ]
             },
             {
-              "rank": 4,
+              "rank": 3,
               "chunk_id": "612520d250023739",
               "page": 9,
               "section": "6.2 Model Variations",
+              "score": 0.015873015873015872,
+              "dense_score": null,
+              "lexical_score": 10.489001063733294,
+              "matched_gold_indices": []
+            },
+            {
+              "rank": 4,
+              "chunk_id": "df7298b984dcfac5",
+              "page": 6,
+              "section": "3.5 Positional Encoding",
               "score": 0.015625,
               "dense_score": null,
-              "lexical_score": 8.911975497008282,
+              "lexical_score": 10.026242807779989,
               "matched_gold_indices": []
             },
             {
@@ -917,11 +794,11 @@
               "section": "5.4 Regularization",
               "score": 0.015384615384615385,
               "dense_score": null,
-              "lexical_score": 7.591481943441487,
+              "lexical_score": 6.390689911187201,
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.001113
+          "seconds": 0.001654
         },
         "hybrid": {
           "support_hit_at_5": 1,
@@ -933,9 +810,9 @@
               "chunk_id": "9a4b4c620df72b88",
               "page": 6,
               "section": "3.5 Positional Encoding",
-              "score": 0.032266458495966696,
+              "score": 0.03252247488101534,
               "dense_score": 0.8829981836716488,
-              "lexical_score": 10.140822982670237,
+              "lexical_score": 11.941123867164741,
               "matched_gold_indices": [
                 0
               ]
@@ -947,7 +824,7 @@
               "section": "6.2 Model Variations",
               "score": 0.032266458495966696,
               "dense_score": 0.8523941533998595,
-              "lexical_score": 15.043759312881146,
+              "lexical_score": 17.169024399925462,
               "matched_gold_indices": []
             },
             {
@@ -955,9 +832,9 @@
               "chunk_id": "df7298b984dcfac5",
               "page": 6,
               "section": "3.5 Positional Encoding",
-              "score": 0.03225806451612903,
+              "score": 0.031754032258064516,
               "dense_score": 0.8524938674516916,
-              "lexical_score": 10.5157674408441,
+              "lexical_score": 10.026242807779989,
               "matched_gold_indices": []
             },
             {
@@ -965,9 +842,9 @@
               "chunk_id": "612520d250023739",
               "page": 9,
               "section": "6.2 Model Variations",
-              "score": 0.03125,
+              "score": 0.03149801587301587,
               "dense_score": 0.8361769306448873,
-              "lexical_score": 8.911975497008282,
+              "lexical_score": 10.489001063733294,
               "matched_gold_indices": []
             },
             {
@@ -975,57 +852,14 @@
               "chunk_id": "64810c08e56e864f",
               "page": 5,
               "section": "3.4 Embeddings and Softmax",
-              "score": 0.030536130536130537,
+              "score": 0.030303030303030304,
               "dense_score": 0.7807560322127476,
-              "lexical_score": 5.702469293440102,
+              "lexical_score": 5.9003105460919745,
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.005825
+          "seconds": 0.006673
         }
-      },
-      "answer_check": {
-        "status": "answered",
-        "status_agrees": true,
-        "answer": {
-          "status": "answered",
-          "claims": [
-            {
-              "text": "The authors chose sinusoidal positional encodings because they hypothesized it would allow the model to easily learn to attend by relative positions and may allow the model to extrapolate to sequence lengths longer than those encountered during training.",
-              "evidence": [
-                {
-                  "chunk_id": "9a4b4c620df72b88",
-                  "quote": "We chose the sinusoidal version because it may allow the model to extrapolate to sequence lengths longer than the ones encountered during training."
-                },
-                {
-                  "chunk_id": "df7298b984dcfac5",
-                  "quote": "We chose this function because we hypothesized it would allow the model to easily learn to attend by relative positions, since for any fixed offset k, PE can be represented as a linear function of pos+k PE ."
-                }
-              ]
-            },
-            {
-              "text": "This choice is based on the observation that for any fixed offset k, the positional encoding can be represented as a linear function of pos+k.",
-              "evidence": [
-                {
-                  "chunk_id": "df7298b984dcfac5",
-                  "quote": "We chose this function because we hypothesized it would allow the model to easily learn to attend by relative positions, since for any fixed offset k, PE can be represented as a linear function of pos+k PE ."
-                }
-              ]
-            }
-          ],
-          "explanation": ""
-        },
-        "grounding_rejected": false,
-        "grounding_rejection_reason": null,
-        "provenance": {
-          "check": "passed",
-          "claim_count": 2,
-          "quote_count": 3,
-          "semantic_correctness": "not_scored"
-        },
-        "seconds": 11.016545,
-        "model_calls": 2,
-        "generated_tokens": 355
       }
     },
     {
@@ -1102,7 +936,7 @@
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.009833
+          "seconds": 0.004168
         },
         "bm25": {
           "support_hit_at_5": 1,
@@ -1116,29 +950,29 @@
               "section": "5.1 Training Data and Batching",
               "score": 0.01639344262295082,
               "dense_score": null,
-              "lexical_score": 26.701252789740657,
+              "lexical_score": 25.650972842603686,
               "matched_gold_indices": [
                 0
               ]
             },
             {
               "rank": 2,
-              "chunk_id": "b37abe7f7725f407",
-              "page": 8,
-              "section": "6.1 Machine Translation",
+              "chunk_id": "e23adebd09fc5ab3",
+              "page": 9,
+              "section": "6.3 English Constituency Parsing",
               "score": 0.016129032258064516,
               "dense_score": null,
-              "lexical_score": 9.229828444897066,
+              "lexical_score": 10.340718488974211,
               "matched_gold_indices": []
             },
             {
               "rank": 3,
-              "chunk_id": "e23adebd09fc5ab3",
-              "page": 9,
-              "section": "6.3 English Constituency Parsing",
+              "chunk_id": "b37abe7f7725f407",
+              "page": 8,
+              "section": "6.1 Machine Translation",
               "score": 0.015873015873015872,
               "dense_score": null,
-              "lexical_score": 8.407150877502009,
+              "lexical_score": 7.009669244402698,
               "matched_gold_indices": []
             },
             {
@@ -1148,21 +982,21 @@
               "section": "Abstract",
               "score": 0.015625,
               "dense_score": null,
-              "lexical_score": 7.142480603966569,
+              "lexical_score": 6.834797469265379,
               "matched_gold_indices": []
             },
             {
               "rank": 5,
-              "chunk_id": "e1c821986d8d5e43",
+              "chunk_id": "6d85bb4b7eaa3b3b",
               "page": 8,
-              "section": "6.1 Machine Translation",
+              "section": "6.2 Model Variations",
               "score": 0.015384615384615385,
               "dense_score": null,
-              "lexical_score": 7.0887714726962034,
+              "lexical_score": 6.187948713651518,
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.001172
+          "seconds": 0.001621
         },
         "hybrid": {
           "support_hit_at_5": 1,
@@ -1176,7 +1010,7 @@
               "section": "5.1 Training Data and Batching",
               "score": 0.03278688524590164,
               "dense_score": 0.880960106895873,
-              "lexical_score": 26.701252789740657,
+              "lexical_score": 25.650972842603686,
               "matched_gold_indices": [
                 0
               ]
@@ -1186,9 +1020,9 @@
               "chunk_id": "e23adebd09fc5ab3",
               "page": 9,
               "section": "6.3 English Constituency Parsing",
-              "score": 0.03200204813108039,
+              "score": 0.03225806451612903,
               "dense_score": 0.8053790508754306,
-              "lexical_score": 8.407150877502009,
+              "lexical_score": 10.340718488974211,
               "matched_gold_indices": []
             },
             {
@@ -1196,9 +1030,9 @@
               "chunk_id": "b37abe7f7725f407",
               "page": 8,
               "section": "6.1 Machine Translation",
-              "score": 0.03200204813108039,
+              "score": 0.031746031746031744,
               "dense_score": 0.7750748128099578,
-              "lexical_score": 9.229828444897066,
+              "lexical_score": 7.009669244402698,
               "matched_gold_indices": []
             },
             {
@@ -1208,52 +1042,22 @@
               "section": "Abstract",
               "score": 0.03125,
               "dense_score": 0.7694576232986989,
-              "lexical_score": 7.142480603966569,
+              "lexical_score": 6.834797469265379,
               "matched_gold_indices": []
             },
             {
               "rank": 5,
-              "chunk_id": "e1c821986d8d5e43",
-              "page": 8,
-              "section": "6.1 Machine Translation",
-              "score": 0.030309988518943745,
-              "dense_score": 0.7294392077460592,
-              "lexical_score": 7.0887714726962034,
+              "chunk_id": "49d422707fe7c327",
+              "page": 10,
+              "section": "6.3 English Constituency Parsing",
+              "score": 0.030303030303030304,
+              "dense_score": 0.7296707080044644,
+              "lexical_score": 5.745896936949128,
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.005221
+          "seconds": 0.00573
         }
-      },
-      "answer_check": {
-        "status": "answered",
-        "status_agrees": true,
-        "answer": {
-          "status": "answered",
-          "claims": [
-            {
-              "text": "The English-German translation training dataset consisted of about 4.5 million sentence pairs.",
-              "evidence": [
-                {
-                  "chunk_id": "0d2a4eae730e188f",
-                  "quote": "We trained on the standard WMT 2014 English-German dataset consisting of about 4.5 million sentence pairs."
-                }
-              ]
-            }
-          ],
-          "explanation": ""
-        },
-        "grounding_rejected": false,
-        "grounding_rejection_reason": null,
-        "provenance": {
-          "check": "passed",
-          "claim_count": 1,
-          "quote_count": 1,
-          "semantic_correctness": "not_scored"
-        },
-        "seconds": 5.851279,
-        "model_calls": 2,
-        "generated_tokens": 131
       }
     },
     {
@@ -1330,7 +1134,7 @@
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.009394
+          "seconds": 0.003872
         },
         "bm25": {
           "support_hit_at_5": 1,
@@ -1344,53 +1148,53 @@
               "section": "5.2 Hardware and Schedule",
               "score": 0.01639344262295082,
               "dense_score": null,
-              "lexical_score": 12.73929555598472,
+              "lexical_score": 12.15113784606429,
               "matched_gold_indices": [
                 0
               ]
             },
             {
               "rank": 2,
-              "chunk_id": "74f8db603263a9ff",
-              "page": 8,
-              "section": "5.4 Regularization",
+              "chunk_id": "a3d64752b5cce068",
+              "page": 7,
+              "section": "5.3 Optimizer",
               "score": 0.016129032258064516,
               "dense_score": null,
-              "lexical_score": 6.66024487648624,
+              "lexical_score": 6.544427836395816,
               "matched_gold_indices": []
             },
             {
               "rank": 3,
-              "chunk_id": "b37abe7f7725f407",
+              "chunk_id": "be60c51a247cf9b5",
               "page": 8,
-              "section": "6.1 Machine Translation",
+              "section": "5.4 Regularization",
               "score": 0.015873015873015872,
               "dense_score": null,
-              "lexical_score": 6.548331527052637,
+              "lexical_score": 5.958220691689083,
               "matched_gold_indices": []
             },
             {
               "rank": 4,
-              "chunk_id": "a3d64752b5cce068",
-              "page": 7,
-              "section": "5.3 Optimizer",
+              "chunk_id": "74f8db603263a9ff",
+              "page": 8,
+              "section": "5.4 Regularization",
               "score": 0.015625,
               "dense_score": null,
-              "lexical_score": 6.47312618975366,
+              "lexical_score": 5.774443503057647,
               "matched_gold_indices": []
             },
             {
               "rank": 5,
-              "chunk_id": "be60c51a247cf9b5",
+              "chunk_id": "b37abe7f7725f407",
               "page": 8,
-              "section": "5.4 Regularization",
+              "section": "6.1 Machine Translation",
               "score": 0.015384615384615385,
               "dense_score": null,
-              "lexical_score": 5.626124045760253,
+              "lexical_score": 5.599298924885774,
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.001391
+          "seconds": 0.001629
         },
         "hybrid": {
           "support_hit_at_5": 1,
@@ -1404,7 +1208,7 @@
               "section": "5.2 Hardware and Schedule",
               "score": 0.03278688524590164,
               "dense_score": 0.7565199406490806,
-              "lexical_score": 12.73929555598472,
+              "lexical_score": 12.15113784606429,
               "matched_gold_indices": [
                 0
               ]
@@ -1414,9 +1218,9 @@
               "chunk_id": "b37abe7f7725f407",
               "page": 8,
               "section": "6.1 Machine Translation",
-              "score": 0.031746031746031744,
+              "score": 0.03125763125763126,
               "dense_score": 0.6763186881484484,
-              "lexical_score": 6.548331527052637,
+              "lexical_score": 5.599298924885774,
               "matched_gold_indices": []
             },
             {
@@ -1424,73 +1228,34 @@
               "chunk_id": "74f8db603263a9ff",
               "page": 8,
               "section": "5.4 Regularization",
-              "score": 0.0315136476426799,
+              "score": 0.031009615384615385,
               "dense_score": 0.666088007677944,
-              "lexical_score": 6.66024487648624,
+              "lexical_score": 5.774443503057647,
               "matched_gold_indices": []
             },
             {
               "rank": 4,
-              "chunk_id": "a3d64752b5cce068",
-              "page": 7,
-              "section": "5.3 Optimizer",
-              "score": 0.030330882352941176,
-              "dense_score": 0.6431753413405236,
-              "lexical_score": 6.47312618975366,
+              "chunk_id": "6d85bb4b7eaa3b3b",
+              "page": 8,
+              "section": "6.2 Model Variations",
+              "score": 0.030834914611005692,
+              "dense_score": 0.7041216163529522,
+              "lexical_score": 4.1295154191045045,
               "matched_gold_indices": []
             },
             {
               "rank": 5,
-              "chunk_id": "afa4a203bd4d014c",
-              "page": 9,
-              "section": "6.2 Model Variations",
-              "score": 0.029910714285714284,
-              "dense_score": 0.6675109754489116,
-              "lexical_score": 4.333111840080258,
+              "chunk_id": "a3d64752b5cce068",
+              "page": 7,
+              "section": "5.3 Optimizer",
+              "score": 0.030834914611005692,
+              "dense_score": 0.6431753413405236,
+              "lexical_score": 6.544427836395816,
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.005869
+          "seconds": 0.005548
         }
-      },
-      "answer_check": {
-        "status": "answered",
-        "status_agrees": true,
-        "answer": {
-          "status": "answered",
-          "claims": [
-            {
-              "text": "The base models were trained for a total of 100,000 steps or 12 hours.",
-              "evidence": [
-                {
-                  "chunk_id": "abf6f22b8f92a712",
-                  "quote": "We trained the base models for a total of 100,000 steps or 12 hours."
-                }
-              ]
-            },
-            {
-              "text": "For the base models, each training step took about 0.4 seconds.",
-              "evidence": [
-                {
-                  "chunk_id": "abf6f22b8f92a712",
-                  "quote": "For our base models using the hyperparameters described throughout the paper, each training step took about 0.4 seconds."
-                }
-              ]
-            }
-          ],
-          "explanation": ""
-        },
-        "grounding_rejected": false,
-        "grounding_rejection_reason": null,
-        "provenance": {
-          "check": "passed",
-          "claim_count": 2,
-          "quote_count": 2,
-          "semantic_correctness": "not_scored"
-        },
-        "seconds": 8.442309,
-        "model_calls": 2,
-        "generated_tokens": 239
       }
     },
     {
@@ -1567,7 +1332,7 @@
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.005206
+          "seconds": 0.004783
         },
         "bm25": {
           "support_hit_at_5": 1,
@@ -1581,7 +1346,7 @@
               "section": "5.3 Optimizer",
               "score": 0.01639344262295082,
               "dense_score": null,
-              "lexical_score": 13.607535831223704,
+              "lexical_score": 12.993809647869039,
               "matched_gold_indices": [
                 0
               ]
@@ -1593,17 +1358,17 @@
               "section": "5.4 Regularization",
               "score": 0.016129032258064516,
               "dense_score": null,
-              "lexical_score": 5.964490548202069,
+              "lexical_score": 5.552968695809526,
               "matched_gold_indices": []
             },
             {
               "rank": 3,
-              "chunk_id": "052e280ac78332d0",
-              "page": 1,
-              "section": "Abstract",
+              "chunk_id": "e23adebd09fc5ab3",
+              "page": 9,
+              "section": "6.3 English Constituency Parsing",
               "score": 0.015873015873015872,
               "dense_score": null,
-              "lexical_score": 5.479289134745732,
+              "lexical_score": 5.354407144116995,
               "matched_gold_indices": []
             },
             {
@@ -1613,7 +1378,7 @@
               "section": "4 Why Self-Attention",
               "score": 0.015625,
               "dense_score": null,
-              "lexical_score": 5.165037206508401,
+              "lexical_score": 5.032683864303461,
               "matched_gold_indices": []
             },
             {
@@ -1623,11 +1388,11 @@
               "section": "6.1 Machine Translation",
               "score": 0.015384615384615385,
               "dense_score": null,
-              "lexical_score": 5.027545768096971,
+              "lexical_score": 4.820129612805401,
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.001179
+          "seconds": 0.001684
         },
         "hybrid": {
           "support_hit_at_5": 1,
@@ -1641,74 +1406,54 @@
               "section": "5.3 Optimizer",
               "score": 0.03278688524590164,
               "dense_score": 0.7510818478358761,
-              "lexical_score": 13.607535831223704,
+              "lexical_score": 12.993809647869039,
               "matched_gold_indices": [
                 0
               ]
             },
             {
               "rank": 2,
-              "chunk_id": "052e280ac78332d0",
-              "page": 1,
-              "section": "Abstract",
-              "score": 0.031024531024531024,
-              "dense_score": 0.6189497261898999,
-              "lexical_score": 5.479289134745732,
-              "matched_gold_indices": []
-            },
-            {
-              "rank": 3,
               "chunk_id": "e1c821986d8d5e43",
               "page": 8,
               "section": "6.1 Machine Translation",
               "score": 0.031009615384615385,
               "dense_score": 0.6223381227474514,
-              "lexical_score": 5.027545768096971,
+              "lexical_score": 4.820129612805401,
               "matched_gold_indices": []
             },
             {
-              "rank": 4,
-              "chunk_id": "abf6f22b8f92a712",
-              "page": 7,
-              "section": "5.2 Hardware and Schedule",
-              "score": 0.030834914611005692,
-              "dense_score": 0.6773494062159495,
-              "lexical_score": 3.697585900278677,
-              "matched_gold_indices": []
-            },
-            {
-              "rank": 5,
+              "rank": 3,
               "chunk_id": "be60c51a247cf9b5",
               "page": 8,
               "section": "5.4 Regularization",
               "score": 0.030621785881252923,
               "dense_score": 0.6132072178902626,
-              "lexical_score": 5.964490548202069,
+              "lexical_score": 5.552968695809526,
+              "matched_gold_indices": []
+            },
+            {
+              "rank": 4,
+              "chunk_id": "64efc8fd6c5e3052",
+              "page": 1,
+              "section": "Abstract",
+              "score": 0.029631255487269532,
+              "dense_score": 0.6169220000223015,
+              "lexical_score": 2.679818194473278,
+              "matched_gold_indices": []
+            },
+            {
+              "rank": 5,
+              "chunk_id": "e27cb5baded37b67",
+              "page": 7,
+              "section": "5.4 Regularization",
+              "score": 0.029631255487269532,
+              "dense_score": 0.6159000584902625,
+              "lexical_score": 3.575766753094649,
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.0059
+          "seconds": 0.006291
         }
-      },
-      "answer_check": {
-        "status": "insufficient_evidence",
-        "status_agrees": false,
-        "answer": {
-          "status": "insufficient_evidence",
-          "claims": [],
-          "explanation": "I could not find enough evidence in the retrieved passages to answer this question."
-        },
-        "grounding_rejected": false,
-        "grounding_rejection_reason": null,
-        "provenance": {
-          "check": "no_claims_to_check",
-          "claim_count": 0,
-          "quote_count": 0,
-          "semantic_correctness": "not_scored"
-        },
-        "seconds": 1.975656,
-        "model_calls": 1,
-        "generated_tokens": 15
       }
     },
     {
@@ -1792,7 +1537,7 @@
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.009358
+          "seconds": 0.006063
         },
         "bm25": {
           "support_hit_at_5": 1,
@@ -1806,7 +1551,7 @@
               "section": "6.1 Machine Translation",
               "score": 0.01639344262295082,
               "dense_score": null,
-              "lexical_score": 22.91467779770703,
+              "lexical_score": 23.29683834451939,
               "matched_gold_indices": [
                 0
               ]
@@ -1818,7 +1563,7 @@
               "section": "Abstract",
               "score": 0.016129032258064516,
               "dense_score": null,
-              "lexical_score": 19.95475106298998,
+              "lexical_score": 18.759570555696808,
               "matched_gold_indices": [
                 1
               ]
@@ -1830,31 +1575,31 @@
               "section": "7 Conclusion",
               "score": 0.015873015873015872,
               "dense_score": null,
-              "lexical_score": 16.270195948621186,
+              "lexical_score": 14.405169589655312,
               "matched_gold_indices": []
             },
             {
               "rank": 4,
-              "chunk_id": "0d2a4eae730e188f",
-              "page": 7,
-              "section": "5.1 Training Data and Batching",
+              "chunk_id": "74f8db603263a9ff",
+              "page": 8,
+              "section": "5.4 Regularization",
               "score": 0.015625,
               "dense_score": null,
-              "lexical_score": 12.451620280937373,
+              "lexical_score": 12.441369921977218,
               "matched_gold_indices": []
             },
             {
               "rank": 5,
-              "chunk_id": "74f8db603263a9ff",
-              "page": 8,
-              "section": "5.4 Regularization",
+              "chunk_id": "0d2a4eae730e188f",
+              "page": 7,
+              "section": "5.1 Training Data and Batching",
               "score": 0.015384615384615385,
               "dense_score": null,
-              "lexical_score": 10.937662428945973,
+              "lexical_score": 10.90018139236788,
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.001137
+          "seconds": 0.001649
         },
         "hybrid": {
           "support_hit_at_5": 1,
@@ -1868,7 +1613,7 @@
               "section": "6.1 Machine Translation",
               "score": 0.03278688524590164,
               "dense_score": 0.8416085751474576,
-              "lexical_score": 22.91467779770703,
+              "lexical_score": 23.29683834451939,
               "matched_gold_indices": [
                 0
               ]
@@ -1878,9 +1623,9 @@
               "chunk_id": "74f8db603263a9ff",
               "page": 8,
               "section": "5.4 Regularization",
-              "score": 0.0315136476426799,
+              "score": 0.031754032258064516,
               "dense_score": 0.770952696987562,
-              "lexical_score": 10.937662428945973,
+              "lexical_score": 12.441369921977218,
               "matched_gold_indices": []
             },
             {
@@ -1890,19 +1635,19 @@
               "section": "Abstract",
               "score": 0.03128054740957967,
               "dense_score": 0.6646561982632876,
-              "lexical_score": 19.95475106298998,
+              "lexical_score": 18.759570555696808,
               "matched_gold_indices": [
                 1
               ]
             },
             {
               "rank": 4,
-              "chunk_id": "0d2a4eae730e188f",
-              "page": 7,
-              "section": "5.1 Training Data and Batching",
-              "score": 0.031009615384615385,
-              "dense_score": 0.6676606628350611,
-              "lexical_score": 12.451620280937373,
+              "chunk_id": "6d85bb4b7eaa3b3b",
+              "page": 8,
+              "section": "6.2 Model Variations",
+              "score": 0.031024531024531024,
+              "dense_score": 0.708584962573021,
+              "lexical_score": 8.630676672748331,
               "matched_gold_indices": []
             },
             {
@@ -1912,59 +1657,12 @@
               "section": "7 Conclusion",
               "score": 0.030798389007344232,
               "dense_score": 0.6506716708055035,
-              "lexical_score": 16.270195948621186,
+              "lexical_score": 14.405169589655312,
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.007126
+          "seconds": 0.007723
         }
-      },
-      "answer_check": {
-        "status": "answered",
-        "status_agrees": true,
-        "answer": {
-          "status": "answered",
-          "claims": [
-            {
-              "text": "The big Transformer achieved a BLEU score of 28.4 on WMT 2014 English-to-German, outperforming the best previously reported models (including ensembles) by more than 2.0 BLEU.",
-              "evidence": [
-                {
-                  "chunk_id": "b37abe7f7725f407",
-                  "quote": "On the WMT 2014 English-to-German translation task, the big transformer model (Transformer (big) in Table 2) outperforms the best previously reported models (including ensembles) by more than 2.0 BLEU, establishing a new state-of-the-art BLEU score of 28.4."
-                },
-                {
-                  "chunk_id": "c8b5eec8c07826e6",
-                  "quote": "Our model achieves 28.4 BLEU on the WMT 2014 Englishto-German translation task, improving over the existing best results, including ensembles, by over 2 BLEU."
-                }
-              ]
-            },
-            {
-              "text": "This result established a new state-of-the-art BLEU score, improving over existing best results by over 2 BLEU points.",
-              "evidence": [
-                {
-                  "chunk_id": "b37abe7f7725f407",
-                  "quote": "On the WMT 2014 English-to-German translation task, the big transformer model (Transformer (big) in Table 2) outperforms the best previously reported models (including ensembles) by more than 2.0 BLEU, establishing a new state-of-the-art BLEU score of 28.4."
-                },
-                {
-                  "chunk_id": "c8b5eec8c07826e6",
-                  "quote": "Our model achieves 28.4 BLEU on the WMT 2014 Englishto-German translation task, improving over the existing best results, including ensembles, by over 2 BLEU."
-                }
-              ]
-            }
-          ],
-          "explanation": ""
-        },
-        "grounding_rejected": false,
-        "grounding_rejection_reason": null,
-        "provenance": {
-          "check": "passed",
-          "claim_count": 2,
-          "quote_count": 4,
-          "semantic_correctness": "not_scored"
-        },
-        "seconds": 15.390292,
-        "model_calls": 2,
-        "generated_tokens": 443
       }
     },
     {
@@ -2041,7 +1739,7 @@
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.015238
+          "seconds": 0.004058
         },
         "bm25": {
           "support_hit_at_5": 1,
@@ -2055,7 +1753,7 @@
               "section": "6.1 Machine Translation",
               "score": 0.01639344262295082,
               "dense_score": null,
-              "lexical_score": 20.271510815501422,
+              "lexical_score": 14.467198010773792,
               "matched_gold_indices": [
                 0
               ]
@@ -2067,41 +1765,41 @@
               "section": "6.1 Machine Translation",
               "score": 0.016129032258064516,
               "dense_score": null,
-              "lexical_score": 12.58077378595653,
+              "lexical_score": 8.523083599642968,
               "matched_gold_indices": []
             },
             {
               "rank": 3,
-              "chunk_id": "0d2a4eae730e188f",
+              "chunk_id": "9fe31808134ce24b",
               "page": 7,
-              "section": "5.1 Training Data and Batching",
+              "section": "4 Why Self-Attention",
               "score": 0.015873015873015872,
               "dense_score": null,
-              "lexical_score": 9.155378104810955,
+              "lexical_score": 5.632037197442474,
               "matched_gold_indices": []
             },
             {
               "rank": 4,
-              "chunk_id": "9fe31808134ce24b",
-              "page": 7,
-              "section": "4 Why Self-Attention",
+              "chunk_id": "e23adebd09fc5ab3",
+              "page": 9,
+              "section": "6.3 English Constituency Parsing",
               "score": 0.015625,
               "dense_score": null,
-              "lexical_score": 6.514014866206151,
+              "lexical_score": 5.166406662552429,
               "matched_gold_indices": []
             },
             {
               "rank": 5,
-              "chunk_id": "4ab6f510a55f3523",
-              "page": 10,
-              "section": "6.3 English Constituency Parsing",
+              "chunk_id": "6d4c3bccc6b3e958",
+              "page": 6,
+              "section": "3.4 Embeddings and Softmax",
               "score": 0.015384615384615385,
               "dense_score": null,
-              "lexical_score": 6.229191991680119,
+              "lexical_score": 4.921803358800369,
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.001286
+          "seconds": 0.001579
         },
         "hybrid": {
           "support_hit_at_5": 1,
@@ -2115,29 +1813,29 @@
               "section": "6.1 Machine Translation",
               "score": 0.03278688524590164,
               "dense_score": 0.8401243863525175,
-              "lexical_score": 20.271510815501422,
+              "lexical_score": 14.467198010773792,
               "matched_gold_indices": [
                 0
               ]
             },
             {
               "rank": 2,
-              "chunk_id": "0d2a4eae730e188f",
-              "page": 7,
-              "section": "5.1 Training Data and Batching",
-              "score": 0.03200204813108039,
-              "dense_score": 0.7623932357966654,
-              "lexical_score": 9.155378104810955,
-              "matched_gold_indices": []
-            },
-            {
-              "rank": 3,
               "chunk_id": "b37abe7f7725f407",
               "page": 8,
               "section": "6.1 Machine Translation",
               "score": 0.03200204813108039,
               "dense_score": 0.7574668359912872,
-              "lexical_score": 12.58077378595653,
+              "lexical_score": 8.523083599642968,
+              "matched_gold_indices": []
+            },
+            {
+              "rank": 3,
+              "chunk_id": "e23adebd09fc5ab3",
+              "page": 9,
+              "section": "6.3 English Constituency Parsing",
+              "score": 0.031009615384615385,
+              "dense_score": 0.729091657771223,
+              "lexical_score": 5.166406662552429,
               "matched_gold_indices": []
             },
             {
@@ -2145,71 +1843,24 @@
               "chunk_id": "9fe31808134ce24b",
               "page": 7,
               "section": "4 Why Self-Attention",
-              "score": 0.03055037313432836,
+              "score": 0.030798389007344232,
               "dense_score": 0.7219975567547725,
-              "lexical_score": 6.514014866206151,
+              "lexical_score": 5.632037197442474,
               "matched_gold_indices": []
             },
             {
               "rank": 5,
-              "chunk_id": "e23adebd09fc5ab3",
+              "chunk_id": "612520d250023739",
               "page": 9,
-              "section": "6.3 English Constituency Parsing",
-              "score": 0.030536130536130537,
-              "dense_score": 0.729091657771223,
-              "lexical_score": 6.023236642383147,
+              "section": "6.2 Model Variations",
+              "score": 0.03007688828584351,
+              "dense_score": 0.7239776026703935,
+              "lexical_score": 3.627172405720875,
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.006238
+          "seconds": 0.005712
         }
-      },
-      "answer_check": {
-        "status": "answered",
-        "status_agrees": true,
-        "answer": {
-          "status": "answered",
-          "claims": [
-            {
-              "text": "Translation decoding used beam search with a beam size of 4 and a length penalty alpha of 0.6.",
-              "evidence": [
-                {
-                  "chunk_id": "e1c821986d8d5e43",
-                  "quote": "We used beam search with a beam size of 4 and length penalty α = 0.6 [38]."
-                },
-                {
-                  "chunk_id": "b37abe7f7725f407",
-                  "quote": "We used beam search with a beam size of 4 and length"
-                }
-              ]
-            },
-            {
-              "text": "The beam size was set to 4 and the length penalty parameter alpha was 0.6.",
-              "evidence": [
-                {
-                  "chunk_id": "e1c821986d8d5e43",
-                  "quote": "We used beam search with a beam size of 4 and length penalty α = 0.6 [38]."
-                },
-                {
-                  "chunk_id": "b37abe7f7725f407",
-                  "quote": "We used beam search with a beam size of 4 and length"
-                }
-              ]
-            }
-          ],
-          "explanation": ""
-        },
-        "grounding_rejected": false,
-        "grounding_rejection_reason": null,
-        "provenance": {
-          "check": "passed",
-          "claim_count": 2,
-          "quote_count": 4,
-          "semantic_correctness": "not_scored"
-        },
-        "seconds": 11.272248,
-        "model_calls": 2,
-        "generated_tokens": 298
       }
     },
     {
@@ -2258,21 +1909,21 @@
             },
             {
               "rank": 3,
-              "chunk_id": "052e280ac78332d0",
-              "page": 1,
-              "section": "Abstract",
+              "chunk_id": "49d422707fe7c327",
+              "page": 10,
+              "section": "6.3 English Constituency Parsing",
               "score": 0.015873015873015872,
-              "dense_score": 0.8058286042148786,
+              "dense_score": 0.8054383202262305,
               "lexical_score": null,
               "matched_gold_indices": []
             },
             {
               "rank": 4,
-              "chunk_id": "49d422707fe7c327",
-              "page": 10,
-              "section": "6.3 English Constituency Parsing",
+              "chunk_id": "64efc8fd6c5e3052",
+              "page": 1,
+              "section": "Abstract",
               "score": 0.015625,
-              "dense_score": 0.8054383202262305,
+              "dense_score": 0.803394292410129,
               "lexical_score": null,
               "matched_gold_indices": []
             },
@@ -2287,43 +1938,43 @@
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.010676
+          "seconds": 0.004643
         },
         "bm25": {
           "support_hit_at_5": 1,
-          "reciprocal_rank_at_5": 0.5,
-          "first_support_rank": 2,
+          "reciprocal_rank_at_5": 1.0,
+          "first_support_rank": 1,
           "ranks": [
             {
               "rank": 1,
-              "chunk_id": "0d2a4eae730e188f",
-              "page": 7,
-              "section": "5.1 Training Data and Batching",
-              "score": 0.01639344262295082,
-              "dense_score": null,
-              "lexical_score": 18.849146480860618,
-              "matched_gold_indices": []
-            },
-            {
-              "rank": 2,
               "chunk_id": "e23adebd09fc5ab3",
               "page": 9,
               "section": "6.3 English Constituency Parsing",
-              "score": 0.016129032258064516,
+              "score": 0.01639344262295082,
               "dense_score": null,
-              "lexical_score": 17.96266772062126,
+              "lexical_score": 20.183409168710917,
               "matched_gold_indices": [
                 0
               ]
             },
             {
-              "rank": 3,
+              "rank": 2,
               "chunk_id": "4ab6f510a55f3523",
               "page": 10,
               "section": "6.3 English Constituency Parsing",
+              "score": 0.016129032258064516,
+              "dense_score": null,
+              "lexical_score": 12.576267149097918,
+              "matched_gold_indices": []
+            },
+            {
+              "rank": 3,
+              "chunk_id": "0d2a4eae730e188f",
+              "page": 7,
+              "section": "5.1 Training Data and Batching",
               "score": 0.015873015873015872,
               "dense_score": null,
-              "lexical_score": 14.366935967121941,
+              "lexical_score": 12.303844686313326,
               "matched_gold_indices": []
             },
             {
@@ -2333,21 +1984,21 @@
               "section": "6.3 English Constituency Parsing",
               "score": 0.015625,
               "dense_score": null,
-              "lexical_score": 12.028927641099774,
+              "lexical_score": 11.09393414318743,
               "matched_gold_indices": []
             },
             {
               "rank": 5,
-              "chunk_id": "e1c821986d8d5e43",
-              "page": 8,
-              "section": "6.1 Machine Translation",
+              "chunk_id": "c8b5eec8c07826e6",
+              "page": 1,
+              "section": "Abstract",
               "score": 0.015384615384615385,
               "dense_score": null,
-              "lexical_score": 11.383249540543847,
+              "lexical_score": 9.140267740188808,
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.001103
+          "seconds": 0.001748
         },
         "hybrid": {
           "support_hit_at_5": 1,
@@ -2359,9 +2010,9 @@
               "chunk_id": "e23adebd09fc5ab3",
               "page": 9,
               "section": "6.3 English Constituency Parsing",
-              "score": 0.03252247488101534,
+              "score": 0.03278688524590164,
               "dense_score": 0.875664915443419,
-              "lexical_score": 17.96266772062126,
+              "lexical_score": 20.183409168710917,
               "matched_gold_indices": [
                 0
               ]
@@ -2371,64 +2022,44 @@
               "chunk_id": "4ab6f510a55f3523",
               "page": 10,
               "section": "6.3 English Constituency Parsing",
-              "score": 0.03200204813108039,
+              "score": 0.03225806451612903,
               "dense_score": 0.8399588148078339,
-              "lexical_score": 14.366935967121941,
+              "lexical_score": 12.576267149097918,
               "matched_gold_indices": []
             },
             {
               "rank": 3,
-              "chunk_id": "0d2a4eae730e188f",
-              "page": 7,
-              "section": "5.1 Training Data and Batching",
-              "score": 0.03177805800756621,
-              "dense_score": 0.784267090430188,
-              "lexical_score": 18.849146480860618,
+              "chunk_id": "49d422707fe7c327",
+              "page": 10,
+              "section": "6.3 English Constituency Parsing",
+              "score": 0.03149801587301587,
+              "dense_score": 0.8054383202262305,
+              "lexical_score": 11.09393414318743,
               "matched_gold_indices": []
             },
             {
               "rank": 4,
-              "chunk_id": "49d422707fe7c327",
-              "page": 10,
-              "section": "6.3 English Constituency Parsing",
-              "score": 0.03125,
-              "dense_score": 0.8054383202262305,
-              "lexical_score": 12.028927641099774,
+              "chunk_id": "0d2a4eae730e188f",
+              "page": 7,
+              "section": "5.1 Training Data and Batching",
+              "score": 0.03125763125763126,
+              "dense_score": 0.784267090430188,
+              "lexical_score": 12.303844686313326,
               "matched_gold_indices": []
             },
             {
               "rank": 5,
-              "chunk_id": "052e280ac78332d0",
+              "chunk_id": "64efc8fd6c5e3052",
               "page": 1,
               "section": "Abstract",
-              "score": 0.03057889822595705,
-              "dense_score": 0.8058286042148786,
-              "lexical_score": 6.419993277777046,
+              "score": 0.03055037313432836,
+              "dense_score": 0.803394292410129,
+              "lexical_score": 5.619228546729038,
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.005749
+          "seconds": 0.006214
         }
-      },
-      "answer_check": {
-        "status": "insufficient_evidence",
-        "status_agrees": false,
-        "answer": {
-          "status": "insufficient_evidence",
-          "claims": [],
-          "explanation": "A draft answer failed evidence validation; no unverified answer is shown."
-        },
-        "grounding_rejected": true,
-        "grounding_rejection_reason": "The model output failed schema/evidence validation twice. No unverified answer was accepted. Support review rejected: Claim 'The semi-supervised setting used the larger high-confidence and BerkleyParser corpora with approximately 17M sentences.': The quotation mentions the semi-supervised setting and the corpora (high-confidence and BerkleyParser) but fails to specify the total sentence count as 'approximately 17M'. Instead, it states 'from with approximately 17M sentences', which is grammatically incomplete and ambiguous regarding whether 17M refers to the combined total, the high-confidence subset, or the BerkleyParser subset alone. The claim presents 17M as the total for both corpora, which is not definitively supported by the truncated phrasing in the qu",
-        "provenance": {
-          "check": "no_claims_to_check",
-          "claim_count": 0,
-          "quote_count": 0,
-          "semantic_correctness": "not_scored"
-        },
-        "seconds": 15.027784,
-        "model_calls": 3,
-        "generated_tokens": 422
       }
     },
     {
@@ -2495,7 +2126,7 @@
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.009784
+          "seconds": 0.006445
         },
         "bm25": {
           "support_hit_at_5": null,
@@ -2504,32 +2135,32 @@
           "ranks": [
             {
               "rank": 1,
-              "chunk_id": "abf6f22b8f92a712",
-              "page": 7,
-              "section": "5.2 Hardware and Schedule",
+              "chunk_id": "a5e30be99fb8ff20",
+              "page": 6,
+              "section": "4 Why Self-Attention",
               "score": 0.01639344262295082,
               "dense_score": null,
-              "lexical_score": 4.821299127184762,
+              "lexical_score": 2.9125192621417266,
               "matched_gold_indices": []
             },
             {
               "rank": 2,
-              "chunk_id": "052e280ac78332d0",
-              "page": 1,
-              "section": "Abstract",
+              "chunk_id": "8e65840738173935",
+              "page": 7,
+              "section": "5 Training",
               "score": 0.016129032258064516,
               "dense_score": null,
-              "lexical_score": 3.804800222612671,
+              "lexical_score": 2.0834856279395577,
               "matched_gold_indices": []
             },
             {
               "rank": 3,
-              "chunk_id": "a5e30be99fb8ff20",
-              "page": 6,
-              "section": "4 Why Self-Attention",
+              "chunk_id": "e27cb5baded37b67",
+              "page": 7,
+              "section": "5.4 Regularization",
               "score": 0.015873015873015872,
               "dense_score": null,
-              "lexical_score": 3.449395164908114,
+              "lexical_score": 1.7261534563727507,
               "matched_gold_indices": []
             },
             {
@@ -2539,21 +2170,21 @@
               "section": "6.3 English Constituency Parsing",
               "score": 0.015625,
               "dense_score": null,
-              "lexical_score": 2.2353649376361284,
+              "lexical_score": 1.7170000745779357,
               "matched_gold_indices": []
             },
             {
               "rank": 5,
-              "chunk_id": "8e65840738173935",
+              "chunk_id": "a3d64752b5cce068",
               "page": 7,
-              "section": "5 Training",
+              "section": "5.3 Optimizer",
               "score": 0.015384615384615385,
               "dense_score": null,
-              "lexical_score": 2.1275316889358,
+              "lexical_score": 1.6366590514955808,
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.001061
+          "seconds": 0.001598
         },
         "hybrid": {
           "support_hit_at_5": null,
@@ -2562,77 +2193,57 @@
           "ranks": [
             {
               "rank": 1,
-              "chunk_id": "abf6f22b8f92a712",
+              "chunk_id": "a3d64752b5cce068",
               "page": 7,
-              "section": "5.2 Hardware and Schedule",
-              "score": 0.03252247488101534,
-              "dense_score": 0.599034746778333,
-              "lexical_score": 4.821299127184762,
+              "section": "5.3 Optimizer",
+              "score": 0.03177805800756621,
+              "dense_score": 0.6163281944966557,
+              "lexical_score": 1.6366590514955808,
               "matched_gold_indices": []
             },
             {
               "rank": 2,
-              "chunk_id": "a3d64752b5cce068",
+              "chunk_id": "8e65840738173935",
               "page": 7,
-              "section": "5.3 Optimizer",
-              "score": 0.030886196246139225,
-              "dense_score": 0.6163281944966557,
-              "lexical_score": 1.795220881427871,
+              "section": "5 Training",
+              "score": 0.0315136476426799,
+              "dense_score": 0.5523200103435113,
+              "lexical_score": 2.0834856279395577,
               "matched_gold_indices": []
             },
             {
               "rank": 3,
-              "chunk_id": "8e65840738173935",
+              "chunk_id": "0d2a4eae730e188f",
               "page": 7,
-              "section": "5 Training",
-              "score": 0.03076923076923077,
-              "dense_score": 0.5523200103435113,
-              "lexical_score": 2.1275316889358,
+              "section": "5.1 Training Data and Batching",
+              "score": 0.031024531024531024,
+              "dense_score": 0.5883174258168844,
+              "lexical_score": 1.5405463988725228,
               "matched_gold_indices": []
             },
             {
               "rank": 4,
-              "chunk_id": "052e280ac78332d0",
-              "page": 1,
-              "section": "Abstract",
-              "score": 0.0304147465437788,
-              "dense_score": 0.5223883109754608,
-              "lexical_score": 3.804800222612671,
+              "chunk_id": "e27cb5baded37b67",
+              "page": 7,
+              "section": "5.4 Regularization",
+              "score": 0.030798389007344232,
+              "dense_score": 0.5291505849276581,
+              "lexical_score": 1.7261534563727507,
               "matched_gold_indices": []
             },
             {
               "rank": 5,
-              "chunk_id": "b37abe7f7725f407",
-              "page": 8,
-              "section": "6.1 Machine Translation",
-              "score": 0.030303030303030304,
-              "dense_score": 0.5498753274544649,
-              "lexical_score": 1.9735600655604928,
+              "chunk_id": "abf6f22b8f92a712",
+              "page": 7,
+              "section": "5.2 Hardware and Schedule",
+              "score": 0.03021353930031804,
+              "dense_score": 0.599034746778333,
+              "lexical_score": 1.2449036425015636,
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.006208
+          "seconds": 0.015829
         }
-      },
-      "answer_check": {
-        "status": "insufficient_evidence",
-        "status_agrees": true,
-        "answer": {
-          "status": "insufficient_evidence",
-          "claims": [],
-          "explanation": "I could not find enough evidence in the retrieved passages to answer this question."
-        },
-        "grounding_rejected": false,
-        "grounding_rejection_reason": null,
-        "provenance": {
-          "check": "no_claims_to_check",
-          "claim_count": 0,
-          "quote_count": 0,
-          "semantic_correctness": "not_scored"
-        },
-        "seconds": 2.129639,
-        "model_calls": 1,
-        "generated_tokens": 15
       }
     },
     {
@@ -2699,7 +2310,7 @@
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.005943
+          "seconds": 0.024715
         },
         "bm25": {
           "support_hit_at_5": null,
@@ -2713,7 +2324,7 @@
               "section": "Abstract",
               "score": 0.01639344262295082,
               "dense_score": null,
-              "lexical_score": 9.68348472458684,
+              "lexical_score": 10.647500022453682,
               "matched_gold_indices": []
             },
             {
@@ -2723,17 +2334,17 @@
               "section": "6.3 English Constituency Parsing",
               "score": 0.016129032258064516,
               "dense_score": null,
-              "lexical_score": 8.883454300622398,
+              "lexical_score": 9.558005559657497,
               "matched_gold_indices": []
             },
             {
               "rank": 3,
-              "chunk_id": "0d2a4eae730e188f",
-              "page": 7,
-              "section": "5.1 Training Data and Batching",
+              "chunk_id": "6d85bb4b7eaa3b3b",
+              "page": 8,
+              "section": "6.2 Model Variations",
               "score": 0.015873015873015872,
               "dense_score": null,
-              "lexical_score": 8.244102953540976,
+              "lexical_score": 6.645332470573687,
               "matched_gold_indices": []
             },
             {
@@ -2743,7 +2354,7 @@
               "section": "6.1 Machine Translation",
               "score": 0.015625,
               "dense_score": null,
-              "lexical_score": 6.982617372679358,
+              "lexical_score": 6.297945292868447,
               "matched_gold_indices": []
             },
             {
@@ -2753,11 +2364,11 @@
               "section": "5.4 Regularization",
               "score": 0.015384615384615385,
               "dense_score": null,
-              "lexical_score": 5.983314252810278,
+              "lexical_score": 6.095824429177115,
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.001105
+          "seconds": 0.003996
         },
         "hybrid": {
           "support_hit_at_5": null,
@@ -2766,22 +2377,22 @@
           "ranks": [
             {
               "rank": 1,
-              "chunk_id": "0d2a4eae730e188f",
-              "page": 7,
-              "section": "5.1 Training Data and Batching",
-              "score": 0.032266458495966696,
-              "dense_score": 0.7124556972475058,
-              "lexical_score": 8.244102953540976,
-              "matched_gold_indices": []
-            },
-            {
-              "rank": 2,
               "chunk_id": "b37abe7f7725f407",
               "page": 8,
               "section": "6.1 Machine Translation",
               "score": 0.031754032258064516,
               "dense_score": 0.7090434617490085,
-              "lexical_score": 6.982617372679358,
+              "lexical_score": 6.297945292868447,
+              "matched_gold_indices": []
+            },
+            {
+              "rank": 2,
+              "chunk_id": "0d2a4eae730e188f",
+              "page": 7,
+              "section": "5.1 Training Data and Batching",
+              "score": 0.031544957774465976,
+              "dense_score": 0.7124556972475058,
+              "lexical_score": 5.756653107320455,
               "matched_gold_indices": []
             },
             {
@@ -2791,7 +2402,7 @@
               "section": "6.3 English Constituency Parsing",
               "score": 0.0315136476426799,
               "dense_score": 0.6879598077986777,
-              "lexical_score": 8.883454300622398,
+              "lexical_score": 9.558005559657497,
               "matched_gold_indices": []
             },
             {
@@ -2801,7 +2412,7 @@
               "section": "5.4 Regularization",
               "score": 0.03125763125763126,
               "dense_score": 0.6936450209505083,
-              "lexical_score": 5.983314252810278,
+              "lexical_score": 6.095824429177115,
               "matched_gold_indices": []
             },
             {
@@ -2811,32 +2422,12 @@
               "section": "Abstract",
               "score": 0.030886196246139225,
               "dense_score": 0.6520517850724166,
-              "lexical_score": 9.68348472458684,
+              "lexical_score": 10.647500022453682,
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.006065
+          "seconds": 0.008042
         }
-      },
-      "answer_check": {
-        "status": "insufficient_evidence",
-        "status_agrees": true,
-        "answer": {
-          "status": "insufficient_evidence",
-          "claims": [],
-          "explanation": "I could not find enough evidence in the retrieved passages to answer this question."
-        },
-        "grounding_rejected": false,
-        "grounding_rejection_reason": null,
-        "provenance": {
-          "check": "no_claims_to_check",
-          "claim_count": 0,
-          "quote_count": 0,
-          "semantic_correctness": "not_scored"
-        },
-        "seconds": 3.339564,
-        "model_calls": 1,
-        "generated_tokens": 15
       }
     },
     {
@@ -2874,11 +2465,11 @@
             },
             {
               "rank": 3,
-              "chunk_id": "052e280ac78332d0",
+              "chunk_id": "64efc8fd6c5e3052",
               "page": 1,
               "section": "Abstract",
               "score": 0.015873015873015872,
-              "dense_score": 0.7378020015000195,
+              "dense_score": 0.7426417816188732,
               "lexical_score": null,
               "matched_gold_indices": []
             },
@@ -2903,7 +2494,7 @@
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.007703
+          "seconds": 0.013237
         },
         "bm25": {
           "support_hit_at_5": null,
@@ -2917,7 +2508,7 @@
               "section": "7 Conclusion",
               "score": 0.01639344262295082,
               "dense_score": null,
-              "lexical_score": 6.657539734834478,
+              "lexical_score": 6.493941479860899,
               "matched_gold_indices": []
             },
             {
@@ -2927,41 +2518,41 @@
               "section": "5.4 Regularization",
               "score": 0.016129032258064516,
               "dense_score": null,
-              "lexical_score": 6.6142471506593905,
+              "lexical_score": 5.556517018270696,
               "matched_gold_indices": []
             },
             {
               "rank": 3,
-              "chunk_id": "abf6f22b8f92a712",
-              "page": 7,
-              "section": "5.2 Hardware and Schedule",
+              "chunk_id": "b37abe7f7725f407",
+              "page": 8,
+              "section": "6.1 Machine Translation",
               "score": 0.015873015873015872,
               "dense_score": null,
-              "lexical_score": 5.642710587512196,
+              "lexical_score": 4.350832591451746,
               "matched_gold_indices": []
             },
             {
               "rank": 4,
-              "chunk_id": "b37abe7f7725f407",
-              "page": 8,
-              "section": "6.1 Machine Translation",
+              "chunk_id": "abf6f22b8f92a712",
+              "page": 7,
+              "section": "5.2 Hardware and Schedule",
               "score": 0.015625,
               "dense_score": null,
-              "lexical_score": 4.6042894559570735,
+              "lexical_score": 4.301109343399093,
               "matched_gold_indices": []
             },
             {
               "rank": 5,
-              "chunk_id": "15757ad196420295",
-              "page": 2,
-              "section": "1 Introduction",
+              "chunk_id": "74f8db603263a9ff",
+              "page": 8,
+              "section": "5.4 Regularization",
               "score": 0.015384615384615385,
               "dense_score": null,
-              "lexical_score": 4.58106792976889,
+              "lexical_score": 4.265211936359607,
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.001043
+          "seconds": 0.001744
         },
         "hybrid": {
           "support_hit_at_5": null,
@@ -2975,7 +2566,7 @@
               "section": "7 Conclusion",
               "score": 0.03252247488101534,
               "dense_score": 0.7491054306566309,
-              "lexical_score": 6.657539734834478,
+              "lexical_score": 6.493941479860899,
               "matched_gold_indices": []
             },
             {
@@ -2983,9 +2574,9 @@
               "chunk_id": "74f8db603263a9ff",
               "page": 8,
               "section": "5.4 Regularization",
-              "score": 0.031099324975891997,
+              "score": 0.03177805800756621,
               "dense_score": 0.7608518020636209,
-              "lexical_score": 3.8193005989574766,
+              "lexical_score": 4.265211936359607,
               "matched_gold_indices": []
             },
             {
@@ -2993,58 +2584,38 @@
               "chunk_id": "b37abe7f7725f407",
               "page": 8,
               "section": "6.1 Machine Translation",
-              "score": 0.031009615384615385,
+              "score": 0.03125763125763126,
               "dense_score": 0.7231106822597797,
-              "lexical_score": 4.6042894559570735,
+              "lexical_score": 4.350832591451746,
               "matched_gold_indices": []
             },
             {
               "rank": 4,
-              "chunk_id": "15757ad196420295",
-              "page": 2,
-              "section": "1 Introduction",
-              "score": 0.030090497737556562,
-              "dense_score": 0.7091638970907459,
-              "lexical_score": 4.58106792976889,
-              "matched_gold_indices": []
-            },
-            {
-              "rank": 5,
               "chunk_id": "be60c51a247cf9b5",
               "page": 8,
               "section": "5.4 Regularization",
               "score": 0.030017921146953404,
               "dense_score": 0.6896701878071074,
-              "lexical_score": 6.6142471506593905,
+              "lexical_score": 5.556517018270696,
+              "matched_gold_indices": []
+            },
+            {
+              "rank": 5,
+              "chunk_id": "dd6a4c88f12ba735",
+              "page": 2,
+              "section": "2 Background",
+              "score": 0.029709507042253523,
+              "dense_score": 0.7240049057450251,
+              "lexical_score": 1.5992681673340159,
               "matched_gold_indices": []
             }
           ],
-          "seconds": 0.005966
+          "seconds": 0.006297
         }
-      },
-      "answer_check": {
-        "status": "insufficient_evidence",
-        "status_agrees": true,
-        "answer": {
-          "status": "insufficient_evidence",
-          "claims": [],
-          "explanation": "I could not find enough evidence in the retrieved passages to answer this question."
-        },
-        "grounding_rejected": false,
-        "grounding_rejection_reason": null,
-        "provenance": {
-          "check": "no_claims_to_check",
-          "claim_count": 0,
-          "quote_count": 0,
-          "semantic_correctness": "not_scored"
-        },
-        "seconds": 3.351529,
-        "model_calls": 1,
-        "generated_tokens": 15
       }
     }
   ],
-  "elapsed_seconds": 123.92099,
+  "elapsed_seconds": 0.289449,
   "retrieval_summary": {
     "dense": {
       "answerable_questions": 10,
@@ -3056,7 +2627,7 @@
       "answerable_questions": 10,
       "support_hits_at_5": 10,
       "support_hit_at_5": 1.0,
-      "mrr_at_5": 0.8833333333333334
+      "mrr_at_5": 0.95
     },
     "hybrid": {
       "answerable_questions": 10,
@@ -3065,14 +2636,5 @@
       "mrr_at_5": 1.0
     }
   },
-  "unanswerable_questions_excluded_from_retrieval_metrics": 3,
-  "answer_status_summary": {
-    "questions": 13,
-    "completed": 13,
-    "status_matches": 10,
-    "status_agreement": 0.7692307692307693,
-    "execution_errors": 0,
-    "grounding_rejections": 2,
-    "note": "Execution errors count as disagreements; status agreement is not answer correctness."
-  }
+  "unanswerable_questions_excluded_from_retrieval_metrics": 3
 }

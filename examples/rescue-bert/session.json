@@ -1,0 +1,400 @@
+{
+  "schema_version": 1,
+  "id": "7016d3da0645",
+  "query": "https://arxiv.org/abs/1810.04805",
+  "model": "qwen3.5:4b",
+  "embedding_model": "BAAI/bge-small-en-v1.5",
+  "created_at": "2026-09-19T18:16:04.188177+00:00",
+  "updated_at": "2026-09-19T18:17:24.485337+00:00",
+  "node": "ready",
+  "status": "ready",
+  "intent": {
+    "kind": "paper",
+    "value": "1810.04805",
+    "keywords": [],
+    "recent": false
+  },
+  "candidates": [
+    {
+      "arxiv_id": "1810.04805v2",
+      "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+      "authors": [
+        "Jacob Devlin",
+        "Ming-Wei Chang",
+        "Kenton Lee",
+        "Kristina Toutanova"
+      ],
+      "abstract": "We introduce a new language representation model called BERT, which stands for Bidirectional Encoder Representations from Transformers. Unlike recent language representation models, BERT is designed to pre-train deep bidirectional representations from unlabeled text by jointly conditioning on both left and right context in all layers. As a result, the pre-trained BERT model can be fine-tuned with just one additional output layer to create state-of-the-art models for a wide range of tasks, such as question answering and language inference, without substantial task-specific architecture modifications. BERT is conceptually simple and empirically powerful. It obtains new state-of-the-art results on eleven natural language processing tasks, including pushing the GLUE score to 80.5% (7.7% point absolute improvement), MultiNLI accuracy to 86.7% (4.6% absolute improvement), SQuAD v1.1 question answering Test F1 to 93.2 (1.5 point absolute improvement) and SQuAD v2.0 Test F1 to 83.1 (5.1 point absolute improvement).",
+      "published": "2018-10-11T00:50:01Z",
+      "updated": "2019-05-24T20:37:26Z",
+      "categories": [
+        "cs.CL"
+      ],
+      "url": "https://arxiv.org/abs/1810.04805v2",
+      "pdf_url": "https://arxiv.org/pdf/1810.04805v2",
+      "relevance": 0.0
+    }
+  ],
+  "paper": {
+    "arxiv_id": "1810.04805v2",
+    "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding",
+    "authors": [
+      "Jacob Devlin",
+      "Ming-Wei Chang",
+      "Kenton Lee",
+      "Kristina Toutanova"
+    ],
+    "abstract": "We introduce a new language representation model called BERT, which stands for Bidirectional Encoder Representations from Transformers. Unlike recent language representation models, BERT is designed to pre-train deep bidirectional representations from unlabeled text by jointly conditioning on both left and right context in all layers. As a result, the pre-trained BERT model can be fine-tuned with just one additional output layer to create state-of-the-art models for a wide range of tasks, such as question answering and language inference, without substantial task-specific architecture modifications. BERT is conceptually simple and empirically powerful. It obtains new state-of-the-art results on eleven natural language processing tasks, including pushing the GLUE score to 80.5% (7.7% point absolute improvement), MultiNLI accuracy to 86.7% (4.6% absolute improvement), SQuAD v1.1 question answering Test F1 to 93.2 (1.5 point absolute improvement) and SQuAD v2.0 Test F1 to 83.1 (5.1 point absolute improvement).",
+    "published": "2018-10-11T00:50:01Z",
+    "updated": "2019-05-24T20:37:26Z",
+    "categories": [
+      "cs.CL"
+    ],
+    "url": "https://arxiv.org/abs/1810.04805v2",
+    "pdf_url": "https://arxiv.org/pdf/1810.04805v2",
+    "relevance": 0.0
+  },
+  "collection": "paper_593e6ce94df9f708bda8c034",
+  "pdf_sha256": "5692a5514787a8c6727b4ff3b726a3385798bc68e12138d1d4af83947e2acf6e",
+  "pages": 16,
+  "chunk_count": 80,
+  "briefing": {
+    "summary": {
+      "text": "BERT is a new language representation model that stands for Bidirectional Encoder Representations from Transformers and is conceptually simple yet empirically powerful.",
+      "evidence": [
+        {
+          "chunk_id": "e1796cabe1b618c0",
+          "quote": "We introduce a new language representation model called BERT, which stands for Bidirectional Encoder Representations from Transformers."
+        },
+        {
+          "chunk_id": "e1796cabe1b618c0",
+          "quote": "BERT is conceptually simple and empirically powerful."
+        }
+      ]
+    },
+    "problem": {
+      "text": "Unlike recent models that rely on unidirectional language models or shallow concatenations, BERT is designed to pretrain deep bidirectional representations by jointly conditioning on both left and right context in all layers.",
+      "evidence": [
+        {
+          "chunk_id": "e1796cabe1b618c0",
+          "quote": "Unlike recent language representation models (Peters et al., 2018a; Radford et al., 2018), BERT is designed to pretrain deep bidirectional representations from unlabeled text by jointly conditioning on both left and right context in all layers."
+        },
+        {
+          "chunk_id": "0866f1cf1cf65f28",
+          "quote": "Unlike Radford et al. (2018), which uses unidirectional language models for pre-training, BERT uses masked language models to enable pretrained deep bidirectional representations."
+        }
+      ]
+    },
+    "method": [
+      {
+        "text": "The model uses a masked language model objective to fuse left and right context, and also employs a next sentence prediction task to jointly pretrain text-pair representations.",
+        "evidence": [
+          {
+            "chunk_id": "0866f1cf1cf65f28",
+            "quote": "Unlike left-toright language model pre-training, the MLM objective enables the representation to fuse the left and the right context, which allows us to pretrain a deep bidirectional Transformer."
+          },
+          {
+            "chunk_id": "0866f1cf1cf65f28",
+            "quote": "In addition to the masked language model, we also use a “next sentence prediction” task that jointly pretrains text-pair representations."
+          }
+        ]
+      },
+      {
+        "text": "BERT demonstrates that pre-trained representations reduce the need for many heavily engineered task-specific architectures and advances the state of the art for eleven NLP tasks.",
+        "evidence": [
+          {
+            "chunk_id": "0866f1cf1cf65f28",
+            "quote": "This is also in contrast to Peters et al. (2018a), which uses a shallow concatenation of independently trained left-to-right and right-to-left LMs. • We show that pre-trained representations reduce the need for many heavily-engineered taskspecific architectures."
+          },
+          {
+            "chunk_id": "0866f1cf1cf65f28",
+            "quote": "BERT is the first finetuning based representation model that achieves state-of-the-art performance on a large suite of sentence-level and token-level tasks, outperforming many task-specific architectures. • BERT advances the state of the art for eleven NLP tasks."
+          }
+        ]
+      },
+      {
+        "text": "The approach involves adding a simple classification layer to the pre-trained model and jointly fine-tuning all parameters on the downstream task.",
+        "evidence": [
+          {
+            "chunk_id": "b41e4d43317ecd13",
+            "quote": "All of the BERT results presented so far have used the fine-tuning approach, where a simple classification layer is added to the pre-trained model, and all parameters are jointly fine-tuned on a downstream task."
+          }
+        ]
+      }
+    ],
+    "results": [
+      {
+        "text": "The pre-trained BERT model obtains new state-of-the-art results on eleven natural language processing tasks, including pushing the GLUE score to 80.5%, MultiNLI accuracy to 86.7%, SQuAD v1.1 Test F1 to 93.2, and SQuAD v2.0 Test F1 to 83.1.",
+        "evidence": [
+          {
+            "chunk_id": "e1796cabe1b618c0",
+            "quote": "It obtains new state-of-the-art results on eleven natural language processing tasks, including pushing the GLUE score to 80.5% (7.7% point absolute improvement), MultiNLI accuracy to 86.7% (4.6% absolute improvement), SQuAD v1.1 question answering Test F1 to 93.2 (1.5 point absolute improvement) and SQuAD v2.0 Test F1 to 83.1 (5.1 point absolute improvement)."
+          }
+        ]
+      },
+      {
+        "text": "As a result, the model can be finetuned with just one additional output layer to create state-of-the-art models for a wide range of tasks without substantial task-specific architecture modifications.",
+        "evidence": [
+          {
+            "chunk_id": "e1796cabe1b618c0",
+            "quote": "As a result, the pre-trained BERT model can be finetuned with just one additional output layer to create state-of-the-art models for a wide range of tasks, such as question answering and language inference, without substantial taskspecific architecture modifications."
+          }
+        ]
+      },
+      {
+        "text": "Source wording (automatic review requested inspection): “BERT is the first finetuning based representation model that achieves state-of-the-art performance on a large suite of sentence-level and token-level tasks, outperforming many task-specific architectures. • BERT advances the state of the art for eleven NLP tasks.”",
+        "evidence": [
+          {
+            "chunk_id": "0866f1cf1cf65f28",
+            "quote": "BERT is the first finetuning based representation model that achieves state-of-the-art performance on a large suite of sentence-level and token-level tasks, outperforming many task-specific architectures. • BERT advances the state of the art for eleven NLP tasks."
+          }
+        ]
+      }
+    ],
+    "limitations": [],
+    "limitations_note": "No explicit limitations were identified in the selected evidence; this does not establish that the paper has none.",
+    "follow_up_questions": [
+      "How does the performance of BERT compare to models using feature-based approaches on tasks requiring fine-grained token-level output?",
+      "What are the computational trade-offs of using deep bidirectional architectures versus shallow unidirectional models for low-resource tasks?",
+      "Can the next sentence prediction task be effectively combined with other pre-training objectives to further improve representation quality?"
+    ]
+  },
+  "briefing_evidence_ids": [
+    "e1796cabe1b618c0",
+    "0866f1cf1cf65f28",
+    "be2279e8686e949f",
+    "b41e4d43317ecd13",
+    "dea7d935a000d6a1",
+    "180f6460c1045f66",
+    "7ddad6708c9a27bd",
+    "e67616a4c6ebed08",
+    "bf23993844e78188"
+  ],
+  "exchanges": [
+    {
+      "question": "What does BERT stand for?",
+      "retrieval_query": "What does BERT stand for?",
+      "answer": {
+        "status": "answered",
+        "claims": [
+          {
+            "text": "BERT stands for Bidirectional Encoder Representations from Transformers.",
+            "evidence": [
+              {
+                "chunk_id": "e1796cabe1b618c0",
+                "quote": "We introduce a new language representation model called BERT, which stands for Bidirectional Encoder Representations from Transformers."
+              }
+            ]
+          }
+        ],
+        "explanation": ""
+      },
+      "retrieved_ids": [
+        "55906861680239b2",
+        "7ce6d6e8721d6fca",
+        "a92a3c043defcc47",
+        "e1796cabe1b618c0",
+        "00dc413ab7546bb0",
+        "507bfbf9bf1a8c65",
+        "72ef7b53a6b6e2dc"
+      ],
+      "elapsed_seconds": 4.579,
+      "created_at": "2026-09-19T18:17:04.115058+00:00"
+    },
+    {
+      "question": "What was the total training cost in US dollars?",
+      "retrieval_query": "What was the total training cost in US dollars?",
+      "answer": {
+        "status": "insufficient_evidence",
+        "claims": [],
+        "explanation": "I could not find enough evidence in the retrieved passages to answer this question."
+      },
+      "retrieved_ids": [
+        "191d0463fb23528f",
+        "4637b00c6eb831a7",
+        "90f8b7db07c19311",
+        "2a20f61cb4a8f185",
+        "dac6e1e8387e0cc7",
+        "4b01b879b3d533fe",
+        "f455ed781ccd5959"
+      ],
+      "elapsed_seconds": 2.472,
+      "created_at": "2026-09-19T18:17:24.485326+00:00"
+    }
+  ],
+  "warnings": [
+    "Page 1: two-column reading order inferred. Complex tables or spanning figures may need manual inspection.",
+    "Page 2: two-column reading order inferred. Complex tables or spanning figures may need manual inspection.",
+    "Page 3: two-column reading order inferred. Complex tables or spanning figures may need manual inspection.",
+    "Page 4: two-column reading order inferred. Complex tables or spanning figures may need manual inspection.",
+    "Page 5: two-column reading order inferred. Complex tables or spanning figures may need manual inspection.",
+    "Page 6: two-column reading order inferred. Complex tables or spanning figures may need manual inspection.",
+    "Page 8: two-column reading order inferred. Complex tables or spanning figures may need manual inspection.",
+    "Page 9: two-column reading order inferred. Complex tables or spanning figures may need manual inspection.",
+    "Page 10: two-column reading order inferred. Complex tables or spanning figures may need manual inspection.",
+    "Page 11: two-column reading order inferred. Complex tables or spanning figures may need manual inspection.",
+    "Page 12: two-column reading order inferred. Complex tables or spanning figures may need manual inspection.",
+    "Page 13: two-column reading order inferred. Complex tables or spanning figures may need manual inspection.",
+    "Page 14: two-column reading order inferred. Complex tables or spanning figures may need manual inspection.",
+    "Page 15: two-column reading order inferred. Complex tables or spanning figures may need manual inspection.",
+    "Page 16: two-column reading order inferred. Complex tables or spanning figures may need manual inspection.",
+    "Automatic support review replaced 1 briefing paraphrase(s) with visibly labeled source wording. Inspect those passages; the reviewer is fallible."
+  ],
+  "events": [
+    {
+      "node": "understand",
+      "status": "completed",
+      "seconds": 0.0,
+      "detail": "",
+      "at": "2026-09-19T18:16:04.190158+00:00"
+    },
+    {
+      "node": "retrieve",
+      "status": "completed",
+      "seconds": 0.0,
+      "detail": "",
+      "at": "2026-09-19T18:16:04.192108+00:00"
+    },
+    {
+      "node": "select",
+      "status": "completed",
+      "seconds": 0.0,
+      "detail": "",
+      "at": "2026-09-19T18:16:04.193428+00:00"
+    },
+    {
+      "node": "fetch",
+      "status": "completed",
+      "seconds": 0.002,
+      "detail": "",
+      "at": "2026-09-19T18:16:04.198234+00:00"
+    },
+    {
+      "node": "parse",
+      "status": "completed",
+      "seconds": 0.84,
+      "detail": "",
+      "at": "2026-09-19T18:16:05.039755+00:00"
+    },
+    {
+      "node": "index",
+      "status": "completed",
+      "seconds": 0.028,
+      "detail": "",
+      "at": "2026-09-19T18:16:05.071547+00:00"
+    },
+    {
+      "node": "model.load",
+      "status": "completed",
+      "seconds": 0.001,
+      "detail": "",
+      "at": "2026-09-19T18:16:05.080268+00:00"
+    },
+    {
+      "node": "brief.generate",
+      "status": "completed",
+      "seconds": 18.715,
+      "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 2.825, \"eval_duration\": 15.309}, \"output_tokens\": 528}",
+      "at": "2026-09-19T18:16:23.881390+00:00"
+    },
+    {
+      "node": "brief.review",
+      "status": "completed",
+      "seconds": 3.759,
+      "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.004, \"prompt_eval_duration\": 0.645, \"eval_duration\": 2.996}, \"output_tokens\": 117}",
+      "at": "2026-09-19T18:16:27.647963+00:00"
+    },
+    {
+      "node": "brief.review",
+      "status": "completed",
+      "seconds": 3.968,
+      "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 0.637, \"eval_duration\": 3.296}, \"output_tokens\": 117}",
+      "at": "2026-09-19T18:16:31.617157+00:00"
+    },
+    {
+      "node": "brief.review",
+      "status": "completed",
+      "seconds": 3.065,
+      "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 0.51, \"eval_duration\": 2.447}, \"output_tokens\": 94}",
+      "at": "2026-09-19T18:16:34.689775+00:00"
+    },
+    {
+      "node": "brief",
+      "status": "completed",
+      "seconds": 29.618,
+      "detail": "",
+      "at": "2026-09-19T18:16:34.691436+00:00"
+    },
+    {
+      "node": "validate",
+      "status": "completed",
+      "seconds": 0.002,
+      "detail": "",
+      "at": "2026-09-19T18:16:34.695063+00:00"
+    },
+    {
+      "node": "qa.retrieve",
+      "status": "completed",
+      "seconds": 0.129,
+      "detail": "7 passages",
+      "at": "2026-09-19T18:16:59.665047+00:00"
+    },
+    {
+      "node": "model.load",
+      "status": "completed",
+      "seconds": 0.001,
+      "detail": "",
+      "at": "2026-09-19T18:16:59.670840+00:00"
+    },
+    {
+      "node": "qa.generate",
+      "status": "completed",
+      "seconds": 3.323,
+      "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 2.308, \"eval_duration\": 0.936}, \"output_tokens\": 37}",
+      "at": "2026-09-19T18:17:02.996788+00:00"
+    },
+    {
+      "node": "qa.review",
+      "status": "completed",
+      "seconds": 1.112,
+      "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 0.279, \"eval_duration\": 0.749}, \"output_tokens\": 30}",
+      "at": "2026-09-19T18:17:04.110881+00:00"
+    },
+    {
+      "node": "qa.answer",
+      "status": "completed",
+      "seconds": 4.579,
+      "detail": "answered",
+      "at": "2026-09-19T18:17:04.115071+00:00"
+    },
+    {
+      "node": "qa.retrieve",
+      "status": "completed",
+      "seconds": 0.1,
+      "detail": "7 passages",
+      "at": "2026-09-19T18:17:22.112825+00:00"
+    },
+    {
+      "node": "model.load",
+      "status": "completed",
+      "seconds": 0.001,
+      "detail": "",
+      "at": "2026-09-19T18:17:22.118158+00:00"
+    },
+    {
+      "node": "qa.generate",
+      "status": "completed",
+      "seconds": 2.363,
+      "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 1.877, \"eval_duration\": 0.398}, \"output_tokens\": 15}",
+      "at": "2026-09-19T18:17:24.484365+00:00"
+    },
+    {
+      "node": "qa.answer",
+      "status": "completed",
+      "seconds": 2.472,
+      "detail": "insufficient_evidence",
+      "at": "2026-09-19T18:17:24.485334+00:00"
+    }
+  ],
+  "error": null
+}

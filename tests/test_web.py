@@ -1,4 +1,5 @@
 import json
+import os
 import threading
 import time
 from http.client import HTTPConnection
@@ -8,7 +9,7 @@ import pytest
 
 from papertrail.config import Settings
 from papertrail.errors import PaperTrailError
-from papertrail.schema import Answer, Event, Exchange, Node, RunState
+from papertrail.schema import Answer, Chunk, Event, Exchange, Node, RunState
 from papertrail.storage import Store
 from papertrail.web import MAX_BODY, make_server
 
@@ -61,6 +62,13 @@ def web(tmp_path, paper, chunk, briefing):
             self.store.save(state)
             return state
 
+        def resume(self, session):
+            calls.append(("resume", session))
+            state = self.store.load(session)
+            state.status, state.node, state.error = "ready", Node.READY, None
+            self.store.save(state)
+            return state
+
         def parsed(self, _state):
             return SimpleNamespace(chunks=[chunk])
 
@@ -94,8 +102,8 @@ def request(web, method="GET", path="/", payload=None, headers=None, raw=None):
     return response.status, content, metadata
 
 
-def wait_job(web, identity):
-    deadline = time.monotonic() + 3
+def wait_job(web, identity, timeout=3):
+    deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
         status, body, _ = request(web, path="/api/jobs/" + identity)
         assert status == 200
@@ -146,6 +154,69 @@ def test_ask_uses_saved_model_and_updates_report(web):
     assert b"No evidence." in request(web, path=job["report"])[1]
     sessions = json.loads(request(web, path="/api/sessions")[1])["sessions"]
     assert sessions[0]["report"] is True
+
+
+def test_browser_resume_preserves_session_models_and_checkpoint(web):
+    _, body, _ = request(web, "POST", "/api/digest", {"query": "attention"})
+    original = wait_job(web, json.loads(body)["id"])
+    store = Store(web.root)
+    state = store.load(original["session"])
+    state.status, state.node, state.error = "failed", Node.BRIEF, "The model timed out."
+    store.save(state)
+    sessions = json.loads(request(web, path="/api/sessions")[1])["sessions"]
+    assert sessions[0]["can_resume"] is True
+    assert sessions[0]["checkpoint"] == "brief"
+    assert sessions[0]["error"] == "The model timed out."
+    status, body, _ = request(web, "POST", "/api/resume", {"session": state.id})
+    assert status == 202
+    job = wait_job(web, json.loads(body)["id"])
+    assert job["status"] == "succeeded" and job["session"] == state.id
+    assert ("resume", state.id) in web.calls
+    assert ("settings", "saved-model", "saved-embed") in web.calls
+
+
+def test_refresh_can_reattach_to_active_job_with_elapsed_times(web):
+    web.gate.clear()
+    _, body, _ = request(web, "POST", "/api/digest", {"query": "attention"})
+    original = json.loads(body)
+    current = json.loads(request(web, path="/api/active")[1])["job"]
+    assert current["id"] == original["id"]
+    assert current["status"] == "running"
+    assert current["elapsed_seconds"] >= current["stage_elapsed_seconds"] >= 0
+    assert current["deadline_seconds"] == 240
+    assert "_started" not in current
+    web.gate.set()
+    wait_job(web, original["id"])
+    assert json.loads(request(web, path="/api/active")[1])["job"] is None
+
+
+def test_repeated_review_stage_resets_clock_and_keeps_metrics_out_of_status(web):
+    web.gate.clear()
+    _, body, _ = request(web, "POST", "/api/digest", {"query": "attention"})
+    identity = json.loads(body)["id"]
+    app = web.server.app
+    running = Event(node="brief.review", status="running")
+    app.observe(identity, {"event": running.model_dump()})
+    time.sleep(0.25)
+    first_batch = json.loads(request(web, path="/api/jobs/" + identity)[1])
+    app.observe(identity, {"event": running.model_dump()})
+    second_batch = json.loads(request(web, path="/api/jobs/" + identity)[1])
+    assert second_batch["stage_elapsed_seconds"] < first_batch["stage_elapsed_seconds"]
+    metrics = '{"server_seconds": 1.2, "output_tokens": 40}'
+    app.observe(
+        identity,
+        {
+            "event": Event(
+                node="brief.review", status="completed", seconds=1.3, detail=metrics
+            ).model_dump()
+        },
+    )
+    completed_batch = json.loads(request(web, path="/api/jobs/" + identity)[1])
+    assert completed_batch["detail"] == ""
+    assert completed_batch["timings"][-1]["detail"] == metrics
+    assert completed_batch["timings"][-1]["seconds"] == 1.3
+    web.gate.set()
+    wait_job(web, identity)
 
 
 @pytest.mark.parametrize(
@@ -252,3 +323,131 @@ def test_existing_cli_operation_lock_is_respected(web):
 def test_server_refuses_any_bind_except_numeric_loopback(tmp_path, host):
     with pytest.raises(ValueError, match="127.0.0.1"):
         make_server(Settings(data_dir=tmp_path), host=host, port=0)
+
+
+class ProcessAgent:
+    """Spawnable fixture that holds the real writer lock while deliberately stuck."""
+
+    def __init__(self, settings, observer):
+        self.store, self.observer, self.settings = Store(settings.data_dir), observer, settings
+
+    def new(self, query):
+        state = self.store.load("abcdef123456").model_copy(
+            deep=True,
+            update={
+                "id": "abcdef098765" if query == "hang" else "abcdef876543",
+                "query": query,
+                "status": "running",
+                "node": Node.BRIEF,
+            },
+        )
+        self.store.save(state)
+        self.observer(Event(node="brief.generate", status="running", detail=state.id))
+        if query == "hang":
+            (self.settings.data_dir / "worker.pid").write_text(str(os.getpid()))
+            while True:
+                time.sleep(0.05)
+        state.status, state.node = "ready", Node.READY
+        self.store.save(state)
+        return state
+
+    def resume(self, session):
+        state = self.store.load(session)
+        assert self.settings.model == state.model
+        assert self.settings.embedding_model == state.embedding_model
+        assert state.node == Node.BRIEF
+        state.status, state.node, state.error = "ready", Node.READY, None
+        self.store.save(state)
+        return state
+
+    def ask(self, session, question):
+        state = self.store.load(session)
+        self.observer(Event(node="qa.generate", status="running", detail=state.id))
+        if question == "hang":
+            (self.settings.data_dir / "worker.pid").write_text(str(os.getpid()))
+            while True:
+                time.sleep(0.05)
+        return state
+
+    def parsed(self, _state):
+        return SimpleNamespace(
+            chunks=[Chunk.model_validate_json((self.settings.data_dir / "chunk.json").read_text())]
+        )
+
+    def close(self):
+        pass
+
+
+def test_process_deadline_kills_worker_releases_lock_and_allows_resume_and_new_job(
+    tmp_path, paper, chunk, briefing
+):
+    store = Store(tmp_path)
+    store.save(
+        RunState(
+            id="abcdef123456",
+            query="original",
+            model="saved-model",
+            embedding_model="saved-embed",
+            status="ready",
+            node=Node.READY,
+            paper=paper,
+            briefing=briefing,
+        )
+    )
+    (tmp_path / "chunk.json").write_text(chunk.model_dump_json())
+    server = make_server(
+        Settings(data_dir=tmp_path, operation_timeout=3),
+        port=0,
+        agent_factory=ProcessAgent,
+        isolate=True,
+    )
+    thread = threading.Thread(target=server.serve_forever, daemon=True)
+    thread.start()
+    web = SimpleNamespace(server=server)
+    try:
+        _, body, _ = request(web, "POST", "/api/digest", {"query": "hang"})
+        job = wait_job(web, json.loads(body)["id"], timeout=8)
+        assert job["status"] == "failed" and job["timed_out"] is True
+        assert job["stage"] == "brief.generate"
+        assert 2.8 <= job["elapsed_seconds"] < 7
+        assert job["retry"] == {"path": "/api/resume", "payload": {"session": "abcdef098765"}}
+        assert store.load("abcdef098765").status == "failed"
+        pid = int((tmp_path / "worker.pid").read_text())
+        with pytest.raises(ProcessLookupError):
+            os.kill(pid, 0)
+        with store.exclusive():
+            pass  # OS-level lock released, not merely the browser's active flag.
+
+        _, body, _ = request(web, "POST", "/api/resume", {"session": "abcdef098765"})
+        resumed = wait_job(web, json.loads(body)["id"], timeout=8)
+        assert resumed["status"] == "succeeded"
+        assert resumed["session"] == "abcdef098765"
+        assert store.load(resumed["session"]).status == "ready"
+
+        _, body, _ = request(web, "POST", "/api/digest", {"query": "works"})
+        next_job = wait_job(web, json.loads(body)["id"], timeout=8)
+        assert next_job["status"] == "succeeded"
+        assert request(web, path=next_job["report"])[0] == 200
+
+        _, body, _ = request(
+            web, "POST", "/api/ask", {"session": next_job["session"], "question": "hang"}
+        )
+        failed_question = wait_job(web, json.loads(body)["id"], timeout=8)
+        assert failed_question["status"] == "failed"
+        assert "Retry the question" in failed_question["error"]
+        assert store.load(next_job["session"]).status == "ready"
+        assert store.load(next_job["session"]).events[-1].node == "qa.operation"
+        _, body, _ = request(
+            web, "POST", "/api/ask", {"session": next_job["session"], "question": "works"}
+        )
+        assert wait_job(web, json.loads(body)["id"], timeout=8)["status"] == "succeeded"
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=2)
+
+
+@pytest.mark.parametrize("seconds", [0, -1, float("inf"), float("nan")])
+def test_operation_deadline_rejects_invalid_configuration(seconds):
+    with pytest.raises(ValueError, match="positive"):
+        Settings(operation_timeout=seconds)

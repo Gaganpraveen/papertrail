@@ -19,7 +19,11 @@ def normalized(text: str) -> str:
 
 def numbers(text: str) -> set[str]:
     # Avoid confusing a prose hyphen with a negative sign; compare values, not unit semantics.
-    return set(re.findall(r"\b\d+(?:\.\d+)?\b", text.replace(",", "")))
+    # PDF text often joins a value to its unit (22meV or 2.5ps). A trailing word
+    # boundary would miss it or truncate the decimal. The leading guard still
+    # excludes digits embedded in identifiers such as BERT22 or model2.5.
+    values = re.findall(r"(?<![\w.])(?:\d+(?:\.\d+)?|\.\d+)", text.replace(",", ""))
+    return {"0" + value if value.startswith(".") else value for value in values}
 
 
 def validate_claim(claim: Claim, chunks: dict[str, Chunk]) -> None:

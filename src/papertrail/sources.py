@@ -3,6 +3,7 @@
 import hashlib
 import json
 import re
+import shutil
 import time
 from pathlib import Path
 from urllib.parse import unquote, urlencode, urlparse
@@ -19,6 +20,21 @@ STOP = set(
     "a an the on of for with and or in to from about work research paper papers recent latest new advances study studies please find me explain how what is are does this that their using".split()
 )
 ATOM = {"a": "http://www.w3.org/2005/Atom"}
+RETRYABLE_STATUS = {429, 500, 502, 503, 504}
+
+
+def source_http_error(status: int, resource: str = "metadata") -> SourceError:
+    if status == 406:
+        return SourceError(
+            f"arXiv refused this {resource} request (HTTP 406). No different paper was substituted. "
+            "Retry this session later, or start a new briefing with the paper's exact arXiv ID/URL."
+        )
+    if status in {401, 403}:
+        return SourceError(
+            f"arXiv denied access to this {resource} request (HTTP {status}). "
+            "The request will not be retried automatically. Try again later."
+        )
+    return SourceError(f"arXiv returned HTTP {status} for the {resource} request.")
 
 
 def normalize_id(value: str) -> str | None:
@@ -140,9 +156,15 @@ class ArxivClient:
             time.sleep(wait)
         timestamp.write_text(str(time.time()))
 
-    def _feed(self, params: dict, *, literal_syntax: bool = False) -> list[Paper]:
+    def _feed_cache(self, params: dict) -> Path:
         key = hashlib.sha256(json.dumps(params, sort_keys=True).encode()).hexdigest()
-        cached = self.cache / f"{key}.json"
+        return self.cache / f"{key}.json"
+
+    def _save_feed(self, params: dict, papers: list[Paper]) -> None:
+        atomic_json(self._feed_cache(params), [paper.model_dump() for paper in papers])
+
+    def _feed(self, params: dict, *, literal_syntax: bool = False) -> list[Paper]:
+        cached = self._feed_cache(params)
         if cached.exists() and time.time() - cached.stat().st_mtime < 86400:
             try:
                 return [Paper.model_validate(x) for x in json.loads(cached.read_text())]
@@ -164,17 +186,14 @@ class ArxivClient:
                 if len(response.content) > 2_000_000:
                     raise SourceError("Unexpectedly large metadata response from arXiv.")
                 papers = parse_feed(response.content)
-                atomic_json(cached, [p.model_dump() for p in papers])
+                self._save_feed(params, papers)
                 return papers
             except (httpx.TimeoutException, httpx.NetworkError, httpx.HTTPStatusError) as exc:
-                if isinstance(exc, httpx.HTTPStatusError) and exc.response.status_code not in {
-                    429,
-                    500,
-                    502,
-                    503,
-                    504,
-                }:
-                    raise SourceError(f"arXiv returned HTTP {exc.response.status_code}.") from exc
+                if (
+                    isinstance(exc, httpx.HTTPStatusError)
+                    and exc.response.status_code not in RETRYABLE_STATUS
+                ):
+                    raise source_http_error(exc.response.status_code) from exc
                 if attempt == 2:
                     raise SourceError(
                         "arXiv is unavailable after three attempts. Your session is saved; resume it later."
@@ -195,6 +214,7 @@ class ArxivClient:
                     raise SourceError(
                         "arXiv rejected the version-specific lookup and the base lookup returned a different revision. Refusing to substitute versions."
                     ) from exc
+                self._save_feed({"id_list": intent.value}, papers)
                 warnings.append(
                     "Version-specific metadata lookup returned HTTP 406; the base lookup was verified to refer to the exact requested revision."
                 )
@@ -204,6 +224,9 @@ class ArxivClient:
                 raise SourceError(
                     "arXiv returned a different paper revision. Refusing to substitute versions."
                 )
+            requested_base = re.sub(r"v\d+$", "", intent.value)
+            if any(re.sub(r"v\d+$", "", paper.arxiv_id) != requested_base for paper in papers):
+                raise SourceError("arXiv returned a different paper. Refusing to substitute IDs.")
         else:
 
             def topic_feed(operator: str) -> list[Paper]:
@@ -216,23 +239,28 @@ class ArxivClient:
                 try:
                     return self._feed(params)[:limit]
                 except SourceError as exc:
-                    if "HTTP 406" not in str(exc) or not all(
-                        re.fullmatch(r"[A-Za-z0-9]+", term) for term in intent.keywords
-                    ):
+                    if "HTTP 406" not in str(exc):
                         raise
                     # Some arXiv/CDN routes reject a fully parameterized URL
                     # while serving the equivalent documented minimal query.
-                    # Single alphanumeric terms need no phrase quotes; preserve
-                    # every term and Boolean operator. Defaults are relevance
+                    # Single alphanumeric terms need no phrase quotes; hyphenated
+                    # terms retain their quotes. Preserve all terms and operators.
+                    # Defaults are relevance
                     # order and ten results, so trim locally for smaller limits.
                     canonical = {
-                        "search_query": f" {operator} ".join(f"all:{k}" for k in intent.keywords)
+                        "search_query": f" {operator} ".join(
+                            f"all:{term}" if term.isalnum() else f'all:"{term}"'
+                            for term in intent.keywords
+                        )
                     }
                     if intent.recent:
                         canonical.update(sortBy="submittedDate", sortOrder="descending")
                     if limit > 10:
                         canonical["max_results"] = limit
                     papers = self._feed(canonical, literal_syntax=True)[:limit]
+                    # Reuse the proven equivalent response on subsequent runs;
+                    # otherwise each run repeats the same rejected HTTP request.
+                    self._save_feed(params, papers)
                     warning = (
                         "arXiv returned HTTP 406 for the parameterized topic request; "
                         "an equivalent canonical API query succeeded with the same terms and sort intent."
@@ -259,8 +287,15 @@ class ArxivClient:
             raise SourceError("Refusing an untrusted PDF URL.")
         if destination.exists():
             data = destination.read_bytes()
-            if data.startswith(b"%PDF-") and len(data) <= self.max_bytes:
+            if data.startswith(b"%PDF-") and 100 <= len(data) <= self.max_bytes:
                 return hashlib.sha256(data).hexdigest()
+        cached = self._cached_pdf(paper)
+        if cached is not None:
+            data, checksum = cached
+            temporary = destination.with_suffix(".part")
+            temporary.write_bytes(data)
+            temporary.replace(destination)
+            return checksum
         temporary = destination.with_suffix(".part")
         for attempt in range(3):
             self._throttle()
@@ -285,8 +320,15 @@ class ArxivClient:
                 if total < 100:
                     raise SourceError("arXiv returned an empty or incomplete PDF.")
                 temporary.replace(destination)
-                return digest.hexdigest()
+                checksum = digest.hexdigest()
+                self._save_pdf(paper, destination, checksum)
+                return checksum
             except (httpx.HTTPError, OSError) as exc:
+                if (
+                    isinstance(exc, httpx.HTTPStatusError)
+                    and exc.response.status_code not in RETRYABLE_STATUS
+                ):
+                    raise source_http_error(exc.response.status_code, "PDF") from exc
                 if attempt == 2:
                     raise SourceError(
                         "PDF download failed after three attempts. Resume this session to retry."
@@ -295,6 +337,46 @@ class ArxivClient:
             finally:
                 temporary.unlink(missing_ok=True)
         raise SourceError("PDF download failed.")
+
+    def _pdf_cache_paths(self, paper: Paper) -> tuple[Path, Path]:
+        key = hashlib.sha256(paper.arxiv_id.encode()).hexdigest()
+        return self.cache / "pdf" / f"{key}.pdf", self.cache / "pdf" / f"{key}.json"
+
+    def _cached_pdf(self, paper: Paper) -> tuple[bytes, str] | None:
+        # Only explicit revisions are immutable. Never reuse a base ID's old PDF.
+        if not re.search(r"v\d+$", paper.arxiv_id):
+            return None
+        cached, manifest = self._pdf_cache_paths(paper)
+        try:
+            metadata = json.loads(manifest.read_text())
+            if metadata.get("arxiv_id") != paper.arxiv_id or metadata.get("url") != paper.pdf_url:
+                return None
+            if not 100 <= cached.stat().st_size <= self.max_bytes:
+                return None
+            data = cached.read_bytes()
+            checksum = hashlib.sha256(data).hexdigest()
+            if data.startswith(b"%PDF-") and checksum == metadata.get("sha256"):
+                return data, checksum
+        except (OSError, ValueError, AttributeError):
+            pass
+        return None
+
+    def _save_pdf(self, paper: Paper, source: Path, checksum: str) -> None:
+        if not re.search(r"v\d+$", paper.arxiv_id):
+            return
+        cached, manifest = self._pdf_cache_paths(paper)
+        try:
+            cached.parent.mkdir(parents=True, exist_ok=True)
+            temporary = cached.with_suffix(".part")
+            shutil.copyfile(source, temporary)
+            temporary.replace(cached)
+            atomic_json(
+                manifest,
+                {"arxiv_id": paper.arxiv_id, "url": paper.pdf_url, "sha256": checksum},
+            )
+        except OSError:
+            # A cache write is optional; the verified session PDF is already saved.
+            pass
 
     def close(self):
         self.client.close()

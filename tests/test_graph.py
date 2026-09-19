@@ -45,6 +45,24 @@ def test_saved_state_survives_reopening(tmp_path):
     assert Store(tmp_path).load(state.id) == state
 
 
+def test_briefing_retains_opening_context_when_abstract_heading_is_absent(chunk):
+    first = chunk.model_copy(update={"id": "a" * 16, "page": 1, "section": "Front matter"})
+    second = chunk.model_copy(update={"id": "b" * 16, "page": 1, "section": "Front matter"})
+    later = chunk.model_copy(update={"id": "c" * 16, "page": 3, "section": "Method"})
+    agent = Agent.__new__(Agent)
+    agent.parsed = Mock(
+        return_value=ParsedPaper(sha256="test", pages=3, chunks=[first, second, later])
+    )
+    agent.index = Mock()
+    agent.index.search.return_value = []
+    state = RunState(id="abcdef123456", query="topic", model="local", embedding_model="bge")
+    assert agent.briefing_evidence(state) == [first, second]
+
+    abstract = first.model_copy(update={"section": "Abstract"})
+    agent.parsed.return_value.chunks = [abstract, second, later]
+    assert agent.briefing_evidence(state) == [abstract]
+
+
 def test_session_path_traversal_rejected(tmp_path):
     with pytest.raises(PaperTrailError):
         Store(tmp_path).run_dir("../../outside")

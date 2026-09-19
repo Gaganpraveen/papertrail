@@ -1,0 +1,594 @@
+{
+  "schema_version": 1,
+  "id": "d757bedd4a1c",
+  "query": "research about electron",
+  "model": "qwen3.5:4b",
+  "embedding_model": "BAAI/bge-small-en-v1.5",
+  "created_at": "2026-09-19T18:29:28.668225+00:00",
+  "updated_at": "2026-09-19T18:31:34.263299+00:00",
+  "node": "ready",
+  "status": "ready",
+  "intent": {
+    "kind": "topic",
+    "value": "research about electron",
+    "keywords": [
+      "electron"
+    ],
+    "recent": false
+  },
+  "candidates": [
+    {
+      "arxiv_id": "1401.3078v2",
+      "title": "Ultrafast Electron Dynamics in the Topological Insulator Bi2Se3 Studied by Time-Resolved Photoemission Spectroscopy",
+      "authors": [
+        "Jonathan A. Sobota",
+        "Shuolong Yang",
+        "Dominik Leuenberger",
+        "Alexander F. Kemper",
+        "James G. Analytis",
+        "Ian R. Fisher",
+        "Patrick S. Kirchmann",
+        "Thomas P. Devereaux",
+        "Zhi-Xun Shen"
+      ],
+      "abstract": "We characterize the topological insulator Bi$_2$Se$_3$ using time- and angle- resolved photoemission spectroscopy. By employing two-photon photoemission, a complete picture of the unoccupied electronic structure from the Fermi level up to the vacuum level is obtained. We demonstrate that the unoccupied states host a second, Dirac surface state which can be resonantly excited by 1.5 eV photons. We then study the ultrafast relaxation processes following optical excitation. We find that they culminate in a persistent non-equilibrium population of the first Dirac surface state, which is maintained by a meta-stable population of the bulk conduction band. Finally, we perform a temperature-dependent study of the electron-phonon scattering processes in the conduction band, and find the unexpected result that their rates decrease with increasing sample temperature. We develop a model of phonon emission and absorption from a population of electrons, and show that this counter-intuitive trend is the natural consequence of fundamental electron-phonon scattering processes. This analysis serves as an important reminder that the decay rates extracted by time-resolved photoemission are not in general equal to single electron scattering rates, but include contributions from filling and emptying processes from a continuum of states.",
+      "published": "2014-01-14T06:16:36Z",
+      "updated": "2014-02-06T18:56:13Z",
+      "categories": [
+        "cond-mat.mtrl-sci",
+        "cond-mat.mes-hall"
+      ],
+      "url": "https://arxiv.org/abs/1401.3078v2",
+      "pdf_url": "https://arxiv.org/pdf/1401.3078v2",
+      "relevance": 0.786
+    },
+    {
+      "arxiv_id": "hep-th/0505137v1",
+      "title": "A geometrical meaning to the electron mass from breakdown of Lorentz invariance",
+      "authors": [
+        "Fabio Cardone",
+        "Alessio Marrani",
+        "Roberto Mignani"
+      ],
+      "abstract": "We discuss the problem of the electron mass in the framework of Deformed Special Relativity (DSR), a generalization of Special Relativity based on a deformed Minkowski space (i.e. a four-dimensional space-time with metric coefficients depending on the energy). We show that, by such a formalism, it is possible to derive the value of the electron mass from the space-time geometry via the experimental knowledge of the parameter of local Lorentz invariance breakdown, and of the Minkowskian threshold energy $E_{0,em}$ for the electromagnetic interaction. We put forward the suggestion that mass generation can be related, in DSR, to the possible dependence of mass on the metric background (relativity of mass).",
+      "published": "2005-05-16T12:42:07Z",
+      "updated": "2005-05-16T12:42:07Z",
+      "categories": [
+        "hep-th",
+        "gr-qc"
+      ],
+      "url": "https://arxiv.org/abs/hep-th/0505137v1",
+      "pdf_url": "https://arxiv.org/pdf/hep-th/0505137v1",
+      "relevance": 0.7841
+    },
+    {
+      "arxiv_id": "cond-mat/0310718v2",
+      "title": "Effect of discrete impurities on electron transport in ultra-short MOSFET using 3D Monte Carlo simulation",
+      "authors": [
+        "P. Dollfus",
+        "A. Bournel",
+        "S. Galdin",
+        "S. Barraud",
+        "P. Hesto"
+      ],
+      "abstract": "This paper discusses the influence of the channel impurity distribution on the transport and the drive current in short-gate MOSFET. In this purpose, a careful description of electron-ion interaction suitable for the case of discrete impurities has been implemented in a 3D particle Monte Carlo simulator. This transport model is applied to the investigation of 50 nm MOSFET operation. The results show that a small change in the number of doping impurities or in the position of a single discrete impurity in the inversion layer may significantly influence the drain current. This effect is not only related to threshold voltage fluctuations but also to variations in transport properties in the inversion layer, especially at high drain voltage. The results are analyzed in terms of local fluctuations of electron velocity and current density. In a set of fifteen simulated devices the drive current Ion, determined at VGS = VDS = 0.6 V, is found to vary in a range of 23% according to the position of channel impurities.",
+      "published": "2003-10-30T08:51:58Z",
+      "updated": "2004-02-23T12:58:55Z",
+      "categories": [
+        "cond-mat.mes-hall"
+      ],
+      "url": "https://arxiv.org/abs/cond-mat/0310718v2",
+      "pdf_url": "https://arxiv.org/pdf/cond-mat/0310718v2",
+      "relevance": 0.7709
+    },
+    {
+      "arxiv_id": "2102.03929v1",
+      "title": "A flexible 300 mm integrated Si MOS platform for electron- and hole-spin qubits exploration",
+      "authors": [
+        "R. Li",
+        "N. I. Dumoulin Stuyck",
+        "S. Kubicek",
+        "J. Jussot",
+        "B. T. Chan",
+        "F. A. Mohiyaddin",
+        "A. Elsayed",
+        "M. Shehata",
+        "G. Simion",
+        "C. Godfrin",
+        "Y. Canvel",
+        "Ts. Ivanov",
+        "L. Goux",
+        "B. Govoreanu",
+        "I. P. Radu"
+      ],
+      "abstract": "We report on a flexible 300 mm process that optimally combines optical and electron beam lithography to fabricate silicon spin qubits. It enables on-the-fly layout design modifications while allowing devices with either n- or p-type ohmic implants, a pitch smaller than 100 nm, and uniform critical dimensions down to 30 nm with a standard deviation ~ 1.6 nm. Various n- and p-type qubits are characterized in a dilution refrigerator at temperatures ~ 10 mK. Electrical measurements demonstrate well-defined quantum dots, tunable tunnel couplings, and coherent spin control, which are essential requirements for the implementation of a large-scale quantum processor.",
+      "published": "2021-02-07T21:56:59Z",
+      "updated": "2021-02-07T21:56:59Z",
+      "categories": [
+        "cond-mat.mes-hall",
+        "physics.app-ph",
+        "quant-ph"
+      ],
+      "url": "https://arxiv.org/abs/2102.03929v1",
+      "pdf_url": "https://arxiv.org/pdf/2102.03929v1",
+      "relevance": 0.7221
+    },
+    {
+      "arxiv_id": "cond-mat/0211289v1",
+      "title": "Surface effects on the electronic energy loss of charged particles entering a metal surface",
+      "authors": [
+        "A. Garcia-Lekue",
+        "J. M. Pitarke"
+      ],
+      "abstract": "Surface effects on the electronic energy loss of charged particles entering a metal surface are investigated within linear-response theory, in the framework of time-dependent density functional theory. Interesting phenomena occur in the loss spectra originated by the boundary (bregenzung) effect, which is as a consequence of the orthogonality of surface and bulk excitation modes. Our calculations indicate that the presence of a non-abrupt electron-density profile at the surface severely affects the nature of surface excitations, as deduced from comparison with simplified models.",
+      "published": "2002-11-14T15:23:14Z",
+      "updated": "2002-11-14T15:23:14Z",
+      "categories": [
+        "cond-mat.mtrl-sci"
+      ],
+      "url": "https://arxiv.org/abs/cond-mat/0211289v1",
+      "pdf_url": "https://arxiv.org/pdf/cond-mat/0211289v1",
+      "relevance": 0.7028
+    },
+    {
+      "arxiv_id": "cond-mat/0011267v1",
+      "title": "The electronic structure of cuprates from high energy spectroscopy",
+      "authors": [
+        "Mark S. Golden",
+        "Christian Duerr",
+        "Andreas Koitzsch",
+        "Sibylle Legner",
+        "Zhiwei Hu",
+        "Sergey Borisenko",
+        "Martin Knupfer",
+        "Joerg Fink"
+      ],
+      "abstract": "We report studies of the electronic structure and elementary excitations of doped and undoped cuprate chains, ladders and planes. Using high energy spectroscopies such as x-ray absorption, core level photoemission and angle resolved photoemission spectroscopy, important information regarding the charge distribution and hole dynamics can be obtained. The comparison of the experimental data with suitable theoretical models sets constraints on the parameters entering into the model calculations, and offers insight into the important physical quantities governing the electronic structure of these materials. Recurring themes include the importance of the dimensionality of the Cu-O network (1D->2D) and the crucial role played by the spin-background in determining the dynamics of low-lying excitations in these strongly correlated systems.",
+      "published": "2000-11-15T16:19:15Z",
+      "updated": "2000-11-15T16:19:15Z",
+      "categories": [
+        "cond-mat.supr-con",
+        "cond-mat.str-el"
+      ],
+      "url": "https://arxiv.org/abs/cond-mat/0011267v1",
+      "pdf_url": "https://arxiv.org/pdf/cond-mat/0011267v1",
+      "relevance": 0.474
+    },
+    {
+      "arxiv_id": "1711.09828v1",
+      "title": "Electronic and magnetic properties of the graphene densely decorated with 3d metallic adatoms",
+      "authors": [
+        "Malgorzata Wawrzyniak-Adamczewska"
+      ],
+      "abstract": "The electronic properties of graphene decorated with Ni, Co, Cu and Zn adatoms is studied with the density functional theory approach. Within the analysis the spin-orbit interaction is taken into account. We focus on the case when the indicated $3d$ metallic adatoms form a perfect, close-packed single-atomic layer above the graphene surface. The two configurations are examined, namely the adatoms in the on-top, and the hollow positions on graphene. First, we verify that the metallic adatoms in the close-packed structure do not form a covalent bonds with the graphene substrate. However, due to the proximity of the metallic adatoms to the graphene, the charge transfer from the adatom layer to the graphene takes place, and in consequence the graphene becomes $n$-doped. The observed charge transfer results from the arising hybridization between the graphene $2p$ and transition metal $3d$ orbitals. The proximity of metallic adatoms modifies the magnetic state of the graphene. This effect is especially pronounced for the decoration with magnetic atoms, when the magnetic moments on the graphene sublattices are induced. The analysis of the band structure demonstrates that the charge transfer, as well as the induced magnetism on graphene, modify the graphene electronic properties near high symmetry points, especially the Dirac cones. The presence of the metallic adatoms breaks graphene $K-K^{'}$ symmetry and splits the bands due to the exchange coupling. We show that for the hollow configuration the gap opening arises at the $K(K^{'})$-point due to the Rashba-like spin-orbit interaction, while in the case of the on-top configuration the energy gap opens mainly due to the staggered potential. We also mapped the parameters of an effective Hamiltonian on the results obtained with the density functional theory approach.",
+      "published": "2017-11-27T16:56:22Z",
+      "updated": "2017-11-27T16:56:22Z",
+      "categories": [
+        "physics.app-ph"
+      ],
+      "url": "https://arxiv.org/abs/1711.09828v1",
+      "pdf_url": "https://arxiv.org/pdf/1711.09828v1",
+      "relevance": 0.4665
+    },
+    {
+      "arxiv_id": "1912.06461v1",
+      "title": "A sparse spin qubit array with integrated control electronics",
+      "authors": [
+        "Jelmer M. Boter",
+        "Juan P. Dehollain",
+        "Jeroen P. G. van Dijk",
+        "Toivo Hensgens",
+        "Richard Versluis",
+        "James S. Clarke",
+        "Menno Veldhorst",
+        "Fabio Sebastiano",
+        "Lieven M. K. Vandersypen"
+      ],
+      "abstract": "Current implementations of quantum computers suffer from large numbers of control lines per qubit, becoming unmanageable with system scale up. Here, we discuss a sparse spin-qubit architecture featuring integrated control electronics significantly reducing the off-chip wire count. This quantum-classical hardware integration closes the feasibility gap towards a CMOS quantum computer.",
+      "published": "2019-12-13T13:18:45Z",
+      "updated": "2019-12-13T13:18:45Z",
+      "categories": [
+        "quant-ph",
+        "cond-mat.mes-hall",
+        "physics.app-ph"
+      ],
+      "url": "https://arxiv.org/abs/1912.06461v1",
+      "pdf_url": "https://arxiv.org/pdf/1912.06461v1",
+      "relevance": 0.4259
+    }
+  ],
+  "paper": {
+    "arxiv_id": "1401.3078v2",
+    "title": "Ultrafast Electron Dynamics in the Topological Insulator Bi2Se3 Studied by Time-Resolved Photoemission Spectroscopy",
+    "authors": [
+      "Jonathan A. Sobota",
+      "Shuolong Yang",
+      "Dominik Leuenberger",
+      "Alexander F. Kemper",
+      "James G. Analytis",
+      "Ian R. Fisher",
+      "Patrick S. Kirchmann",
+      "Thomas P. Devereaux",
+      "Zhi-Xun Shen"
+    ],
+    "abstract": "We characterize the topological insulator Bi$_2$Se$_3$ using time- and angle- resolved photoemission spectroscopy. By employing two-photon photoemission, a complete picture of the unoccupied electronic structure from the Fermi level up to the vacuum level is obtained. We demonstrate that the unoccupied states host a second, Dirac surface state which can be resonantly excited by 1.5 eV photons. We then study the ultrafast relaxation processes following optical excitation. We find that they culminate in a persistent non-equilibrium population of the first Dirac surface state, which is maintained by a meta-stable population of the bulk conduction band. Finally, we perform a temperature-dependent study of the electron-phonon scattering processes in the conduction band, and find the unexpected result that their rates decrease with increasing sample temperature. We develop a model of phonon emission and absorption from a population of electrons, and show that this counter-intuitive trend is the natural consequence of fundamental electron-phonon scattering processes. This analysis serves as an important reminder that the decay rates extracted by time-resolved photoemission are not in general equal to single electron scattering rates, but include contributions from filling and emptying processes from a continuum of states.",
+    "published": "2014-01-14T06:16:36Z",
+    "updated": "2014-02-06T18:56:13Z",
+    "categories": [
+      "cond-mat.mtrl-sci",
+      "cond-mat.mes-hall"
+    ],
+    "url": "https://arxiv.org/abs/1401.3078v2",
+    "pdf_url": "https://arxiv.org/pdf/1401.3078v2",
+    "relevance": 0.786
+  },
+  "collection": "paper_3ee5fbb615bf89aca8571c33",
+  "pdf_sha256": "e8cfdedeb83e676fceda2d909840a28e54135c20035712a5e31b14bea3c929ae",
+  "pages": 10,
+  "chunk_count": 57,
+  "briefing": {
+    "summary": {
+      "text": "The study characterizes the topological insulator Bi2Se3 using time- and angle-resolved photoemission spectroscopy to obtain a complete picture of the unoccupied electronic structure from the Fermi level up to the vacuum level.",
+      "evidence": [
+        {
+          "chunk_id": "61c497cabb0b78f1",
+          "quote": "Shen1,2,3,† 1Stanford Institute for Materials and Energy Sciences, SLAC National Accelerator Laboratory, 2575 Sand Hill Road, Menlo Park, CA 94025, USA 2Geballe Laboratory for Advanced Materials, Department of Applied Physics, Stanford University, Stanford, CA 94305, USA 3Department of Physics, Stanford University, Stanford, CA 94305, USA 4Lawrence Berkeley National Lab, 1 Cyclotron Road, Berkeley, CA 94720 5Department of Physics, University of California, Berkeley, California 94720, USA (Dated: February 7, 2014) We characterize the topological insulator Bi Se using time- and angle- resolved photoemission 2 3 spectroscopy."
+        },
+        {
+          "chunk_id": "61c497cabb0b78f1",
+          "quote": "By employing two-photon photoemission, a complete picture of the unoccupied electronic structure from the Fermi level up to the vacuum level is obtained."
+        }
+      ]
+    },
+    "problem": {
+      "text": "The research demonstrates that unoccupied states host a second Dirac surface state which can be resonantly excited by 1.5 eV photons and proceeds to study ultrafast relaxation processes following optical excitation.",
+      "evidence": [
+        {
+          "chunk_id": "61c497cabb0b78f1",
+          "quote": "We demonstrate that the unoccupied states host a second, Dirac surface state which can be resonantly excited by 1.5 eV photons."
+        },
+        {
+          "chunk_id": "61c497cabb0b78f1",
+          "quote": "We then study the ultrafast relaxation processes following optical excitation."
+        }
+      ]
+    },
+    "method": [
+      {
+        "text": "The experiment utilizes 6 eV pulses to perform both one-photon and two-photon photoemission, achieving an energy resolution of < 22 meV and a temporal resolution of about 160 fs.",
+        "evidence": [
+          {
+            "chunk_id": "4455b47adb1a80bf",
+            "quote": "us to perform both 1PPE and 2PPE with the same 6 eV pulses."
+          },
+          {
+            "chunk_id": "4455b47adb1a80bf",
+            "quote": "The setup has a total energy resolution of < 22meV (limited by the bandwidth of the 6eV pulses) and angular resolution < 0.5◦."
+          },
+          {
+            "chunk_id": "4455b47adb1a80bf",
+            "quote": "The temporal resolution, defined by the cross-correlation of the 1.5 and 6 eV pulses, is about 160 fs."
+          }
+        ]
+      },
+      {
+        "text": "Density functional theory calculations were conducted using the PBE exchange functional with the full potential (linearized) augmented plane-wave method based on the experimentally determined crystal structure of a Bi2Se3 slab consisting of 6 quintuple layers.",
+        "evidence": [
+          {
+            "chunk_id": "4455b47adb1a80bf",
+            "quote": "The density functional theory calculations were done with the PBE exchange functional [28] using the full potential (linearized) augmented plane-wave method as implemented in the wien2k package[29]."
+          },
+          {
+            "chunk_id": "4455b47adb1a80bf",
+            "quote": "The calculations were based on the experimentally determined crystal structure reported in Ref. 30."
+          },
+          {
+            "chunk_id": "4455b47adb1a80bf",
+            "quote": "The Bi Se slab con2 3 sists of 6 quintuple layers, separated by a vacuum of ∼ 25 ̊A."
+          }
+        ]
+      },
+      {
+        "text": "The modeling assumes that all phonon modes couple equally well to all electrons, utilizing an approximation to the measured phonon density of states for the electron-phonon coupling function.",
+        "evidence": [
+          {
+            "chunk_id": "382b66d8a474b884",
+            "quote": "To avoid detailed calculations of electron-phonon coupling matrix elements, we shall assume that all phonon modes couple equally well to all electrons, so that |G(ω)|2 is simply a constant."
+          },
+          {
+            "chunk_id": "382b66d8a474b884",
+            "quote": "The F(ω) used for our modeling is shown in Fig. 8(b)."
+          },
+          {
+            "chunk_id": "382b66d8a474b884",
+            "quote": "This choice is an approximation to the measured phonon DOS [44]."
+          }
+        ]
+      }
+    ],
+    "results": [
+      {
+        "text": "Following optical excitation, the system culminates in a persistent non-equilibrium population of the first Dirac surface state, maintained by a meta-stable population of the bulk conduction band with a population lifetime of 5.95(2) ps.",
+        "evidence": [
+          {
+            "chunk_id": "40dfceee0a68102a",
+            "quote": "We find that they culminate in a persistent non-equilibrium population of the first Dirac surface state, which is maintained by a meta-stable population of the bulk conduction band."
+          },
+          {
+            "chunk_id": "4cc7969aaaadc50f",
+            "quote": "An exponential fit to the CB population decay (curve #10 in Fig. 5(b)) gives a population lifetime of 5.95(2)ps."
+          }
+        ]
+      },
+      {
+        "text": "A temperature-dependent study of electron-phonon scattering in the conduction band reveals the unexpected result that their rates decrease with increasing sample temperature, a trend explained by a model of phonon emission and absorption.",
+        "evidence": [
+          {
+            "chunk_id": "40dfceee0a68102a",
+            "quote": "Finally, we perform a temperature-dependent study of the electron-phonon scattering processes in the conduction band, and find the unexpected result that their rates decrease with increasing sample temperature."
+          },
+          {
+            "chunk_id": "40dfceee0a68102a",
+            "quote": "We develop a model of phonon emission and absorption from a population of electrons, and show that this counter-intuitive trend is the natural consequence of fundamental electron-phonon scattering processes."
+          }
+        ]
+      },
+      {
+        "text": "Source wording (automatic review requested inspection): “In particular, away from the band edge it exhibits a monotonic decrease of relaxation rate with increasing T.” “In addition, the model reproduces the flattening of the rate curve at the value of Γ near the band esc edge.”",
+        "evidence": [
+          {
+            "chunk_id": "a5affe9e5a4118c2",
+            "quote": "In particular, away from the band edge it exhibits a monotonic decrease of relaxation rate with increasing T."
+          },
+          {
+            "chunk_id": "a5affe9e5a4118c2",
+            "quote": "In addition, the model reproduces the flattening of the rate curve at the value of Γ near the band esc edge."
+          }
+        ]
+      }
+    ],
+    "limitations": [],
+    "limitations_note": "No explicit limitations were identified in the selected evidence; this does not establish that the paper has none.",
+    "follow_up_questions": [
+      "How does the presence of the second Dirac surface state influence the particle-hole asymmetry of superconducting and pseudogap states in high-T cuprates?",
+      "What specific roles does the transition into the second surface state play in the interpretation of existing studies on n-type topological insulators?",
+      "Can the model for electron-phonon scattering be extended to regimes near the Fermi energy without assuming a linearly increasing density of states?"
+    ]
+  },
+  "briefing_evidence_ids": [
+    "61c497cabb0b78f1",
+    "40dfceee0a68102a",
+    "4cc7969aaaadc50f",
+    "1ebdf54f94523bdb",
+    "4455b47adb1a80bf",
+    "bf5ec20f66d1f368",
+    "3ae4ad32abc03173",
+    "2f1c4b657e60e7f7",
+    "a5affe9e5a4118c2",
+    "382b66d8a474b884",
+    "31efd5d91729b5ee"
+  ],
+  "exchanges": [
+    {
+      "question": "What was the total energy resolution of the setup?",
+      "retrieval_query": "What was the total energy resolution of the setup?",
+      "answer": {
+        "status": "answered",
+        "claims": [
+          {
+            "text": "The setup has a total energy resolution of < 22meV (limited by the bandwidth of the 6eV pulses).",
+            "evidence": [
+              {
+                "chunk_id": "4455b47adb1a80bf",
+                "quote": "The setup has a total energy resolution of < 22meV (limited by the bandwidth of the 6eV pulses) and angular resolution < 0.5◦."
+              }
+            ]
+          }
+        ],
+        "explanation": ""
+      },
+      "retrieved_ids": [
+        "4455b47adb1a80bf",
+        "e5d8315193e769fb",
+        "730fb36b3edfef52",
+        "9005e8502eaf245f",
+        "31efd5d91729b5ee",
+        "62090b4c650af517",
+        "8a138bf74372c623"
+      ],
+      "elapsed_seconds": 4.05,
+      "created_at": "2026-09-19T18:30:27.007137+00:00"
+    },
+    {
+      "question": "What was the total research budget in US dollars?",
+      "retrieval_query": "What was the total research budget in US dollars?",
+      "answer": {
+        "status": "insufficient_evidence",
+        "claims": [],
+        "explanation": "I could not find enough evidence in the retrieved passages to answer this question."
+      },
+      "retrieved_ids": [
+        "4455b47adb1a80bf",
+        "31efd5d91729b5ee",
+        "1bdb2834d5086d65",
+        "46aee8329a737ee4",
+        "86222866e8d78dc3",
+        "cbd0973f87fc1908",
+        "ce6604a8f6d1d1fc"
+      ],
+      "elapsed_seconds": 0.8,
+      "created_at": "2026-09-19T18:31:34.263290+00:00"
+    }
+  ],
+  "warnings": [
+    "Page 2: two-column reading order inferred. Complex tables or spanning figures may need manual inspection.",
+    "Page 3: two-column reading order inferred. Complex tables or spanning figures may need manual inspection.",
+    "Page 4: two-column reading order inferred. Complex tables or spanning figures may need manual inspection.",
+    "Page 5: two-column reading order inferred. Complex tables or spanning figures may need manual inspection.",
+    "Page 6: two-column reading order inferred. Complex tables or spanning figures may need manual inspection.",
+    "Page 7: two-column reading order inferred. Complex tables or spanning figures may need manual inspection.",
+    "Page 8: two-column reading order inferred. Complex tables or spanning figures may need manual inspection.",
+    "Page 9: two-column reading order inferred. Complex tables or spanning figures may need manual inspection.",
+    "Page 10: two-column reading order inferred. Complex tables or spanning figures may need manual inspection.",
+    "No separate Abstract heading detected; the official API abstract remains available in metadata.",
+    "No separate References heading detected; section extraction is heuristic.",
+    "Automatic support review replaced 1 briefing paraphrase(s) with visibly labeled source wording. Inspect those passages; the reviewer is fallible."
+  ],
+  "events": [
+    {
+      "node": "understand",
+      "status": "completed",
+      "seconds": 0.0,
+      "detail": "",
+      "at": "2026-09-19T18:29:28.669846+00:00"
+    },
+    {
+      "node": "retrieve",
+      "status": "completed",
+      "seconds": 0.0,
+      "detail": "",
+      "at": "2026-09-19T18:29:28.671363+00:00"
+    },
+    {
+      "node": "select",
+      "status": "completed",
+      "seconds": 0.601,
+      "detail": "",
+      "at": "2026-09-19T18:29:29.273300+00:00"
+    },
+    {
+      "node": "fetch",
+      "status": "completed",
+      "seconds": 0.007,
+      "detail": "",
+      "at": "2026-09-19T18:29:29.282631+00:00"
+    },
+    {
+      "node": "parse",
+      "status": "completed",
+      "seconds": 0.636,
+      "detail": "",
+      "at": "2026-09-19T18:29:29.921532+00:00"
+    },
+    {
+      "node": "index",
+      "status": "completed",
+      "seconds": 0.03,
+      "detail": "",
+      "at": "2026-09-19T18:29:29.953885+00:00"
+    },
+    {
+      "node": "model.load",
+      "status": "completed",
+      "seconds": 0.001,
+      "detail": "",
+      "at": "2026-09-19T18:29:29.961108+00:00"
+    },
+    {
+      "node": "brief.generate",
+      "status": "completed",
+      "seconds": 21.83,
+      "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.002, \"prompt_eval_duration\": 5.323, \"eval_duration\": 16.36}, \"output_tokens\": 624}",
+      "at": "2026-09-19T18:29:51.817136+00:00"
+    },
+    {
+      "node": "brief.review",
+      "status": "completed",
+      "seconds": 4.539,
+      "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.005, \"prompt_eval_duration\": 1.154, \"eval_duration\": 3.031}, \"output_tokens\": 117}",
+      "at": "2026-09-19T18:29:56.363021+00:00"
+    },
+    {
+      "node": "brief.review",
+      "status": "completed",
+      "seconds": 4.491,
+      "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 1.109, \"eval_duration\": 2.933}, \"output_tokens\": 117}",
+      "at": "2026-09-19T18:30:00.858066+00:00"
+    },
+    {
+      "node": "brief.review",
+      "status": "completed",
+      "seconds": 3.12,
+      "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 0.717, \"eval_duration\": 2.333}, \"output_tokens\": 93}",
+      "at": "2026-09-19T18:30:03.985931+00:00"
+    },
+    {
+      "node": "brief",
+      "status": "completed",
+      "seconds": 34.033,
+      "detail": "",
+      "at": "2026-09-19T18:30:03.988341+00:00"
+    },
+    {
+      "node": "validate",
+      "status": "completed",
+      "seconds": 0.001,
+      "detail": "",
+      "at": "2026-09-19T18:30:03.991770+00:00"
+    },
+    {
+      "node": "qa.retrieve",
+      "status": "completed",
+      "seconds": 0.125,
+      "detail": "7 passages",
+      "at": "2026-09-19T18:30:23.081920+00:00"
+    },
+    {
+      "node": "model.load",
+      "status": "completed",
+      "seconds": 0.002,
+      "detail": "",
+      "at": "2026-09-19T18:30:23.089527+00:00"
+    },
+    {
+      "node": "qa.generate",
+      "status": "completed",
+      "seconds": 2.43,
+      "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 0.263, \"eval_duration\": 1.421}, \"output_tokens\": 52}",
+      "at": "2026-09-19T18:30:25.522796+00:00"
+    },
+    {
+      "node": "qa.review",
+      "status": "completed",
+      "seconds": 1.479,
+      "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 0.2, \"eval_duration\": 0.774}, \"output_tokens\": 30}",
+      "at": "2026-09-19T18:30:27.004896+00:00"
+    },
+    {
+      "node": "qa.answer",
+      "status": "completed",
+      "seconds": 4.05,
+      "detail": "answered",
+      "at": "2026-09-19T18:30:27.007152+00:00"
+    },
+    {
+      "node": "qa.retrieve",
+      "status": "completed",
+      "seconds": 0.11,
+      "detail": "7 passages",
+      "at": "2026-09-19T18:31:33.573319+00:00"
+    },
+    {
+      "node": "model.load",
+      "status": "completed",
+      "seconds": 0.002,
+      "detail": "",
+      "at": "2026-09-19T18:31:33.582167+00:00"
+    },
+    {
+      "node": "qa.generate",
+      "status": "completed",
+      "seconds": 0.677,
+      "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 0.065, \"eval_duration\": 0.36}, \"output_tokens\": 15}",
+      "at": "2026-09-19T18:31:34.261983+00:00"
+    },
+    {
+      "node": "qa.answer",
+      "status": "completed",
+      "seconds": 0.8,
+      "detail": "insufficient_evidence",
+      "at": "2026-09-19T18:31:34.263297+00:00"
+    }
+  ],
+  "error": null
+}

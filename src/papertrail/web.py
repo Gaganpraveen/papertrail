@@ -2,38 +2,53 @@
 
 import hashlib
 import json
+import multiprocessing
 import re
 import threading
+import time
 from base64 import b64encode
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from uuid import uuid4
 
 from papertrail.errors import PaperTrailError
-from papertrail.graph import Agent, settings_for_session
-from papertrail.rendering import export_run
+from papertrail.graph import Agent
+from papertrail.schema import Event, Node
 from papertrail.storage import Store
+from papertrail.worker import process_operation, run_operation
 
 SESSION = re.compile(r"[a-f0-9]{12}")
 MAX_BODY = 8192
 SCRIPT = r"""
 const $ = id => document.getElementById(id);
-let selected = '', busy = false, ready = false;
+let selected = '', busy = false, ready = false, resumable = false, lastRetry = null, watchVersion = 0;
+const seconds = value => Math.max(0, value || 0).toFixed((value || 0)<10 ? 1 : 0)+'s';
+const stageNames = {initialize:'Opening local index', understand:'Understanding input', retrieve:'Retrieving arXiv metadata', select:'Selecting the matching paper', fetch:'Downloading PDF', parse:'Reading PDF', index:'Indexing passages', brief:'Preparing briefing evidence', validate:'Validating citations', 'model.load':'Loading local model', 'brief.generate':'Writing briefing', 'brief.review':'Checking briefing evidence', 'qa.retrieve':'Finding answer evidence', 'qa.generate':'Answering question', 'qa.review':'Checking answer evidence', export:'Saving report'};
+const stageName = node => stageNames[node] || node;
 async function api(path, data) {
-  const response = await fetch(path, data ? {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)} : {});
+  const response = await fetch(path, {...(data ? {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)} : {}), signal:AbortSignal.timeout(15000)});
   const result = await response.json();
   if (!response.ok) throw Error(result.error || 'Request failed');
   return result;
 }
 function status(message, error=false) { $('status').textContent=message; $('status').classList.toggle('error',error); }
-function controls(locked) { busy=locked; $('digestButton').disabled=locked; $('askButton').disabled=locked || !ready; }
+function controls(locked) {
+  busy=locked; $('digestButton').disabled=locked; $('askButton').disabled=locked || !ready;
+  $('resumeButton').disabled=locked || !resumable; $('retryButton').disabled=locked;
+}
+function pendingPaper(query) {
+  selected=''; ready=false; resumable=false;
+  $('selected').textContent='Selecting paper…'; $('sessionId').textContent='Requested: '+query;
+  $('reader').hidden=true; $('reader').removeAttribute('src');
+  $('reportLink').hidden=true; $('reportLink').removeAttribute('href'); $('resumeButton').hidden=true;
+  $('empty').hidden=false; $('empty').textContent='Processing your input. The selected paper and its briefing will appear here.';
+}
 function choose(session) {
-  selected=session.id; ready=session.status==='ready'; $('selected').textContent=session.title || session.query;
-  $('sessionId').textContent=session.id+' / '+session.model;
-  $('askButton').disabled=busy || session.status!=='ready';
-  $('reader').hidden=!session.report; $('empty').hidden=!!session.report;
-  $('reportLink').hidden=!session.report;
+  selected=session.id; ready=session.status==='ready'; resumable=session.can_resume;
+  $('selected').textContent=session.title || session.query; $('sessionId').textContent=session.id+' / '+session.model;
+  $('resumeButton').hidden=!resumable; controls(busy);
+  $('reader').hidden=!session.report; $('empty').hidden=!!session.report; $('reportLink').hidden=!session.report;
   if(session.report) { $('reader').src='/report/'+session.id+'?v='+Date.now(); $('reportLink').href='/report/'+session.id; }
-  else $('empty').textContent=session.status==='ready' ? 'No exported report yet. Ask a question to create one.' : 'Session '+session.status+'. If interrupted, resume it from the CLI: papertrail resume '+session.id;
+  else $('empty').textContent=session.error || (resumable ? 'Saved at '+session.checkpoint+'. Resume this session to continue from its last checkpoint.' : session.status==='ready' ? 'No exported report yet. Ask a question to create one.' : 'Enter a corrected ID or topic to start a new briefing.');
 }
 async function sessions(preferred) {
   const result=await api('/api/sessions'); $('sessions').replaceChildren();
@@ -47,112 +62,291 @@ async function sessions(preferred) {
   const target=result.sessions.find(s=>s.id===(preferred || selected)) || (!selected && result.sessions[0]);
   if(target) choose(target);
 }
-async function submit(path, data) {
-  controls(true); status('Starting a local job...');
+function progress(job) {
+  const timing=(job.timings || []).filter(event=>event.status==='completed').map(event=>stageName(event.node)+' '+seconds(event.seconds)).join(' · ');
+  status(stageName(job.stage)+' — '+seconds(job.stage_elapsed_seconds)+' in this stage; '+seconds(job.elapsed_seconds)+' total / '+seconds(job.deadline_seconds)+' limit.'+(job.detail ? '\n'+job.detail : '')+(timing ? '\nCompleted: '+timing : ''));
+}
+async function watch(job) {
+  const version=++watchVersion;
+  controls(true); $('retryButton').hidden=true;
   try {
-    let job=await api(path,data);
-    while(job.status==='running') {
-      status((job.stage || 'Working')+' - running on this computer. You can keep reading.');
-      await new Promise(resolve=>setTimeout(resolve,1200));
-      job=await api('/api/jobs/'+job.id);
+    let reconnects=0;
+    while(job.status==='running' && version===watchVersion) {
+      progress(job); await new Promise(resolve=>setTimeout(resolve,1000));
+      try { job=await api('/api/jobs/'+job.id); reconnects=0; }
+      catch(error) { if(++reconnects>2) throw error; status('Connection interrupted; reconnecting to the current job...',true); }
     }
-    if(job.status==='failed') throw Error(job.error);
-    await sessions(job.session); status('Saved. Open the evidence below to inspect this result.');
-    if(path==='/api/ask') $('question').value='';
-  } catch(error) { status(error.message,true); await sessions().catch(()=>{}); }
-  finally { controls(false); }
+    if(version!==watchVersion) return;
+    await sessions(job.session);
+    if(job.status==='failed') {
+      lastRetry=job.retry; $('retryButton').hidden=!lastRetry;
+      status(job.error+'\nElapsed: '+seconds(job.elapsed_seconds)+'.',true);
+    } else {
+      lastRetry=null; status('Saved in '+seconds(job.elapsed_seconds)+'. Open the evidence below to inspect this result.');
+      if(job.action==='ask') $('question').value='';
+    }
+  } catch(error) { if(version===watchVersion) status(error.message+' Refresh to reconnect; the server still enforces its operation deadline.',true); }
+  finally { if(version===watchVersion) controls(false); }
+}
+async function submit(path, data) {
+  if(path==='/api/digest') pendingPaper(data.query);
+  controls(true); status('Starting an operation...'); $('retryButton').hidden=true;
+  try { await watch(await api(path,data)); }
+  catch(error) { status(error.message,true); controls(false); }
 }
 $('digest').onsubmit=event=>{event.preventDefault(); submit('/api/digest',{query:$('query').value});};
 $('ask').onsubmit=event=>{event.preventDefault(); submit('/api/ask',{session:selected,question:$('question').value});};
-$('refresh').onclick=()=>sessions().catch(error=>status(error.message,true));
-sessions().catch(error=>status(error.message,true));
+$('resumeButton').onclick=()=>submit('/api/resume',{session:selected});
+$('retryButton').onclick=()=>{ if(lastRetry) submit(lastRetry.path,lastRetry.payload); };
+async function reconnect() {
+  try { await sessions(); const result=await api('/api/active'); if(result.job) await watch(result.job); }
+  catch(error) { status(error.message,true); }
+}
+$('refresh').onclick=reconnect;
+reconnect();
 """
 HTML = (
     """<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PaperTrail - local research desk</title><style>
 :root{--ink:#183b3a;--muted:#637571;--paper:#faf9f5;--line:#dce3dc;--accent:#176459;--wash:#eff3ed;--gold:#b88e4c}*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.6 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}button,input{font:inherit}button,a{touch-action:manipulation}button{cursor:pointer}button:disabled{opacity:.5;cursor:wait}button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:3px}a{color:var(--accent)}.layout{display:grid;grid-template-columns:270px 1fr;min-height:100vh}aside{padding:30px 22px;border-right:1px solid var(--line);background:var(--wash)}.brand{font-size:27px;font-weight:750;letter-spacing:-1px}.brand span{color:var(--gold)}.eyebrow{text-transform:uppercase;font-size:10px;letter-spacing:1.8px;color:var(--muted)}.sidehead{display:flex;justify-content:space-between;align-items:center;margin:45px 0 12px}.textbutton{border:0;background:transparent;color:var(--accent);padding:5px}.session{display:block;text-align:left;width:100%;padding:13px 0;border:0;border-top:1px solid var(--line);background:transparent;color:var(--ink)}.session strong{display:block;font-size:13px;font-weight:550;line-height:1.4}.session small{display:block;margin-top:6px;color:var(--muted);font-size:11px}.local{margin-top:35px;font-size:12px;color:var(--muted)}main{min-width:0;padding:35px 42px}.top{display:flex;justify-content:space-between;gap:16px}.badge{font-size:10px;letter-spacing:1px;border:1px solid var(--line);border-radius:20px;padding:4px 12px;white-space:nowrap}h1{font:normal clamp(32px,4vw,48px)/1.15 Georgia,serif;letter-spacing:-1.2px;margin:25px 0 12px}h2{font:normal 25px/1.3 Georgia,serif;margin:0 0 14px}p{margin:10px 0}.intro{color:var(--muted);max-width:670px}section{margin:30px 0}.card{border:1px solid var(--line);background:white;border-radius:10px;padding:22px 25px}.row{display:flex;gap:10px;align-items:stretch}input{width:100%;min-width:0;border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:12px 14px;border-radius:6px}label{display:block;font-size:12px;font-weight:650;margin-bottom:8px}.primary{border:0;border-radius:6px;background:var(--accent);color:white;padding:12px 20px;white-space:nowrap}.hint{font-size:12px;color:var(--muted)}#status{padding:13px 17px;background:var(--wash);border-left:3px solid var(--accent);font-size:13px;white-space:pre-line;overflow-wrap:anywhere}.error{border-color:#9e533b!important;color:#8c3d28}.paperhead{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}#selected{font:normal 23px/1.35 Georgia,serif;margin-bottom:5px}#sessionId{font-size:11px;color:var(--muted)}#reportLink{font-size:12px;white-space:nowrap}.reader{width:100%;height:760px;border:1px solid var(--line);border-radius:8px;background:white}#empty{padding:35px 20px;background:var(--wash);text-align:center;color:var(--muted);font-size:13px}.foot{font-size:12px;color:var(--muted);border-top:1px solid var(--line);padding-top:18px}[hidden]{display:none!important}@media(max-width:850px){.layout{grid-template-columns:1fr}aside{padding:20px 22px;border-right:0;border-bottom:1px solid var(--line)}.sidehead{margin-top:20px}#sessions{max-height:180px;overflow:auto}.local{margin-top:15px}main{padding:25px 20px}.card{padding:20px}.row{flex-direction:column}.paperhead,.top{flex-wrap:wrap}.reader{height:650px}}
-</style></head><body><div class="layout"><aside><div class="brand">papertrail<span>.</span></div><div class="eyebrow">Research with receipts</div><div class="sidehead"><b class="eyebrow">Saved sessions</b><button id="refresh" class="textbutton" type="button">Refresh</button></div><div id="sessions">Loading sessions...</div><p class="local"><b>Local compute</b><br>This interface runs on your computer. Keep the server and Ollama running. The public Pages demo contains saved reports only.</p></aside><main><div class="top"><div class="eyebrow">Your research desk</div><span class="badge">LIVE / LOCALHOST ONLY</span></div><h1>A paper. A question. A trail.</h1><p class="intro">Find one research paper, read its briefing, and ask questions with inspectable source quotations.</p><section class="card"><h2>Start with a paper</h2><form id="digest"><label for="query">Research topic, arXiv ID or arXiv URL</label><div class="row"><input id="query" name="query" required maxlength="1000" placeholder="e.g. 1706.03762 or efficient attention"><button class="primary" id="digestButton" type="submit">Create briefing</button></div></form><p class="hint">A topic search selects one paper. Downloading and local generation may take several minutes.</p></section><p id="status" role="status" aria-live="polite">Ready when you are. Select a saved paper or create a briefing.</p><section class="card"><div class="paperhead"><div><div class="eyebrow">Selected paper</div><div id="selected">No paper selected</div><div id="sessionId"></div></div><a id="reportLink" hidden target="_blank" rel="noopener">Open full report</a></div><form id="ask"><label for="question">Ask about this paper</label><div class="row"><input id="question" name="question" required maxlength="1000" placeholder="What evidence supports the main result?"><button class="primary" id="askButton" type="submit" disabled>Ask question</button></div></form><p class="hint">Answers may abstain when retrieved evidence is insufficient. Every exchange is saved.</p></section><div id="empty">Create or select a completed session to view its evidence.</div><iframe id="reader" class="reader" title="Saved briefing and source evidence" sandbox="allow-popups allow-popups-to-escape-sandbox" hidden></iframe><p class="foot">Source quotations establish provenance. Model review adds a fallible support check; neither guarantees scientific correctness.</p></main></div><script>"""
+</style></head><body><div class="layout"><aside><div class="brand">papertrail<span>.</span></div><div class="eyebrow">Research with receipts</div><div class="sidehead"><b class="eyebrow">Saved sessions</b><button id="refresh" class="textbutton" type="button">Refresh</button></div><div id="sessions">Loading sessions...</div><p class="local"><b>Local compute</b><br>This interface runs on your computer. Keep the server and Ollama running. The public Pages demo contains saved reports only.</p></aside><main><div class="top"><div class="eyebrow">Your research desk</div><span class="badge">LIVE / LOCALHOST ONLY</span></div><h1>A paper. A question. A trail.</h1><p class="intro">Find one research paper, read its briefing, and ask questions with inspectable source quotations.</p><section class="card"><h2>Start with a paper</h2><form id="digest"><label for="query">Research topic, arXiv ID or arXiv URL</label><div class="row"><input id="query" name="query" required maxlength="1000" placeholder="e.g. 1706.03762 or efficient attention"><button class="primary" id="digestButton" type="submit">Create briefing</button></div></form><p class="hint">A topic search selects one paper. Downloading and local generation may take several minutes.</p></section><p id="status" role="status" aria-live="polite">Ready when you are. Select a saved paper or create a briefing.</p><button id="retryButton" class="textbutton" type="button" hidden>Retry last operation</button><section class="card"><div class="paperhead"><div><div class="eyebrow">Selected paper</div><div id="selected">No paper selected</div><div id="sessionId"></div><button id="resumeButton" class="textbutton" type="button" hidden>Resume saved session</button></div><a id="reportLink" hidden target="_blank" rel="noopener">Open full report</a></div><form id="ask"><label for="question">Ask about this paper</label><div class="row"><input id="question" name="question" required maxlength="1000" placeholder="What evidence supports the main result?"><button class="primary" id="askButton" type="submit" disabled>Ask question</button></div></form><p class="hint">Answers may abstain when retrieved evidence is insufficient. Every exchange is saved.</p></section><div id="empty">Create or select a completed session to view its evidence.</div><iframe id="reader" class="reader" title="Saved briefing and source evidence" sandbox="allow-popups allow-popups-to-escape-sandbox" hidden></iframe><p class="foot">Source quotations establish provenance. Model review adds a fallible support check; neither guarantees scientific correctness.</p></main></div><script>"""
     + SCRIPT
     + "</script></body></html>"
 )
 
 
 class LocalApp:
-    def __init__(self, settings, agent_factory=Agent):
+    def __init__(self, settings, agent_factory=Agent, isolate=None):
         self.settings, self.factory = settings, agent_factory
         self.store = Store(settings.data_dir)
         self.active, self.lock = threading.Lock(), threading.Lock()
         self.jobs = {}
+        # Production always isolates Agent. In-process injection keeps small HTTP
+        # tests deterministic; explicit isolation exercises the real watchdog.
+        self.isolate = agent_factory is Agent if isolate is None else isolate
+        self.process = None
+        self.stopping = threading.Event()
+        self.supervisor = None
 
     def update(self, identity, **fields):
         with self.lock:
-            self.jobs[identity].update(fields)
+            job = self.jobs[identity]
+            if fields.get("stage") and fields["stage"] != job["stage"]:
+                job["_stage_started"] = time.monotonic()
+            job.update(fields)
+
+    def snapshot(self, identity):
+        with self.lock:
+            job = self.jobs.get(identity)
+            if not job:
+                return None
+            result = {key: value for key, value in job.items() if not key.startswith("_")}
+            ended = job.get("_ended", time.monotonic())
+            result["elapsed_seconds"] = round(ended - job["_started"], 1)
+            result["stage_elapsed_seconds"] = round(ended - job["_stage_started"], 1)
+            return result
+
+    def current(self):
+        with self.lock:
+            identity = next(
+                (key for key, job in self.jobs.items() if job["status"] == "running"), None
+            )
+        return self.snapshot(identity) if identity else None
 
     def submit(self, action, payload):
-        if not self.active.acquire(blocking=False):
+        if self.stopping.is_set() or not self.active.acquire(blocking=False):
             return None
         identity = uuid4().hex
+        now = time.monotonic()
         with self.lock:
             if len(self.jobs) >= 100:
                 self.jobs.pop(next(iter(self.jobs)))
             self.jobs[identity] = dict(
-                id=identity, status="running", stage="Starting", session=payload.get("session")
+                id=identity,
+                status="running",
+                stage="initialize",
+                stage_status="running",
+                detail="Starting isolated worker",
+                session=payload.get("session"),
+                action=action,
+                retry={"path": "/api/" + action, "payload": payload},
+                deadline_seconds=self.settings.operation_timeout,
+                timings=[],
+                _started=now,
+                _stage_started=now,
             )
-            job = dict(self.jobs[identity])
-        threading.Thread(target=self.work, args=(identity, action, payload), daemon=True).start()
+        job = self.snapshot(identity)
+        self.supervisor = threading.Thread(
+            target=self.work, args=(identity, action, payload), daemon=True
+        )
+        self.supervisor.start()
         return job
 
-    def work(self, identity, action, payload):
-        def observe(event):
-            fields = {"stage": f"{event.node}: {event.status}"}
-            if SESSION.fullmatch(event.detail):
-                fields["session"] = event.detail
-            self.update(identity, **fields)
+    def observe(self, identity, message):
+        if "event" not in message:
+            return message
+        event = Event.model_validate(message["event"])
+        fields = {"stage": event.node, "stage_status": event.status}
+        if event.status == "running":
+            fields["_stage_started"] = time.monotonic()
+        if SESSION.fullmatch(event.detail):
+            fields["session"] = event.detail
+            fields["detail"] = ""
+        else:
+            fields["detail"] = event.detail if event.status == "running" else ""
+        with self.lock:
+            if event.status != "running":
+                self.jobs[identity]["timings"].append(event.model_dump())
+        self.update(identity, **fields)
+        return None
 
+    def mark_interrupted(self, identity, action, message):
+        session = self.snapshot(identity).get("session")
+        if not session:
+            return
         try:
+            # The worker has already exited, so its writer lock is released.
             with self.store.exclusive():
-                settings = (
-                    settings_for_session(self.settings, payload["session"])
-                    if action == "ask"
-                    else self.settings
+                state = self.store.load(session)
+                if action != "ask" and state.status != "ready":
+                    state.status, state.error = "failed", message
+                state.events.append(
+                    Event(
+                        node="qa.operation" if action == "ask" else "web.operation",
+                        status="failed",
+                        seconds=self.snapshot(identity)["elapsed_seconds"],
+                        detail=message,
+                    )
                 )
-                agent = self.factory(settings, observer=observe)
-                try:
-                    self.update(
-                        identity,
-                        stage="Retrieving and answering" if action == "ask" else "Finding paper",
+                self.store.save(state)
+        except PaperTrailError:
+            # A CLI operation may have acquired the lock after the child exited.
+            # Never overwrite its state; the job still exposes the failure.
+            pass
+
+    @staticmethod
+    def stop_process(process):
+        if process.is_alive():
+            process.terminate()
+            process.join(timeout=2)
+        if process.is_alive():
+            process.kill()
+            process.join(timeout=2)
+        if process.is_alive():
+            raise RuntimeError("The isolated worker could not be stopped.")
+        process.join()
+
+    def isolated_work(self, identity, action, payload):
+        context = multiprocessing.get_context("spawn")
+        reader, writer = context.Pipe(duplex=False)
+        process = context.Process(
+            target=process_operation,
+            args=(self.settings, action, payload, writer, self.factory),
+            daemon=True,
+        )
+        self.process = process
+        terminal = None
+        deadline = time.monotonic() + self.settings.operation_timeout
+        try:
+            process.start()
+            writer.close()
+            while True:
+                if time.monotonic() >= deadline or self.stopping.is_set():
+                    stage = self.snapshot(identity)["stage"]
+                    message = (
+                        f"Stopped at {stage} after the {self.settings.operation_timeout:g}s "
+                        "operation limit. The worker was stopped and its resources released. "
+                        + (
+                            "Retry the question; the saved briefing is still available."
+                            if action == "ask"
+                            else "Resume the saved session to continue from its last checkpoint."
+                        )
                     )
-                    state = (
-                        agent.ask(payload["session"], payload["question"])
-                        if action == "ask"
-                        else agent.new(payload["query"])
-                    )
-                    export_run(
-                        state, agent.parsed(state).chunks, self.store.run_dir(state.id) / "export"
-                    )
-                finally:
-                    agent.close()
-            self.update(
-                identity, status="succeeded", session=state.id, report=f"/report/{state.id}"
-            )
-        except Exception as exc:
-            message = (
-                str(exc)
-                if isinstance(exc, PaperTrailError)
-                else "The local job failed unexpectedly. Inspect the saved session with the CLI."
-            )
-            self.update(identity, status="failed", error=message)
+                    if self.stopping.is_set():
+                        message = "The server stopped this operation. Resume its saved checkpoint."
+                    self.stop_process(process)
+                    self.mark_interrupted(identity, action, message)
+                    return {"status": "failed", "error": message, "timed_out": True}
+                if reader.poll(0.1):
+                    try:
+                        result = self.observe(identity, reader.recv())
+                    except EOFError:
+                        break
+                    if result:
+                        terminal = result
+                        break
+                if not process.is_alive() and not reader.poll():
+                    break
+            process.join(timeout=2)
+            self.stop_process(process)
+            if terminal:
+                return terminal
+            message = "The isolated worker exited before finishing. Resume its saved checkpoint."
+            self.mark_interrupted(identity, action, message)
+            return {"status": "failed", "error": message}
         finally:
-            self.active.release()
+            writer.close()
+            reader.close()
+            if process.pid is not None:
+                self.stop_process(process)
+                process.close()
+            self.process = None
+
+    def work(self, identity, action, payload):
+        try:
+            if self.isolate:
+                terminal = self.isolated_work(identity, action, payload)
+            else:
+                terminal = None
+
+                def receive(message):
+                    nonlocal terminal
+                    result = self.observe(identity, message)
+                    if result:
+                        terminal = result
+
+                run_operation(self.settings, action, payload, receive, self.factory)
+            if terminal["status"] == "failed" and action != "ask":
+                session = self.snapshot(identity).get("session")
+                if session:
+                    try:
+                        state = self.store.load(session)
+                        if state.node != Node.UNDERSTAND:
+                            terminal["retry"] = {
+                                "path": "/api/resume",
+                                "payload": {"session": session},
+                            }
+                    except PaperTrailError:
+                        pass
+            self.update(identity, **terminal, _ended=time.monotonic())
+        except Exception:
+            self.update(
+                identity,
+                status="failed",
+                error="The local worker could not start or stop cleanly. Restart the server before retrying.",
+                _ended=time.monotonic(),
+            )
+        finally:
+            if self.process is None or not self.process.is_alive():
+                self.active.release()
+
+    def close(self):
+        self.stopping.set()
+        if self.supervisor:
+            self.supervisor.join(timeout=6)
 
 
 class LocalServer(ThreadingHTTPServer):
     daemon_threads = True
 
-    def __init__(self, settings, host="127.0.0.1", port=8765, agent_factory=Agent):
+    def __init__(self, settings, host="127.0.0.1", port=8765, agent_factory=Agent, isolate=None):
         if host != "127.0.0.1":
             raise ValueError("PaperTrail's web interface binds only to 127.0.0.1.")
-        self.app = LocalApp(settings, agent_factory)
+        self.app = LocalApp(settings, agent_factory, isolate)
         super().__init__((host, port), Handler)
+
+    def server_close(self):
+        self.app.close()
+        super().server_close()
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -205,14 +399,18 @@ class Handler(BaseHTTPRequestHandler):
                     query=s.query,
                     status=s.status,
                     model=s.model,
+                    error=s.error,
+                    checkpoint=s.node,
+                    can_resume=s.status != "ready" and s.node != Node.UNDERSTAND,
                     report=bool((report := self.report_path(s.id)) and report.is_file()),
                 )
                 for s in app.store.recent()
             ]
             return self.send(200, {"sessions": rows})
+        if path == "/api/active":
+            return self.send(200, {"job": app.current()})
         if re.fullmatch(r"/api/jobs/[a-f0-9]{32}", path):
-            with app.lock:
-                job = dict(app.jobs.get(path.rsplit("/", 1)[1], {}))
+            job = app.snapshot(path.rsplit("/", 1)[1])
             return (
                 self.send(200, job)
                 if job
@@ -234,7 +432,7 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         if not self.trusted():
             return self.send(403, {"error": "Only this local origin can start jobs."})
-        if self.path not in {"/api/digest", "/api/ask"}:
+        if self.path not in {"/api/digest", "/api/ask", "/api/resume"}:
             return self.send(404, {"error": "Not found."})
         if self.headers.get_content_type() != "application/json":
             return self.send(415, {"error": "Use application/json."})
@@ -249,7 +447,11 @@ class Handler(BaseHTTPRequestHandler):
             return self.send(413, {"error": "Request body must contain 1-8192 bytes."})
         try:
             payload = json.loads(self.rfile.read(int(lengths[0])))
-            keys = {"query"} if self.path == "/api/digest" else {"session", "question"}
+            keys = {
+                "/api/digest": {"query"},
+                "/api/ask": {"session", "question"},
+                "/api/resume": {"session"},
+            }[self.path]
             if not isinstance(payload, dict) or set(payload) != keys:
                 raise ValueError
             if any(
@@ -272,8 +474,8 @@ class Handler(BaseHTTPRequestHandler):
         )
 
 
-def make_server(settings, host="127.0.0.1", port=8765, agent_factory=Agent):
-    return LocalServer(settings, host, port, agent_factory)
+def make_server(settings, host="127.0.0.1", port=8765, agent_factory=Agent, isolate=None):
+    return LocalServer(settings, host, port, agent_factory, isolate)
 
 
 def serve(settings, port=8765):

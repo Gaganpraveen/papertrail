@@ -2,7 +2,7 @@
 
 This is a small **developer-constructed smoke evaluation**, not a blind or held-out benchmark and not a statistical estimate of research-assistant quality. The ten answerable questions were written after inspecting the actual parsed text of *Attention Is All You Need*, arXiv `1706.03762v7`. Three additional questions request information absent from that source. No retrieval scores were consulted when constructing these initial labels.
 
-`evals/attention-questions.json` contains the questions, expected answer/abstention status, exact supporting snippets, and one-based PDF page numbers. The source PDF SHA-256 is pinned in the file. Gold snippets preserve extraction quirks, including the misplaced `model` subscript in the parsing passage. They are a small, incomplete set of relevant passages, not exhaustive relevance judgments. A semantically valid alternative passage can therefore score as a miss. The German translation result accepts either the abstract or the results-section statement. We avoid the English-to-French score because the parsed abstract/table and body report different values.
+`evals/attention-questions.json` contains the questions, expected answer/abstention status, exact supporting snippets, and one-based PDF page numbers. The source PDF SHA-256 is pinned in the file. Gold snippets preserve extraction quirks, including the misplaced `model` subscript in the parsing passage. They are a small, incomplete set of relevant passages, not exhaustive relevance judgments. A semantically valid alternative passage can therefore score as a miss. The German translation result accepts either the abstract or the results-section statement. The dataset excludes the English-to-French score because the parsed abstract/table and body report different values.
 
 From the repository root, after creating a session for this PDF and installing the project:
 
@@ -11,7 +11,7 @@ python scripts/evaluate.py --session 0d03c77529e0 --validate-only
 python scripts/evaluate.py --session 0d03c77529e0 --output .cache/evaluation-retrieval.json
 ```
 
-Use a session ID from your own `papertrail sessions` output when reproducing on another machine. `--data-dir` defaults to `.papertrail`. The script reads the saved SQLite session in read-only mode, verifies its PDF checksum against the gold labels, and verifies that every gold snippet occurs on its declared page before opening the index. `--validate-only` stops there and performs no retrieval or model calls. The saved session must already have its vector collection; this script does not rebuild a missing index. It acquires the same operation lock as the CLI, so wait for the demo or another command to finish before running it.
+Use a session ID from the local `papertrail sessions` output when reproducing on another machine. `--data-dir` defaults to `.papertrail`. The script reads the saved SQLite session in read-only mode, verifies its PDF checksum against the gold labels, and verifies that every gold snippet occurs on its declared page before opening the index. `--validate-only` stops there and performs no retrieval or model calls. The saved session must already have its vector collection; this script does not rebuild a missing index. It acquires the same operation lock as the CLI, so wait for the demo or another command to finish before running it.
 
 The default run compares the application's `dense`, `bm25`, and `hybrid` modes with the same verbatim question, non-reference chunks, overlap suppression, and `k=5`. These are the actual application retrieval modes rather than independent reimplementations. Dense ranking uses cosine similarity in the saved Qdrant collection; BM25 uses the application's lexical scores; hybrid uses reciprocal rank fusion. The reported `score` is the application's rank-fusion score even in a single mode; raw `dense_score` and `lexical_score` are recorded separately when available.
 
@@ -38,9 +38,13 @@ Generation conservatively withholds dense numeric excerpts and selected displace
 
 The offline unit tests validate scoring, source-label checks, unanswerable denominator handling, and answer-error reporting; synthetic test passages are never presented as live retrieval results.
 
-## Final release smoke run
+## Current verification record
 
-The final [release evaluation report](../examples/evaluation-release.json) was generated on 2026-09-19 at **16:11:19 UTC** with `--answers`, ready session `0d03c77529e0`, `BAAI/bge-small-en-v1.5` embeddings, and local `qwen3.5:4b` (`Q4_K_M`). It uses the release implementation with short-fact handling, formula/qualification guards, and focused QA instructions. The report records the full Ollama model digest and input checksums. The commands above write new reproductions under `.cache` to preserve the committed report history.
+[Release rescue verification](release-rescue.md) records the later parser/retrieval corrections, fresh BERT and topic workflows, timeout recovery, and current regression results. The model-answer results below belong to the earlier implementation and have not been relabeled as a new benchmark.
+
+## Initial release smoke run (historical)
+
+The initial [release evaluation report](../examples/evaluation-release.json) was generated on 2026-09-19 at **16:11:19 UTC** with `--answers`, ready session `0d03c77529e0`, `BAAI/bge-small-en-v1.5` embeddings, and local `qwen3.5:4b` (`Q4_K_M`). It uses the release implementation with short-fact handling, formula/qualification guards, and focused QA instructions. The report records the full Ollama model digest and input checksums. The commands above write new reproductions under `.cache` to preserve the committed report history.
 
 | Retrieval mode | Support-hit@5, 10 answerable questions | MRR@5 |
 | --- | --- | --- |
@@ -66,7 +70,7 @@ All eight returned answers passed the recorded deterministic provenance checks. 
 | --- | --- | --- | --- |
 | [Before numeric guard, 15:37:02 UTC](../examples/evaluation-before-table-guard.json) | `4ca1290ef789` | 10/13 (76.9%) | Accepted `q08` Deep-Att table-column attribution error; qualification loss. |
 | [After numeric guard, 15:41:56 UTC](../examples/evaluation.json) | `4ca1290ef789` | 10/13 (76.9%) | Table error absent; accepted `q04` flattened-math misreading; `q07` false abstention. |
-| [Final release, 16:11:19 UTC](../examples/evaluation-release.json) | `0d03c77529e0` | 11/13 (84.6%) | Earlier accepted errors absent in this run; `q02` and `q10` false abstentions remain. |
+| [Initial release, 16:11:19 UTC](../examples/evaluation-release.json) | `0d03c77529e0` | 11/13 (84.6%) | Earlier accepted errors absent in this run; `q02` and `q10` false abstentions remain. |
 
 In the first run, the accepted `q08` answer grouped Deep-Att among English-to-German baselines although that model's table entries are English-to-French. In the second run, an extra `q04` claim called a positional encoding a linear function of `pos+k`, misreading the source relationship between `PE(pos+k)` and `PE(pos)`. Both passed the same-model review and deterministic quotation checks. These reports remain available because they demonstrate failures that aggregate status metrics missed.
 

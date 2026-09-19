@@ -3,7 +3,7 @@
   "created_at": "2026-09-19T15:37:02.620907+00:00",
   "evaluation_kind": "developer_constructed_smoke_eval_not_held_out",
   "dataset": {
-    "path": "/Users/gagan/Documents/ChatGPT/8byte project/evals/attention-questions.json",
+    "path": "evals/attention-questions.json",
     "sha256": "fab0c206161914ed5086b98ca0d512c0fb4adbd45788e4736853767a59a5d23c",
     "methodology": "Ten answerable questions and three unanswerable controls constructed by the developer after inspecting this exact parsed paper. Gold snippets are copied from the extracted text with whitespace normalized; page numbers are one-based PDF pages. These are neither blind nor held-out labels, are not exhaustive relevance judgments, and do not estimate quality across papers or users. Unanswerable labels reflect absence from the inspected source, not a claim that the question has no answer elsewhere."
   },
