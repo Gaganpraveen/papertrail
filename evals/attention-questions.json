@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "name": "Attention Is All You Need developer smoke questions",
+  "methodology": "Ten answerable questions and three unanswerable controls constructed by the developer after inspecting this exact parsed paper. Gold snippets are copied from the extracted text with whitespace normalized; page numbers are one-based PDF pages. These are neither blind nor held-out labels, are not exhaustive relevance judgments, and do not estimate quality across papers or users. Unanswerable labels reflect absence from the inspected source, not a claim that the question has no answer elsewhere.",
+  "source": {
+    "arxiv_id": "1706.03762v7",
+    "title": "Attention Is All You Need",
+    "url": "https://arxiv.org/abs/1706.03762v7",
+    "pdf_sha256": "bdfaa68d8984f0dc02beaca527b76f207d99b666d31d1da728ee0728182df697",
+    "pages": 15,
+    "inspected_parsed_artifact": ".papertrail/runs/e65208ff1b8d/parsed.json"
+  },
+  "questions": [
+    {
+      "id": "q01-sequential-bottleneck",
+      "question": "Why does training a recurrent sequence model limit parallelization within an example?",
+      "expected_status": "answered",
+      "gold": [
+        {
+          "page": 2,
+          "snippet": "sequential nature precludes parallelization within training examples, which becomes critical at longer sequence lengths, as memory constraints limit batching across examples."
+        }
+      ]
+    },
+    {
+      "id": "q02-decoder-masking",
+      "question": "How does the Transformer decoder prevent a prediction from using future output positions?",
+      "expected_status": "answered",
+      "gold": [
+        {
+          "page": 3,
+          "snippet": "We also modify the self-attention sub-layer in the decoder stack to prevent positions from attending to subsequent positions. This masking, combined with fact that the output embeddings are offset by one position, ensures that the predictions for position i can depend only on the known outputs at positions less than i."
+        }
+      ]
+    },
+    {
+      "id": "q03-multihead-benefit",
+      "question": "What advantage do multiple attention heads provide compared with a single attention head?",
+      "expected_status": "answered",
+      "gold": [
+        {
+          "page": 5,
+          "snippet": "Multi-head attention allows the model to jointly attend to information from different representation subspaces at different positions. With a single attention head, averaging inhibits this."
+        }
+      ]
+    },
+    {
+      "id": "q04-positional-choice",
+      "question": "Why did the authors choose sinusoidal positional encodings over learned positional embeddings?",
+      "expected_status": "answered",
+      "gold": [
+        {
+          "page": 6,
+          "snippet": "We also experimented with using learned positional embeddings [9] instead, and found that the two versions produced nearly identical results (see Table 3 row (E)). We chose the sinusoidal version because it may allow the model to extrapolate to sequence lengths longer than the ones encountered during training."
+        }
+      ]
+    },
+    {
+      "id": "q05-training-data",
+      "question": "Approximately how many sentence pairs were in the English-German translation training dataset?",
+      "expected_status": "answered",
+      "gold": [
+        {
+          "page": 7,
+          "snippet": "We trained on the standard WMT 2014 English-German dataset consisting of about 4.5 million sentence pairs."
+        }
+      ]
+    },
+    {
+      "id": "q06-base-training-schedule",
+      "question": "How many training steps and hours did the base Transformer models use?",
+      "expected_status": "answered",
+      "gold": [
+        {
+          "page": 7,
+          "snippet": "We trained the base models for a total of 100,000 steps or 12 hours."
+        }
+      ]
+    },
+    {
+      "id": "q07-learning-rate",
+      "question": "How did the learning rate change during and after the warmup period, and how long was warmup?",
+      "expected_status": "answered",
+      "gold": [
+        {
+          "page": 7,
+          "snippet": "This corresponds to increasing the learning rate linearly for the first warmup_steps training steps, and decreasing it thereafter proportionally to the inverse square root of the step number. We used warmup_steps = 4000."
+        }
+      ]
+    },
+    {
+      "id": "q08-translation-result",
+      "question": "What BLEU score did the big Transformer achieve on WMT 2014 English-to-German, and how did it compare with prior models?",
+      "expected_status": "answered",
+      "gold": [
+        {
+          "page": 8,
+          "snippet": "On the WMT 2014 English-to-German translation task, the big transformer model (Transformer (big) in Table 2) outperforms the best previously reported models (including ensembles) by more than 2.0 BLEU, establishing a new state-of-the-art BLEU score of 28.4."
+        },
+        {
+          "page": 1,
+          "snippet": "Our model achieves 28.4 BLEU on the WMT 2014 Englishto-German translation task, improving over the existing best results, including ensembles, by over 2 BLEU."
+        }
+      ]
+    },
+    {
+      "id": "q09-decoding",
+      "question": "Which beam size and length penalty were used for translation decoding?",
+      "expected_status": "answered",
+      "gold": [
+        {
+          "page": 8,
+          "snippet": "We used beam search with a beam size of 4 and length penalty α = 0.6 [38]."
+        }
+      ]
+    },
+    {
+      "id": "q10-parsing-small-data",
+      "question": "Which corpus and approximate number of training sentences were used for the supervised English constituency parsing experiment?",
+      "expected_status": "answered",
+      "gold": [
+        {
+          "page": 9,
+          "snippet": "on the Wall Street Journal (WSJ) portion of the model Penn Treebank [25], about 40K training sentences."
+        }
+      ],
+      "annotation_note": "The word 'model' inside the excerpt is an extraction artifact from the preceding d_model subscript. The gold deliberately preserves the parsed text rather than silently repairing it."
+    },
+    {
+      "id": "u01-carbon-footprint",
+      "question": "What was the training run's measured carbon footprint in kilograms of CO2 equivalent?",
+      "expected_status": "insufficient_evidence",
+      "gold": [],
+      "annotation_note": "The source reports training hardware/time and estimated FLOPs, but no measured carbon footprint. Those quantities alone do not establish emissions."
+    },
+    {
+      "id": "u02-random-seed",
+      "question": "Which random seed did the authors use for the English-to-German training experiments?",
+      "expected_status": "insufficient_evidence",
+      "gold": [],
+      "annotation_note": "The inspected source gives optimizer and training settings but does not specify the random seed for these experiments."
+    },
+    {
+      "id": "u03-imagenet",
+      "question": "What top-1 accuracy did the Transformer achieve on ImageNet image classification in this paper?",
+      "expected_status": "insufficient_evidence",
+      "gold": [],
+      "annotation_note": "The paper evaluates machine translation and English constituency parsing, not an ImageNet classification experiment."
+    }
+  ]
+}

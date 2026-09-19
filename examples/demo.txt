@@ -1,0 +1,98 @@
+
+$ papertrail show 4ca1290ef789
+                                          Attention Is All You Need                                           
+
+Authors: Ashish Vaswani, Noam Shazeer, Niki Parmar, Jakob Uszkoreit, Llion Jones, Aidan N. Gomez, Lukasz      
+Kaiser, Illia Polosukhin arXiv: 1706.03762v7 · Published: 2017-06-12 Local model: qwen3.5:4b · Session:       
+4ca1290ef789                                                                                                  
+
+Why this paper matters                                                                                        
+
+The authors propose the Transformer, a new network architecture based solely on attention mechanisms that     
+dispenses with recurrence and convolutions entirely. Experiments on machine translation tasks demonstrate that
+these models are superior in quality while being more parallelizable and requiring significantly less time to 
+train. p. 1, Abstract; p. 1, Abstract                                                                         
+
+Problem                                                                                                       
+
+Dominant sequence transduction models rely on complex recurrent or convolutional neural networks, and to the  
+best of the authors' knowledge, the Transformer is the first transduction model relying entirely on           
+self-attention without using sequence-aligned RNNs or convolution. p. 1, Abstract; p. 2, 2 Background         
+
+Method                                                                                                        
+
+ • The Transformer follows an encoder-decoder structure using stacked self-attention and point-wise, fully    
+   connected layers for both the encoder and decoder. p. 3, 3 Model Architecture; p. 2, 3 Model Architecture  
+ • Source wording (automatic review requested inspection): “In the Transformer this is reduced to a constant  
+   number of operations, albeit at the cost of reduced effective resolution due to averaging                  
+   attention-weighted positions, an effect we counteract with Multi-Head Attention as described in section    
+   3.2.” “Self-attention, sometimes called intra-attention is an attention mechanism relating different       
+   positions of a single sequence in order to compute a representation of the sequence.” p. 2, 2 Background;  
+   p. 2, 2 Background                                                                                         
+ • The decoder generates an output sequence one element at a time in an auto-regressive manner, consuming     
+   previously generated symbols as additional input. p. 2, 3 Model Architecture                               
+
+Key results and claims                                                                                        
+
+ • On the WMT 2014 English-to-German translation task, the model achieves a BLEU score of 28.4, and on the    
+   English-to-French task, it establishes a new single-model state-of-the-art BLEU score of 41.8. p. 1,       
+   Abstract; p. 1, Abstract                                                                                   
+ • The models are more parallelizable and require significantly less time to train, and the architecture      
+   generalizes well to other tasks such as English constituency parsing. p. 1, Abstract; p. 1, Abstract       
+ • Training the big model on the English-to-French task took 3.5 days on eight GPUs, achieving results at less
+   than 1/4 the training cost of the previous state-of-the-art model. p. 8, 6.1 Machine Translation; p. 8, 6.1
+   Machine Translation                                                                                        
+
+Limitations                                                                                                   
+
+No explicit limitations were identified in the selected evidence; this does not establish that the paper has  
+none.                                                                                                         
+
+Suggested questions                                                                                           
+
+ • How does the Transformer handle input and output modalities other than text, such as images or audio?      
+ • What are the specific performance differences between using learned positional embeddings versus sinusoidal
+   positional encoding?                                                                                       
+ • How does the model's performance scale when handling large inputs and outputs that require local,          
+   restricted attention mechanisms?                                                                           
+
+Saved session: 4ca1290ef789
+Evidence reader: /Users/gagan/Documents/ChatGPT/8byte project/.papertrail/runs/4ca1290ef789/export/report.html
+Next: papertrail ask 4ca1290ef789 'Your question'
+
+$ papertrail ask 4ca1290ef789 How many GPUs were used, and how long was the big model trained?
+╭───────────────────────────────────────────────── Question ─────────────────────────────────────────────────╮
+│ How many GPUs were used, and how long was the big model trained?                                           │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+8 NVIDIA P100 GPUs were used to train the big model.
+  p. 7 · 5.2 Hardware and Schedule · abf6f22b8f92a712
+  “We trained our models on one machine with 8 NVIDIA P100 GPUs.”
+  p. 8 · 6.1 Machine Translation · b37abe7f7725f407
+  “Training took 3.5 days on 8 P100 GPUs.”
+The big model was trained for 3.5 days.
+  p. 7 · 5.2 Hardware and Schedule · abf6f22b8f92a712
+  “The big models were trained for 300,000 steps (3.5 days).”
+  p. 8 · 6.1 Machine Translation · b37abe7f7725f407
+  “Training took 3.5 days on 8 P100 GPUs.”
+[answered] 12.5s
+
+$ papertrail ask 4ca1290ef789 What does the paper report about label smoothing?
+╭───────────────────────────────────────────────── Question ─────────────────────────────────────────────────╮
+│ What does the paper report about label smoothing?                                                          │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+A draft answer failed evidence validation; no unverified answer is shown.
+[insufficient_evidence] 21.7s
+
+$ papertrail ask 4ca1290ef789 What was the total training cost in US dollars?
+╭───────────────────────────────────────────────── Question ─────────────────────────────────────────────────╮
+│ What was the total training cost in US dollars?                                                            │
+╰────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
+I could not find enough evidence in the retrieved passages to answer this question.
+[insufficient_evidence] 2.7s
+
+$ papertrail export 4ca1290ef789 --output examples/attention
+markdown: /Users/gagan/Documents/ChatGPT/8byte project/examples/attention/briefing.md
+json: /Users/gagan/Documents/ChatGPT/8byte project/examples/attention/session.json
+html: /Users/gagan/Documents/ChatGPT/8byte project/examples/attention/report.html
+
+Completed real session: 4ca1290ef789
