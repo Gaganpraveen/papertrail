@@ -10,7 +10,7 @@ import pdfplumber
 from papertrail.errors import ParseError
 from papertrail.schema import Chunk, ParsedPaper
 
-PARSER_VERSION = "pdfplumber-sections-v3"
+PARSER_VERSION = "pdfplumber-sections-v4"
 HEADING = re.compile(
     r"^(?:(?:\d+(?:\.\d+)*|[A-Z])\.?\s+[A-Z][A-Za-z][A-Za-z ,:/&()\-]{2,90}|Abstract|References|Bibliography|Acknowledg(?:e)?ments|Appendix(?:\s+.*)?)$",
     re.I,
@@ -28,14 +28,16 @@ def clean_text(value: str) -> str:
 
 
 def page_text(page) -> tuple[str, bool]:
-    """Split only when most long rows show a large central gutter."""
+    """Read repeated central gutters as columns, retaining full-width headers."""
+    # Rotated arXiv stamps are margin metadata, not part of the paper's prose.
+    page = page.filter(lambda obj: obj.get("upright", True))
     words = page.extract_words(x_tolerance=2, y_tolerance=3)
     rows: dict[int, list] = {}
     for word in words:
         if 0.12 * page.height < word["top"] < 0.9 * page.height:
             rows.setdefault(round(word["top"] / 4), []).append(word)
     wide_rows = 0
-    gutter_rows = 0
+    gutter_tops = []
     mid = page.width / 2
     for row in rows.values():
         row.sort(key=lambda word: word["x0"])
@@ -43,15 +45,34 @@ def page_text(page) -> tuple[str, bool]:
             continue
         wide_rows += 1
         if any(
-            a["x1"] < mid < b["x0"] and b["x0"] - a["x1"] > page.width * 0.045
+            a["x1"] < mid < b["x0"] and b["x0"] - a["x1"] > page.width * 0.02
             for a, b in zip(row, row[1:], strict=False)
         ):
-            gutter_rows += 1
-    columns = wide_rows >= 10 and gutter_rows / wide_rows >= 0.6
+            gutter_tops.append(min(word["top"] for word in row))
+    columns = wide_rows >= 8 and len(gutter_tops) / wide_rows >= 0.6
     if columns:
-        left = page.crop((0, 0, mid, page.height)).extract_text(x_tolerance=2) or ""
-        right = page.crop((mid, 0, page.width, page.height)).extract_text(x_tolerance=2) or ""
-        return clean_text(left + "\n" + right), True
+        # A title block can span both columns. Preserve only its initial region,
+        # identified by words crossing the otherwise empty central gutter.
+        spanning = [
+            word["bottom"]
+            for word in words
+            if word["top"] < 0.25 * page.height and word["x0"] < mid < word["x1"]
+        ]
+        header_end = 0
+        if spanning:
+            bottom = max(spanning)
+            following = [word["top"] for word in words if word["top"] > bottom + 2]
+            header_end = (bottom + min(following)) / 2 if following else bottom + 2
+        header = (
+            page.crop((0, 0, page.width, header_end)).extract_text(x_tolerance=2) or ""
+            if header_end
+            else ""
+        )
+        left = page.crop((0, header_end, mid, page.height)).extract_text(x_tolerance=2) or ""
+        right = (
+            page.crop((mid, header_end, page.width, page.height)).extract_text(x_tolerance=2) or ""
+        )
+        return clean_text(header + "\n" + left + "\n" + right), True
     return clean_text(page.extract_text(x_tolerance=2) or ""), False
 
 

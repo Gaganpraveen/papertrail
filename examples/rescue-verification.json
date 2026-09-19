@@ -1,0 +1,1533 @@
+{
+  "2bde953d280d": {
+    "query": "Concierge Agent: A Local Hybrid Vision-Language Framework For Privacy Preserving Autonomous Computer Use",
+    "status": "failed",
+    "node": "retrieve",
+    "error": "arXiv returned HTTP 406.",
+    "paper": null,
+    "events": [
+      {
+        "node": "understand",
+        "status": "completed",
+        "seconds": 0.001,
+        "detail": "",
+        "at": "2026-09-19T17:43:08.934888+00:00"
+      },
+      {
+        "node": "retrieve",
+        "status": "failed",
+        "seconds": 0.287,
+        "detail": "arXiv returned HTTP 406.",
+        "at": "2026-09-19T17:43:09.223760+00:00"
+      }
+    ]
+  },
+  "ecfb16106544": {
+    "query": "Concierge Agent: A Local Hybrid Vision-Language Framework For Privacy Preserving Autonomous Computer Use",
+    "status": "failed",
+    "node": "retrieve",
+    "error": "arXiv refused this metadata request (HTTP 406). No different paper was substituted. Retry this session later, or start a new briefing with the paper's exact arXiv ID/URL.",
+    "paper": null,
+    "events": [
+      {
+        "node": "understand",
+        "status": "completed",
+        "seconds": 0.0,
+        "detail": "",
+        "at": "2026-09-19T18:04:39.941554+00:00"
+      },
+      {
+        "node": "retrieve",
+        "status": "failed",
+        "seconds": 3.232,
+        "detail": "arXiv refused this metadata request (HTTP 406). No different paper was substituted. Retry this session later, or start a new briefing with the paper's exact arXiv ID/URL.",
+        "at": "2026-09-19T18:04:43.175821+00:00"
+      },
+      {
+        "node": "retrieve",
+        "status": "failed",
+        "seconds": 3.227,
+        "detail": "arXiv refused this metadata request (HTTP 406). No different paper was substituted. Retry this session later, or start a new briefing with the paper's exact arXiv ID/URL.",
+        "at": "2026-09-19T18:05:04.526973+00:00"
+      }
+    ]
+  },
+  "0cc60acf95a1": {
+    "query": "1706.invalid",
+    "status": "failed",
+    "node": "understand",
+    "error": "This looks like an invalid arXiv ID. Example: 1706.03762 or 1706.03762v7.",
+    "paper": null,
+    "events": [
+      {
+        "node": "understand",
+        "status": "failed",
+        "seconds": 0.0,
+        "detail": "This looks like an invalid arXiv ID. Example: 1706.03762 or 1706.03762v7.",
+        "at": "2026-09-19T18:05:20.973702+00:00"
+      }
+    ]
+  },
+  "0cd5dd7a02fe": {
+    "query": "https://arxiv.org/abs/1810.04805",
+    "status": "ready",
+    "node": "ready",
+    "error": null,
+    "paper": "1810.04805v2",
+    "events": [
+      {
+        "node": "understand",
+        "status": "completed",
+        "seconds": 0.0,
+        "detail": "",
+        "at": "2026-09-19T17:52:45.548361+00:00"
+      },
+      {
+        "node": "retrieve",
+        "status": "completed",
+        "seconds": 0.087,
+        "detail": "",
+        "at": "2026-09-19T17:52:45.636876+00:00"
+      },
+      {
+        "node": "select",
+        "status": "completed",
+        "seconds": 0.0,
+        "detail": "",
+        "at": "2026-09-19T17:52:45.645064+00:00"
+      },
+      {
+        "node": "fetch",
+        "status": "completed",
+        "seconds": 3.412,
+        "detail": "",
+        "at": "2026-09-19T17:52:49.059586+00:00"
+      },
+      {
+        "node": "parse",
+        "status": "completed",
+        "seconds": 0.993,
+        "detail": "",
+        "at": "2026-09-19T17:52:50.056114+00:00"
+      },
+      {
+        "node": "index",
+        "status": "completed",
+        "seconds": 5.028,
+        "detail": "",
+        "at": "2026-09-19T17:52:55.086638+00:00"
+      },
+      {
+        "node": "model.load",
+        "status": "completed",
+        "seconds": 0.006,
+        "detail": "",
+        "at": "2026-09-19T17:52:55.161532+00:00"
+      },
+      {
+        "node": "brief.generate",
+        "status": "completed",
+        "seconds": 16.634,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 2.837, \"eval_duration\": 13.658}, \"output_tokens\": 465}",
+        "at": "2026-09-19T17:53:11.813568+00:00"
+      },
+      {
+        "node": "brief.generate",
+        "status": "completed",
+        "seconds": 14.688,
+        "detail": "{\"attempt\": 2, \"server_seconds\": {\"load_duration\": 0.004, \"prompt_eval_duration\": 0.79, \"eval_duration\": 13.865}, \"output_tokens\": 465}",
+        "at": "2026-09-19T17:53:26.506287+00:00"
+      },
+      {
+        "node": "brief",
+        "status": "failed",
+        "seconds": 31.418,
+        "detail": "The model output failed schema/evidence validation twice. No unverified answer was accepted. Evidence quote is not an exact passage in chunk 6eea06ca85deda48.",
+        "at": "2026-09-19T17:53:26.509608+00:00"
+      },
+      {
+        "node": "model.load",
+        "status": "completed",
+        "seconds": 0.001,
+        "detail": "",
+        "at": "2026-09-19T17:56:32.799155+00:00"
+      },
+      {
+        "node": "web.operation",
+        "status": "failed",
+        "seconds": 5.1,
+        "detail": "Stopped at brief.generate after the 5s operation limit. The worker was stopped and its resources released. Resume the saved session to continue from its last checkpoint.",
+        "at": "2026-09-19T17:56:37.344563+00:00"
+      },
+      {
+        "node": "model.load",
+        "status": "completed",
+        "seconds": 0.002,
+        "detail": "",
+        "at": "2026-09-19T17:57:53.390625+00:00"
+      },
+      {
+        "node": "brief.generate",
+        "status": "completed",
+        "seconds": 13.696,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.004, \"prompt_eval_duration\": 0.099, \"eval_duration\": 13.428}, \"output_tokens\": 492}",
+        "at": "2026-09-19T17:58:07.192457+00:00"
+      },
+      {
+        "node": "brief.generate",
+        "status": "completed",
+        "seconds": 14.315,
+        "detail": "{\"attempt\": 2, \"server_seconds\": {\"load_duration\": 0.005, \"prompt_eval_duration\": 0.7, \"eval_duration\": 13.591}, \"output_tokens\": 485}",
+        "at": "2026-09-19T17:58:21.514372+00:00"
+      },
+      {
+        "node": "brief.review",
+        "status": "completed",
+        "seconds": 6.064,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.002, \"prompt_eval_duration\": 0.926, \"eval_duration\": 4.686}, \"output_tokens\": 178}",
+        "at": "2026-09-19T17:58:27.583728+00:00"
+      },
+      {
+        "node": "brief.review",
+        "status": "completed",
+        "seconds": 5.178,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.003, \"prompt_eval_duration\": 0.885, \"eval_duration\": 4.216}, \"output_tokens\": 165}",
+        "at": "2026-09-19T17:58:32.766007+00:00"
+      },
+      {
+        "node": "brief.review",
+        "status": "completed",
+        "seconds": 3.505,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 0.882, \"eval_duration\": 2.576}, \"output_tokens\": 99}",
+        "at": "2026-09-19T17:58:36.273560+00:00"
+      },
+      {
+        "node": "brief",
+        "status": "completed",
+        "seconds": 42.898,
+        "detail": "",
+        "at": "2026-09-19T17:58:36.281795+00:00"
+      },
+      {
+        "node": "validate",
+        "status": "completed",
+        "seconds": 0.002,
+        "detail": "",
+        "at": "2026-09-19T17:58:36.286247+00:00"
+      },
+      {
+        "node": "qa.retrieve",
+        "status": "completed",
+        "seconds": 0.097,
+        "detail": "7 passages",
+        "at": "2026-09-19T18:02:10.707988+00:00"
+      },
+      {
+        "node": "model.load",
+        "status": "completed",
+        "seconds": 0.001,
+        "detail": "",
+        "at": "2026-09-19T18:02:10.715579+00:00"
+      },
+      {
+        "node": "qa.generate",
+        "status": "completed",
+        "seconds": 6.29,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 2.794, \"eval_duration\": 3.389}, \"output_tokens\": 118}",
+        "at": "2026-09-19T18:02:17.008469+00:00"
+      },
+      {
+        "node": "qa.review",
+        "status": "completed",
+        "seconds": 4.238,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.003, \"prompt_eval_duration\": 0.918, \"eval_duration\": 3.222}, \"output_tokens\": 125}",
+        "at": "2026-09-19T18:02:21.250060+00:00"
+      },
+      {
+        "node": "qa.validate",
+        "status": "rejected",
+        "seconds": 0.0,
+        "detail": "Support review rejected: Claim 'BERT is pre-trained using two unsupervised tasks: Masked Language Modeling (Masked LM) and Next Sentence Prediction (NSP).': Quotation fragments do not clearly state both tasks are used; 'two unsupervised tasks' is ambiguous without explicit listing of both.; Claim 'The two pre-training tasks are Masked LM and Next Sentence Prediction (NSP), which are described in the section on pre-training BERT.': Quotation fragments do not clearly state both tasks are used; 'two unsupervised tasks' is ambiguous without explicit listing of both.",
+        "at": "2026-09-19T18:02:21.251735+00:00"
+      },
+      {
+        "node": "qa.generate",
+        "status": "completed",
+        "seconds": 3.909,
+        "detail": "{\"attempt\": 2, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 0.412, \"eval_duration\": 3.453}, \"output_tokens\": 131}",
+        "at": "2026-09-19T18:02:25.162170+00:00"
+      },
+      {
+        "node": "qa.review",
+        "status": "completed",
+        "seconds": 4.599,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.002, \"prompt_eval_duration\": 0.886, \"eval_duration\": 3.578}, \"output_tokens\": 129}",
+        "at": "2026-09-19T18:02:29.763593+00:00"
+      },
+      {
+        "node": "qa.validate",
+        "status": "rejected",
+        "seconds": 0.0,
+        "detail": "Support review rejected: Claim 'In order to train a model that understands sentence relationships, the authors pre-train for a binarized next sentence prediction task.': Claim adds 'binarized' and 'next sentence prediction' not found in quotes. Quotes only mention 'unsupervised tasks' and 'masked LM'.; Claim 'Intuitively, it is reasonable to believe that a deep bidirectional model is strictly more powerful than either a left-to-right or right-to-left language model when choosing the sentences A and B for each pre-training example.': Claim adds 'right-to-left' model. Quotes only mention 'left-to-right' and 'deep bidirectional' models.",
+        "at": "2026-09-19T18:02:29.765433+00:00"
+      },
+      {
+        "node": "qa.validate",
+        "status": "rejected",
+        "seconds": 0.0,
+        "detail": "The model output failed schema/evidence validation twice. No unverified answer was accepted. Support review rejected: Claim 'In order to train a model that understands sentence relationships, the authors pre-train for a binarized next sentence prediction task.': Claim adds 'binarized' and 'next sentence prediction' not found in quotes. Quotes only mention 'unsupervised tasks' and 'masked LM'.; Claim 'Intuitively, it is reasonable to believe that a deep bidirectional model is strictly more powerful than either a left-to-right or right-to-left language model when choosing the sentences A and B for each pre-training example.': Claim adds 'right-to-left' model. Quotes only mention 'left-to-right' and 'deep bidirectional' models.",
+        "at": "2026-09-19T18:02:29.766166+00:00"
+      },
+      {
+        "node": "qa.answer",
+        "status": "completed",
+        "seconds": 19.157,
+        "detail": "insufficient_evidence",
+        "at": "2026-09-19T18:02:29.768389+00:00"
+      }
+    ]
+  },
+  "deadline_probe": {
+    "deadline_seconds": 5,
+    "browser_elapsed_seconds": 5.1,
+    "ollama_log": [
+      "[GIN] 2026/09/19 - 23:26:32 | 200 |      886.25\u00b5s |       127.0.0.1 | POST     \"/api/generate\"",
+      "[GIN] 2026/09/19 - 23:26:37 | 200 |  4.396579333s |       127.0.0.1 | POST     \"/api/chat\"",
+      "srv          stop: cancel task, id_task = 2770",
+      "slot      release: id  0 | task 2770 | stop processing: n_tokens = 2355, truncated = 0",
+      "srv  update_slots: all slots are idle",
+      "[GIN] 2026/09/19 - 23:27:02 | 200 |    9.803458ms |       127.0.0.1 | POST     \"/api/generate\"",
+      "slot      release: id  0 | task 2839 | stop processing: n_tokens = 1954, truncated = 0",
+      "srv  update_slots: all slots are idle",
+      "[GIN] 2026/09/19 - 23:27:04 | 200 |  2.663885125s |       127.0.0.1 | POST     \"/api/chat\""
+    ]
+  },
+  "same_paper_latency_after": {
+    "session": "e830d31be1c4",
+    "query": "1706.03762v7",
+    "paper": "1706.03762v7",
+    "status": "ready",
+    "browser_elapsed_seconds": 32,
+    "events": [
+      {
+        "node": "understand",
+        "status": "completed",
+        "seconds": 0.0,
+        "detail": "",
+        "at": "2026-09-19T18:12:34.928349+00:00"
+      },
+      {
+        "node": "retrieve",
+        "status": "completed",
+        "seconds": 0.0,
+        "detail": "",
+        "at": "2026-09-19T18:12:34.930463+00:00"
+      },
+      {
+        "node": "select",
+        "status": "completed",
+        "seconds": 0.0,
+        "detail": "",
+        "at": "2026-09-19T18:12:34.932179+00:00"
+      },
+      {
+        "node": "fetch",
+        "status": "completed",
+        "seconds": 0.256,
+        "detail": "",
+        "at": "2026-09-19T18:12:35.190987+00:00"
+      },
+      {
+        "node": "parse",
+        "status": "completed",
+        "seconds": 0.82,
+        "detail": "",
+        "at": "2026-09-19T18:12:36.013702+00:00"
+      },
+      {
+        "node": "index",
+        "status": "completed",
+        "seconds": 3.03,
+        "detail": "",
+        "at": "2026-09-19T18:12:39.045335+00:00"
+      },
+      {
+        "node": "model.load",
+        "status": "completed",
+        "seconds": 0.002,
+        "detail": "",
+        "at": "2026-09-19T18:12:39.079254+00:00"
+      },
+      {
+        "node": "brief.generate",
+        "status": "completed",
+        "seconds": 16.286,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 0.338, \"eval_duration\": 15.014}, \"output_tokens\": 546}",
+        "at": "2026-09-19T18:12:55.384068+00:00"
+      },
+      {
+        "node": "brief.review",
+        "status": "completed",
+        "seconds": 4.85,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.002, \"prompt_eval_duration\": 0.953, \"eval_duration\": 3.373}, \"output_tokens\": 117}",
+        "at": "2026-09-19T18:13:00.240308+00:00"
+      },
+      {
+        "node": "brief.review",
+        "status": "completed",
+        "seconds": 4.475,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 0.714, \"eval_duration\": 3.629}, \"output_tokens\": 117}",
+        "at": "2026-09-19T18:13:04.717712+00:00"
+      },
+      {
+        "node": "brief.review",
+        "status": "completed",
+        "seconds": 1.478,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 0.42, \"eval_duration\": 0.934}, \"output_tokens\": 30}",
+        "at": "2026-09-19T18:13:06.201667+00:00"
+      },
+      {
+        "node": "brief",
+        "status": "completed",
+        "seconds": 27.158,
+        "detail": "",
+        "at": "2026-09-19T18:13:06.204753+00:00"
+      },
+      {
+        "node": "validate",
+        "status": "completed",
+        "seconds": 0.002,
+        "detail": "",
+        "at": "2026-09-19T18:13:06.210134+00:00"
+      }
+    ]
+  },
+  "bert_parser_and_retrieval_diagnostic": {
+    "session": "a38837a872b4",
+    "query": "https://arxiv.org/abs/1810.04805",
+    "paper": "1810.04805v2",
+    "browser_briefing_seconds": 31,
+    "status": "ready",
+    "events": [
+      {
+        "node": "understand",
+        "status": "completed",
+        "seconds": 0.0,
+        "detail": "",
+        "at": "2026-09-19T18:07:15.688929+00:00"
+      },
+      {
+        "node": "retrieve",
+        "status": "completed",
+        "seconds": 0.001,
+        "detail": "",
+        "at": "2026-09-19T18:07:15.692034+00:00"
+      },
+      {
+        "node": "select",
+        "status": "completed",
+        "seconds": 0.0,
+        "detail": "",
+        "at": "2026-09-19T18:07:15.693670+00:00"
+      },
+      {
+        "node": "fetch",
+        "status": "completed",
+        "seconds": 0.002,
+        "detail": "",
+        "at": "2026-09-19T18:07:15.698599+00:00"
+      },
+      {
+        "node": "parse",
+        "status": "completed",
+        "seconds": 0.829,
+        "detail": "",
+        "at": "2026-09-19T18:07:16.528929+00:00"
+      },
+      {
+        "node": "index",
+        "status": "completed",
+        "seconds": 4.659,
+        "detail": "",
+        "at": "2026-09-19T18:07:21.189383+00:00"
+      },
+      {
+        "node": "model.load",
+        "status": "completed",
+        "seconds": 0.002,
+        "detail": "",
+        "at": "2026-09-19T18:07:21.236510+00:00"
+      },
+      {
+        "node": "brief.generate",
+        "status": "completed",
+        "seconds": 14.218,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 2.793, \"eval_duration\": 11.207}, \"output_tokens\": 407}",
+        "at": "2026-09-19T18:07:35.473170+00:00"
+      },
+      {
+        "node": "brief.review",
+        "status": "completed",
+        "seconds": 4.864,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.007, \"prompt_eval_duration\": 0.972, \"eval_duration\": 3.541}, \"output_tokens\": 117}",
+        "at": "2026-09-19T18:07:40.349167+00:00"
+      },
+      {
+        "node": "brief.review",
+        "status": "completed",
+        "seconds": 4.944,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.002, \"prompt_eval_duration\": 1.086, \"eval_duration\": 3.554}, \"output_tokens\": 117}",
+        "at": "2026-09-19T18:07:45.298245+00:00"
+      },
+      {
+        "node": "brief",
+        "status": "completed",
+        "seconds": 24.118,
+        "detail": "",
+        "at": "2026-09-19T18:07:45.308872+00:00"
+      },
+      {
+        "node": "validate",
+        "status": "completed",
+        "seconds": 0.003,
+        "detail": "",
+        "at": "2026-09-19T18:07:45.314439+00:00"
+      },
+      {
+        "node": "qa.retrieve",
+        "status": "completed",
+        "seconds": 0.102,
+        "detail": "7 passages",
+        "at": "2026-09-19T18:08:07.999722+00:00"
+      },
+      {
+        "node": "model.load",
+        "status": "completed",
+        "seconds": 0.002,
+        "detail": "",
+        "at": "2026-09-19T18:08:08.011722+00:00"
+      },
+      {
+        "node": "qa.generate",
+        "status": "completed",
+        "seconds": 3.588,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.003, \"prompt_eval_duration\": 2.63, \"eval_duration\": 0.398}, \"output_tokens\": 15}",
+        "at": "2026-09-19T18:08:11.603522+00:00"
+      },
+      {
+        "node": "qa.answer",
+        "status": "completed",
+        "seconds": 3.707,
+        "detail": "insufficient_evidence",
+        "at": "2026-09-19T18:08:11.604459+00:00"
+      },
+      {
+        "node": "qa.retrieve",
+        "status": "completed",
+        "seconds": 0.11,
+        "detail": "7 passages",
+        "at": "2026-09-19T18:09:10.563325+00:00"
+      },
+      {
+        "node": "model.load",
+        "status": "completed",
+        "seconds": 0.002,
+        "detail": "",
+        "at": "2026-09-19T18:09:10.571539+00:00"
+      },
+      {
+        "node": "qa.generate",
+        "status": "completed",
+        "seconds": 3.215,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.002, \"prompt_eval_duration\": 2.593, \"eval_duration\": 0.369}, \"output_tokens\": 15}",
+        "at": "2026-09-19T18:09:13.789653+00:00"
+      },
+      {
+        "node": "qa.answer",
+        "status": "completed",
+        "seconds": 3.338,
+        "detail": "insufficient_evidence",
+        "at": "2026-09-19T18:09:13.791090+00:00"
+      },
+      {
+        "node": "qa.retrieve",
+        "status": "completed",
+        "seconds": 0.09,
+        "detail": "7 passages",
+        "at": "2026-09-19T18:09:47.125306+00:00"
+      },
+      {
+        "node": "model.load",
+        "status": "completed",
+        "seconds": 0.001,
+        "detail": "",
+        "at": "2026-09-19T18:09:47.133042+00:00"
+      },
+      {
+        "node": "qa.generate",
+        "status": "completed",
+        "seconds": 2.822,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 2.337, \"eval_duration\": 0.359}, \"output_tokens\": 15}",
+        "at": "2026-09-19T18:09:49.957647+00:00"
+      },
+      {
+        "node": "qa.answer",
+        "status": "completed",
+        "seconds": 2.924,
+        "detail": "insufficient_evidence",
+        "at": "2026-09-19T18:09:49.958597+00:00"
+      },
+      {
+        "node": "qa.retrieve",
+        "status": "completed",
+        "seconds": 0.108,
+        "detail": "7 passages",
+        "at": "2026-09-19T18:14:18.200940+00:00"
+      },
+      {
+        "node": "model.load",
+        "status": "completed",
+        "seconds": 0.002,
+        "detail": "",
+        "at": "2026-09-19T18:14:18.212313+00:00"
+      },
+      {
+        "node": "qa.generate",
+        "status": "completed",
+        "seconds": 6.191,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 2.669, \"eval_duration\": 3.403}, \"output_tokens\": 123}",
+        "at": "2026-09-19T18:14:24.406016+00:00"
+      },
+      {
+        "node": "qa.review",
+        "status": "completed",
+        "seconds": 4.062,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 0.746, \"eval_duration\": 2.96}, \"output_tokens\": 102}",
+        "at": "2026-09-19T18:14:28.475506+00:00"
+      },
+      {
+        "node": "qa.validate",
+        "status": "rejected",
+        "seconds": 0.0,
+        "detail": "Support review rejected: Claim 'BERT is pre-trained using two unsupervised tasks: Masked LM (MLM) and Next Sentence Prediction (NSP).': Quotes mention MLM but do not mention NSP or confirm two tasks.; Claim 'The first task involves masking random input tokens and predicting them, referred to as Masked LM (MLM). The second task is Next Sentence Prediction (NSP), which is used alongside MLM to form the complete pre-training objective.': Quotes define MLM but do not mention NSP or confirm it forms the complete objective.",
+        "at": "2026-09-19T18:14:28.477285+00:00"
+      },
+      {
+        "node": "qa.generate",
+        "status": "completed",
+        "seconds": 3.501,
+        "detail": "{\"attempt\": 2, \"server_seconds\": {\"load_duration\": 0.002, \"prompt_eval_duration\": 0.456, \"eval_duration\": 2.997}, \"output_tokens\": 109}",
+        "at": "2026-09-19T18:14:31.979891+00:00"
+      },
+      {
+        "node": "qa.review",
+        "status": "completed",
+        "seconds": 2.727,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 0.497, \"eval_duration\": 2.145}, \"output_tokens\": 83}",
+        "at": "2026-09-19T18:14:34.708926+00:00"
+      },
+      {
+        "node": "qa.answer",
+        "status": "completed",
+        "seconds": 16.618,
+        "detail": "answered",
+        "at": "2026-09-19T18:14:34.710688+00:00"
+      },
+      {
+        "node": "qa.retrieve",
+        "status": "completed",
+        "seconds": 0.109,
+        "detail": "7 passages",
+        "at": "2026-09-19T18:14:59.045976+00:00"
+      },
+      {
+        "node": "model.load",
+        "status": "completed",
+        "seconds": 0.005,
+        "detail": "",
+        "at": "2026-09-19T18:14:59.056051+00:00"
+      },
+      {
+        "node": "qa.generate",
+        "status": "completed",
+        "seconds": 3.228,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.002, \"prompt_eval_duration\": 2.267, \"eval_duration\": 0.895}, \"output_tokens\": 37}",
+        "at": "2026-09-19T18:15:02.286789+00:00"
+      },
+      {
+        "node": "qa.review",
+        "status": "completed",
+        "seconds": 1.012,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.002, \"prompt_eval_duration\": 0.265, \"eval_duration\": 0.709}, \"output_tokens\": 30}",
+        "at": "2026-09-19T18:15:03.300038+00:00"
+      },
+      {
+        "node": "qa.answer",
+        "status": "completed",
+        "seconds": 4.364,
+        "detail": "answered",
+        "at": "2026-09-19T18:15:03.300921+00:00"
+      }
+    ],
+    "exchanges": [
+      {
+        "question": "What are the two pre-training tasks used in BERT?",
+        "retrieval_query": "What are the two pre-training tasks used in BERT?",
+        "answer": {
+          "status": "insufficient_evidence",
+          "claims": [],
+          "explanation": "I could not find enough evidence in the retrieved passages to answer this question."
+        },
+        "retrieved_ids": [
+          "55906861680239b2",
+          "00dc413ab7546bb0",
+          "f560cdd62b2946ab",
+          "dac6e1e8387e0cc7",
+          "b41e4d43317ecd13",
+          "a03765dddeb4c32c",
+          "90f8b7db07c19311"
+        ],
+        "elapsed_seconds": 3.707,
+        "created_at": "2026-09-19T18:08:11.604453+00:00"
+      },
+      {
+        "question": "What was the total training cost in US dollars?",
+        "retrieval_query": "What was the total training cost in US dollars?",
+        "answer": {
+          "status": "insufficient_evidence",
+          "claims": [],
+          "explanation": "I could not find enough evidence in the retrieved passages to answer this question."
+        },
+        "retrieved_ids": [
+          "191d0463fb23528f",
+          "00dc413ab7546bb0",
+          "4637b00c6eb831a7",
+          "90f8b7db07c19311",
+          "b8dbdba74e0eb977",
+          "2a20f61cb4a8f185",
+          "4b8e5d837b7167bb"
+        ],
+        "elapsed_seconds": 3.338,
+        "created_at": "2026-09-19T18:09:13.791080+00:00"
+      },
+      {
+        "question": "What does BERT stand for?",
+        "retrieval_query": "What does BERT stand for?",
+        "answer": {
+          "status": "insufficient_evidence",
+          "claims": [],
+          "explanation": "I could not find enough evidence in the retrieved passages to answer this question."
+        },
+        "retrieved_ids": [
+          "507bfbf9bf1a8c65",
+          "55906861680239b2",
+          "a92a3c043defcc47",
+          "7ce6d6e8721d6fca",
+          "df32978ad965eccd",
+          "f560cdd62b2946ab",
+          "5d1897207445b238"
+        ],
+        "elapsed_seconds": 2.924,
+        "created_at": "2026-09-19T18:09:49.958591+00:00"
+      },
+      {
+        "question": "What are the two pre-training tasks used in BERT?",
+        "retrieval_query": "What are the two pre-training tasks used in BERT?",
+        "answer": {
+          "status": "answered",
+          "claims": [
+            {
+              "text": "BERT is pre-trained using two unsupervised tasks, and one of them is Masked LM (MLM) where random input tokens are masked and predicted.",
+              "evidence": [
+                {
+                  "chunk_id": "450579bca33cb877",
+                  "quote": "Instead, we pre-train BERT using two unsupervised tasks, described in this section."
+                },
+                {
+                  "chunk_id": "450579bca33cb877",
+                  "quote": "We refer to this procedure as a \u201cmasked LM\u201d (MLM),"
+                }
+              ]
+            },
+            {
+              "text": "The second pre-training task is Next Sentence Prediction (NSP), which is used alongside Masked LM in the pre-training objective.",
+              "evidence": [
+                {
+                  "chunk_id": "b8dbdba74e0eb977",
+                  "quote": "We demonstrate the importance of the deep bidirectionality of BERT by evaluating two pretraining objectives using exactly the same pretraining data, fine-tuning scheme, and hyperparameters as BERT : BASE No NSP: A bidirectional model which is trained using the \u201cmasked LM\u201d (MLM) but without the \u201cnext sentence prediction\u201d (NSP) task."
+                },
+                {
+                  "chunk_id": "b8dbdba74e0eb977",
+                  "quote": "Additionally, this model was pre-trained without the NSP task."
+                }
+              ]
+            }
+          ],
+          "explanation": ""
+        },
+        "retrieved_ids": [
+          "55906861680239b2",
+          "00dc413ab7546bb0",
+          "dac6e1e8387e0cc7",
+          "450579bca33cb877",
+          "f560cdd62b2946ab",
+          "b8dbdba74e0eb977",
+          "90f8b7db07c19311"
+        ],
+        "elapsed_seconds": 16.618,
+        "created_at": "2026-09-19T18:14:34.710680+00:00"
+      },
+      {
+        "question": "What does BERT stand for?",
+        "retrieval_query": "What does BERT stand for?",
+        "answer": {
+          "status": "answered",
+          "claims": [
+            {
+              "text": "BERT stands for Bidirectional Encoder Representations from Transformers.",
+              "evidence": [
+                {
+                  "chunk_id": "e1796cabe1b618c0",
+                  "quote": "We introduce a new language representation model called BERT, which stands for Bidirectional Encoder Representations from Transformers."
+                }
+              ]
+            }
+          ],
+          "explanation": ""
+        },
+        "retrieved_ids": [
+          "55906861680239b2",
+          "7ce6d6e8721d6fca",
+          "a92a3c043defcc47",
+          "e1796cabe1b618c0",
+          "00dc413ab7546bb0",
+          "507bfbf9bf1a8c65",
+          "72ef7b53a6b6e2dc"
+        ],
+        "elapsed_seconds": 4.364,
+        "created_at": "2026-09-19T18:15:03.300915+00:00"
+      }
+    ],
+    "notes": "Initial two answerable questions falsely abstained before lexical retrieval correction. Repeated questions after the correction answered. The original false abstentions remain in this record. Acronym citation inspected in browser and original PDF page1."
+  },
+  "a428e33e9de6": {
+    "query": "research about electron",
+    "paper": "hep-th/0505137v1",
+    "status": "ready",
+    "events": [
+      {
+        "node": "understand",
+        "status": "completed",
+        "seconds": 0.0,
+        "detail": "",
+        "at": "2026-09-19T18:02:42.892113+00:00"
+      },
+      {
+        "node": "retrieve",
+        "status": "completed",
+        "seconds": 0.298,
+        "detail": "",
+        "at": "2026-09-19T18:02:43.191758+00:00"
+      },
+      {
+        "node": "select",
+        "status": "completed",
+        "seconds": 0.751,
+        "detail": "",
+        "at": "2026-09-19T18:02:43.946336+00:00"
+      },
+      {
+        "node": "fetch",
+        "status": "completed",
+        "seconds": 2.075,
+        "detail": "",
+        "at": "2026-09-19T18:02:46.023976+00:00"
+      },
+      {
+        "node": "parse",
+        "status": "completed",
+        "seconds": 0.514,
+        "detail": "",
+        "at": "2026-09-19T18:02:46.558547+00:00"
+      },
+      {
+        "node": "index",
+        "status": "completed",
+        "seconds": 0.022,
+        "detail": "",
+        "at": "2026-09-19T18:02:46.583102+00:00"
+      },
+      {
+        "node": "model.load",
+        "status": "completed",
+        "seconds": 0.002,
+        "detail": "",
+        "at": "2026-09-19T18:02:46.591478+00:00"
+      },
+      {
+        "node": "brief.generate",
+        "status": "completed",
+        "seconds": 19.581,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 4.162, \"eval_duration\": 15.28}, \"output_tokens\": 517}",
+        "at": "2026-09-19T18:03:06.203593+00:00"
+      },
+      {
+        "node": "brief.review",
+        "status": "completed",
+        "seconds": 4.919,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.009, \"prompt_eval_duration\": 1.27, \"eval_duration\": 3.291}, \"output_tokens\": 117}",
+        "at": "2026-09-19T18:03:11.139292+00:00"
+      },
+      {
+        "node": "brief.review",
+        "status": "completed",
+        "seconds": 4.469,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.002, \"prompt_eval_duration\": 1.184, \"eval_duration\": 3.203}, \"output_tokens\": 117}",
+        "at": "2026-09-19T18:03:15.612768+00:00"
+      },
+      {
+        "node": "brief.review",
+        "status": "completed",
+        "seconds": 1.456,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 0.62, \"eval_duration\": 0.778}, \"output_tokens\": 30}",
+        "at": "2026-09-19T18:03:17.069985+00:00"
+      },
+      {
+        "node": "brief",
+        "status": "completed",
+        "seconds": 30.488,
+        "detail": "",
+        "at": "2026-09-19T18:03:17.073167+00:00"
+      },
+      {
+        "node": "validate",
+        "status": "completed",
+        "seconds": 0.001,
+        "detail": "",
+        "at": "2026-09-19T18:03:17.075693+00:00"
+      },
+      {
+        "node": "qa.retrieve",
+        "status": "completed",
+        "seconds": 0.098,
+        "detail": "7 passages",
+        "at": "2026-09-19T18:03:33.513308+00:00"
+      },
+      {
+        "node": "model.load",
+        "status": "completed",
+        "seconds": 0.003,
+        "detail": "",
+        "at": "2026-09-19T18:03:33.522680+00:00"
+      },
+      {
+        "node": "qa.generate",
+        "status": "completed",
+        "seconds": 6.478,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 2.982, \"eval_duration\": 3.418}, \"output_tokens\": 111}",
+        "at": "2026-09-19T18:03:40.003952+00:00"
+      },
+      {
+        "node": "qa.review",
+        "status": "completed",
+        "seconds": 3.1,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 0.784, \"eval_duration\": 2.177}, \"output_tokens\": 83}",
+        "at": "2026-09-19T18:03:43.109073+00:00"
+      },
+      {
+        "node": "qa.answer",
+        "status": "completed",
+        "seconds": 9.695,
+        "detail": "answered",
+        "at": "2026-09-19T18:03:43.110279+00:00"
+      },
+      {
+        "node": "qa.retrieve",
+        "status": "completed",
+        "seconds": 0.084,
+        "detail": "7 passages",
+        "at": "2026-09-19T18:03:51.936473+00:00"
+      },
+      {
+        "node": "model.load",
+        "status": "completed",
+        "seconds": 0.002,
+        "detail": "",
+        "at": "2026-09-19T18:03:51.942308+00:00"
+      },
+      {
+        "node": "qa.generate",
+        "status": "completed",
+        "seconds": 2.807,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 2.357, \"eval_duration\": 0.37}, \"output_tokens\": 15}",
+        "at": "2026-09-19T18:03:54.751828+00:00"
+      },
+      {
+        "node": "qa.answer",
+        "status": "completed",
+        "seconds": 2.9,
+        "detail": "insufficient_evidence",
+        "at": "2026-09-19T18:03:54.753096+00:00"
+      }
+    ],
+    "briefing": {
+      "summary": {
+        "text": "The authors propose that the electron mass can be derived from space-time geometry within Deformed Special Relativity by utilizing the experimental parameter of local Lorentz invariance breakdown and the Minkowskian threshold energy.",
+        "evidence": [
+          {
+            "chunk_id": "ae766c886b044ee6",
+            "quote": "We discuss the problem of the electron mass in the framework of Deformed Special Relativity (DSR), a generalization of Special Relativity based on a deformed Minkowski space (i.e. a four-dimensional space-time with metric coefficients depending on the energy)."
+          },
+          {
+            "chunk_id": "ae766c886b044ee6",
+            "quote": "We show that, by such a formalism, it is possible to derive the value of the electron mass from the space-time geometry via the experimental knowledge of the parameter of local Lorentz invariance breakdown, and of the Minkowskian threshold energy E for the electromagnetic interaction."
+          }
+        ]
+      },
+      "problem": {
+        "text": "The origin of the electron mass remains a theoretical mystery because the Standard Model cannot explain why particles bear specific masses, and the electron is described as a mysterious object despite the successes of the Dirac equation.",
+        "evidence": [
+          {
+            "chunk_id": "2776d0e620ca42d9",
+            "quote": "1 - Introduction The problem of the mass spectrum of the known particles (leptons and hadrons) is still an open one from the theoretical side."
+          },
+          {
+            "chunk_id": "2776d0e620ca42d9",
+            "quote": "As a matter of fact, the Standard Model of electromagnetic, weak and strong interactions is unable to say why a given particle does bear that given (experimental) mass."
+          },
+          {
+            "chunk_id": "2776d0e620ca42d9",
+            "quote": "On this respect, even the first, best known and familiar particle, the electron, is still a mysterious object."
+          }
+        ]
+      },
+      "method": [
+        {
+          "text": "The approach utilizes the Deformed Special Relativity formalism, which is described as a five-dimensional theory where the deformed Minkowski space can be embedded in a larger Riemannian manifold with energy as the fifth dimension.",
+          "evidence": [
+            {
+              "chunk_id": "b608695a51ff6d02",
+              "quote": "Moreover, it was shown that the DSR formalism is actually a five-dimensional one, in the sense that the deformed Minkowski space can be naturally embedded in a larger Riemannian manifold, with energy as fifth dimension(13) ."
+            },
+            {
+              "chunk_id": "b608695a51ff6d02",
+              "quote": "On this respect, the DSR formalism is a kind of generalized (non-compactified) Kaluza-Klein theory, and resembles, in some aspects, the so-called ''Space-Time-Mass'' (STM) theory (in which the fifth dimension is the rest mass), proposed by Wesson(15) and studied in detail by a number of Authors(16). ~ By putting ds2=0 ,"
+            }
+          ]
+        },
+        {
+          "text": "The method involves setting the space-time interval to zero to determine the maximal causal velocity for a specific interaction, which serves as the analogous of the light speed in Special Relativity.",
+          "evidence": [
+            {
+              "chunk_id": "e262f915c39643e2",
+              "quote": "so-called ''Space-Time-Mass'' (STM) theory (in which the fifth dimension is the rest mass), proposed by Wesson(15) and studied in detail by a number of Authors(16). ~ By putting ds2=0 , we get the maximal causal velocity in M (3,21) \u00e6 \u00f6 r b (E) b (E) b (E) u(E) o \u00e7 \u00e7 c 0 ,c 0 ,c 0 \u00f7 \u00f7 (2.3) \u00e8 b (E) b (E) b (E) \u00f8 1 2 3 (i.e. the analogous of the light speed in SR) for the interaction represented by the deformed metric considered."
+            },
+            {
+              "chunk_id": "e262f915c39643e2",
+              "quote": "In DSR the relativistic energy, for a particle of mass m subjected to a given interaction and moving along x\u02c6 ,has the form(3): i E = m u2 (E)g ~ (E) == m c2 b2 0 (E) g ~ (E) (2.4) i b2 (E) i where u is the i-th component of the maximal velocity (2.3) of the interaction considered, i and g ~ (E) o ( 1- b ~ 2 ) - 1 2 = \u00ea \u00e9 1- \u00e7 \u00e7 \u00e6 v i b i (E) \u00f7 \u00f7 \u00f6"
+            }
+          ]
+        },
+        {
+          "text": "A connection to the electron mass is established by defining the local Lorentz invariance breakdown parameter for a given interaction, which represents a measure of the amount of LLI breakdown.",
+          "evidence": [
+            {
+              "chunk_id": "35b4d8178987e0d2",
+              "quote": "In order to establish a connection with the electron mass, we can define the LLI breakdown parameter for a given interaction, d , as int m - m m d o in,int. in,grav. =1- in,grav. (3.3) int m m in,int. in,int. where m is the inertial mass of the particle"
+            },
+            {
+              "chunk_id": "09763ff24ce49150",
+              "quote": "In the framework of DSR, d embodies int 5 Throughout the present work, ''int'' denotes a physically detectable fundamental interaction, which can be operationally defined by means of a phenomenological energy-dependent metric of deformed-Minkowskian type."
+            }
+          ]
+        }
+      ],
+      "results": [
+        {
+          "text": "The study demonstrates that it is possible to derive the value of the electron mass from the space-time geometry via the experimental knowledge of the parameter of local Lorentz invariance breakdown and the Minkowskian threshold energy.",
+          "evidence": [
+            {
+              "chunk_id": "ae766c886b044ee6",
+              "quote": "We show that, by such a formalism, it is possible to derive the value of the electron mass from the space-time geometry via the experimental knowledge of the parameter of local Lorentz invariance breakdown, and of the Minkowskian threshold energy E for the electromagnetic interaction."
+            },
+            {
+              "chunk_id": "ae766c886b044ee6",
+              "quote": "We put forward the suggestion that mass 0,e.m. generation can be related, in DSR, to the possible dependence of mass on the metric background (relativity of mass)."
+            }
+          ]
+        },
+        {
+          "text": "The authors put forward the suggestion that mass generation can be related, in Deformed Special Relativity, to the possible dependence of mass on the metric background, or the relativity of mass.",
+          "evidence": [
+            {
+              "chunk_id": "ae766c886b044ee6",
+              "quote": "We put forward the suggestion that mass 0,e.m. generation can be related, in DSR, to the possible dependence of mass on the metric background (relativity of mass)."
+            }
+          ]
+        }
+      ],
+      "limitations": [],
+      "limitations_note": "No explicit limitations were identified in the selected evidence; this does not establish that the paper has none.",
+      "follow_up_questions": [
+        "How does the specific value of the Minkowskian threshold energy E influence the calculated electron mass in this framework?",
+        "What are the implications of the local violation of the Principle of Equivalence for interactions different from the gravitational one as described by the parameter d?",
+        "Can the five-dimensional embedding of the deformed Minkowski space provide a unified description of mass and energy beyond the electron?"
+      ]
+    },
+    "exchanges": [
+      {
+        "question": "What does DSR stand for in this paper?",
+        "retrieval_query": "What does DSR stand for in this paper?",
+        "answer": {
+          "status": "answered",
+          "claims": [
+            {
+              "text": "DSR stands for Deformed Special Relativity, a generalization of Special Relativity based on a deformation of the Minkowski space.",
+              "evidence": [
+                {
+                  "chunk_id": "1a09b8d685f1ab28",
+                  "quote": "In this paper, we want to show that the electron mass m can be obtained from e arguments related to the breakdown of local Lorentz invariance, in the framework of a generalization of Special Relativity (Deformed Special Relativity, DSR), based on a \u201cdeformation\u201d of the Minkowski space (i.e. with metric coefficients depending on the energy) ."
+                },
+                {
+                  "chunk_id": "1a09b8d685f1ab28",
+                  "quote": "This allows one to attribute to m a geometrical meaning, by expressing it in e terms of the parameter d of LLI breakdown."
+                }
+              ]
+            },
+            {
+              "text": "The paper states that the electron mass can be obtained from arguments related to the breakdown of local Lorentz invariance within the framework of Deformed Special Relativity (DSR).",
+              "evidence": [
+                {
+                  "chunk_id": "1a09b8d685f1ab28",
+                  "quote": "In this paper, we want to show that the electron mass m can be obtained from e arguments related to the breakdown of local Lorentz invariance, in the framework of a generalization of Special Relativity (Deformed Special Relativity, DSR), based on a \u201cdeformation\u201d of the Minkowski space (i.e. with metric coefficients depending on the energy) ."
+                }
+              ]
+            }
+          ],
+          "explanation": ""
+        },
+        "retrieved_ids": [
+          "8fe76a3ad911e039",
+          "b608695a51ff6d02",
+          "1a09b8d685f1ab28",
+          "09763ff24ce49150",
+          "c1799310b144ac08",
+          "fb2d9557d84ec84b",
+          "e262f915c39643e2"
+        ],
+        "elapsed_seconds": 9.695,
+        "created_at": "2026-09-19T18:03:43.110272+00:00"
+      },
+      {
+        "question": "What was the total research budget in US dollars?",
+        "retrieval_query": "What was the total research budget in US dollars?",
+        "answer": {
+          "status": "insufficient_evidence",
+          "claims": [],
+          "explanation": "I could not find enough evidence in the retrieved passages to answer this question."
+        },
+        "retrieved_ids": [
+          "8a380734e58b5fd5",
+          "cf2cf78f4e03268f",
+          "a5850bdd37ffd30f",
+          "a45a68784c687b14",
+          "b608695a51ff6d02",
+          "7cd9f985df766931",
+          "251e079316ab555d"
+        ],
+        "elapsed_seconds": 2.9,
+        "created_at": "2026-09-19T18:03:54.753090+00:00"
+      }
+    ]
+  },
+  "51fc27237fea": {
+    "query": "research about electron",
+    "paper": "1401.3078v2",
+    "status": "ready",
+    "events": [
+      {
+        "node": "understand",
+        "status": "completed",
+        "seconds": 0.0,
+        "detail": "",
+        "at": "2026-09-19T18:17:56.573927+00:00"
+      },
+      {
+        "node": "retrieve",
+        "status": "completed",
+        "seconds": 0.0,
+        "detail": "",
+        "at": "2026-09-19T18:17:56.575866+00:00"
+      },
+      {
+        "node": "select",
+        "status": "completed",
+        "seconds": 0.632,
+        "detail": "",
+        "at": "2026-09-19T18:17:57.209365+00:00"
+      },
+      {
+        "node": "fetch",
+        "status": "completed",
+        "seconds": 1.458,
+        "detail": "",
+        "at": "2026-09-19T18:17:58.670439+00:00"
+      },
+      {
+        "node": "parse",
+        "status": "completed",
+        "seconds": 0.68,
+        "detail": "",
+        "at": "2026-09-19T18:17:59.355570+00:00"
+      },
+      {
+        "node": "index",
+        "status": "completed",
+        "seconds": 3.524,
+        "detail": "",
+        "at": "2026-09-19T18:18:02.882114+00:00"
+      },
+      {
+        "node": "model.load",
+        "status": "completed",
+        "seconds": 0.001,
+        "detail": "",
+        "at": "2026-09-19T18:18:02.926305+00:00"
+      },
+      {
+        "node": "brief.generate",
+        "status": "completed",
+        "seconds": 19.371,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 4.031, \"eval_duration\": 15.219}, \"output_tokens\": 575}",
+        "at": "2026-09-19T18:18:22.328086+00:00"
+      },
+      {
+        "node": "brief.validate",
+        "status": "rejected",
+        "seconds": 0.0,
+        "detail": "Claim contains numeric values missing from its evidence: 22",
+        "at": "2026-09-19T18:18:22.331038+00:00"
+      },
+      {
+        "node": "brief.generate",
+        "status": "completed",
+        "seconds": 17.618,
+        "detail": "{\"attempt\": 2, \"server_seconds\": {\"load_duration\": 0.002, \"prompt_eval_duration\": 0.968, \"eval_duration\": 16.625}, \"output_tokens\": 575}",
+        "at": "2026-09-19T18:18:39.950775+00:00"
+      },
+      {
+        "node": "brief.validate",
+        "status": "rejected",
+        "seconds": 0.0,
+        "detail": "Claim contains numeric values missing from its evidence: 22",
+        "at": "2026-09-19T18:18:39.953345+00:00"
+      },
+      {
+        "node": "brief",
+        "status": "failed",
+        "seconds": 37.062,
+        "detail": "The model output failed schema/evidence validation twice. No unverified answer was accepted. Claim contains numeric values missing from its evidence: 22",
+        "at": "2026-09-19T18:18:39.954072+00:00"
+      },
+      {
+        "node": "model.load",
+        "status": "completed",
+        "seconds": 0.001,
+        "detail": "",
+        "at": "2026-09-19T18:22:31.953344+00:00"
+      },
+      {
+        "node": "brief.generate",
+        "status": "completed",
+        "seconds": 14.924,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 0.208, \"eval_duration\": 14.701}, \"output_tokens\": 575}",
+        "at": "2026-09-19T18:22:46.998980+00:00"
+      },
+      {
+        "node": "brief.review",
+        "status": "completed",
+        "seconds": 5.622,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.002, \"prompt_eval_duration\": 1.028, \"eval_duration\": 4.248}, \"output_tokens\": 173}",
+        "at": "2026-09-19T18:22:52.624780+00:00"
+      },
+      {
+        "node": "brief.review",
+        "status": "completed",
+        "seconds": 3.755,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.003, \"prompt_eval_duration\": 0.846, \"eval_duration\": 2.857}, \"output_tokens\": 117}",
+        "at": "2026-09-19T18:22:56.382155+00:00"
+      },
+      {
+        "node": "brief.review",
+        "status": "completed",
+        "seconds": 3.129,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 0.709, \"eval_duration\": 2.021}, \"output_tokens\": 83}",
+        "at": "2026-09-19T18:22:59.513790+00:00"
+      },
+      {
+        "node": "brief",
+        "status": "completed",
+        "seconds": 27.572,
+        "detail": "",
+        "at": "2026-09-19T18:22:59.519994+00:00"
+      },
+      {
+        "node": "validate",
+        "status": "completed",
+        "seconds": 0.001,
+        "detail": "",
+        "at": "2026-09-19T18:22:59.523199+00:00"
+      },
+      {
+        "node": "qa.retrieve",
+        "status": "completed",
+        "seconds": 0.102,
+        "detail": "7 passages",
+        "at": "2026-09-19T18:23:58.279049+00:00"
+      },
+      {
+        "node": "model.load",
+        "status": "completed",
+        "seconds": 0.001,
+        "detail": "",
+        "at": "2026-09-19T18:23:58.285730+00:00"
+      },
+      {
+        "node": "qa.generate",
+        "status": "completed",
+        "seconds": 4.446,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 2.916, \"eval_duration\": 1.292}, \"output_tokens\": 52}",
+        "at": "2026-09-19T18:24:02.734818+00:00"
+      },
+      {
+        "node": "qa.review",
+        "status": "completed",
+        "seconds": 1.591,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.001, \"prompt_eval_duration\": 0.548, \"eval_duration\": 0.718}, \"output_tokens\": 30}",
+        "at": "2026-09-19T18:24:04.326930+00:00"
+      },
+      {
+        "node": "qa.answer",
+        "status": "completed",
+        "seconds": 6.151,
+        "detail": "answered",
+        "at": "2026-09-19T18:24:04.328303+00:00"
+      },
+      {
+        "node": "qa.retrieve",
+        "status": "completed",
+        "seconds": 0.099,
+        "detail": "7 passages",
+        "at": "2026-09-19T18:24:52.476300+00:00"
+      },
+      {
+        "node": "model.load",
+        "status": "completed",
+        "seconds": 0.001,
+        "detail": "",
+        "at": "2026-09-19T18:24:52.486167+00:00"
+      },
+      {
+        "node": "qa.generate",
+        "status": "completed",
+        "seconds": 3.943,
+        "detail": "{\"attempt\": 1, \"server_seconds\": {\"load_duration\": 0.002, \"prompt_eval_duration\": 3.246, \"eval_duration\": 0.396}, \"output_tokens\": 15}",
+        "at": "2026-09-19T18:24:56.432071+00:00"
+      },
+      {
+        "node": "qa.answer",
+        "status": "completed",
+        "seconds": 4.056,
+        "detail": "insufficient_evidence",
+        "at": "2026-09-19T18:24:56.433292+00:00"
+      }
+    ],
+    "briefing": {
+      "summary": {
+        "text": "Source wording (automatic review requested inspection): \u201cCONCLUSIONS & OUTLOOK In summary, we have characterized the electronic structure of Bi Se with a combination of 1PPE and 2 3 2PPE techniques,\u201d \u201ca linearly increasing DOS, as shown in Fig. 8(a).\u201d",
+        "evidence": [
+          {
+            "chunk_id": "a5affe9e5a4118c2",
+            "quote": "CONCLUSIONS & OUTLOOK In summary, we have characterized the electronic structure of Bi Se with a combination of 1PPE and 2 3 2PPE techniques,"
+          },
+          {
+            "chunk_id": "382b66d8a474b884",
+            "quote": "a linearly increasing DOS, as shown in Fig. 8(a)."
+          }
+        ]
+      },
+      "problem": {
+        "text": "The population decay rate extracted by time-resolved ARPES is not in general equal to the single electron scattering rate, but rather represents the dynamics of a distribution of electrons including filling and emptying processes.",
+        "evidence": [
+          {
+            "chunk_id": "1ebdf54f94523bdb",
+            "quote": "This analysis serves as an important reminder that the population decay rate extracted by trARPES is not in general equal to the single electron scattering rate."
+          },
+          {
+            "chunk_id": "1ebdf54f94523bdb",
+            "quote": "Rather, the dynamics measured by trARPES is that of a distribution of electrons, which naturally includes a combination of filling and emptying processes from a continuum of states."
+          }
+        ]
+      },
+      "method": [
+        {
+          "text": "Source wording (automatic review requested inspection): \u201cus to perform both 1PPE and 2PPE with the same 6 eV pulses.\u201d \u201cThe setup has a total energy resolution of < 22meV (limited by the bandwidth of the 6eV pulses) and angular resolution < 0.5\u25e6.\u201d",
+          "evidence": [
+            {
+              "chunk_id": "4455b47adb1a80bf",
+              "quote": "us to perform both 1PPE and 2PPE with the same 6 eV pulses."
+            },
+            {
+              "chunk_id": "4455b47adb1a80bf",
+              "quote": "The setup has a total energy resolution of < 22meV (limited by the bandwidth of the 6eV pulses) and angular resolution < 0.5\u25e6."
+            }
+          ]
+        },
+        {
+          "text": "Density functional theory calculations were performed using the PBE exchange functional with the full potential (linearized) augmented plane-wave method based on an experimentally determined crystal structure of a Bi2Se3 slab consisting of 6 quintuple layers.",
+          "evidence": [
+            {
+              "chunk_id": "4455b47adb1a80bf",
+              "quote": "The density functional theory calculations were done with the PBE exchange functional [28] using the full potential (linearized) augmented plane-wave method as implemented in the wien2k package[29]."
+            },
+            {
+              "chunk_id": "4455b47adb1a80bf",
+              "quote": "The calculations were based on the experimentally determined crystal structure reported in Ref. 30."
+            },
+            {
+              "chunk_id": "4455b47adb1a80bf",
+              "quote": "The Bi Se slab con2 3 sists of 6 quintuple layers, separated by a vacuum of \u223c 25 \u030aA."
+            }
+          ]
+        },
+        {
+          "text": "Theoretical modeling assumes that phonon modes couple equally well to all electrons and approximates the phonon density of states to avoid detailed calculations of electron-phonon coupling matrix elements.",
+          "evidence": [
+            {
+              "chunk_id": "382b66d8a474b884",
+              "quote": "The choice of |G(\u03c9)|2 is less straightforward."
+            },
+            {
+              "chunk_id": "382b66d8a474b884",
+              "quote": "To avoid detailed calculations of electron-phonon coupling matrix elements, we shall assume that all phonon modes couple equally well to all electrons, so that |G(\u03c9)|2 is simply a constant."
+            },
+            {
+              "chunk_id": "382b66d8a474b884",
+              "quote": "This choice is an approximation to the measured phonon DOS [44]."
+            }
+          ]
+        }
+      ],
+      "results": [
+        {
+          "text": "An exponential fit to the conduction band population decay yields a population lifetime of 5.95(2) ps, which may have several contributing decay mechanisms.",
+          "evidence": [
+            {
+              "chunk_id": "4cc7969aaaadc50f",
+              "quote": "An exponential fit to the CB population decay (curve #10 in Fig. 5(b)) gives a population lifetime of 5.95(2)ps."
+            },
+            {
+              "chunk_id": "4cc7969aaaadc50f",
+              "quote": "The decay mechanisms responsible for this lifetime may have several contributions."
+            }
+          ]
+        },
+        {
+          "text": "The model reproduces the experimental data by showing a monotonic decrease of the relaxation rate with increasing temperature away from the band edge and flattening of the rate curve near the band edge.",
+          "evidence": [
+            {
+              "chunk_id": "a5affe9e5a4118c2",
+              "quote": "In particular, away from the band edge it exhibits a monotonic decrease of relaxation rate with increasing T."
+            },
+            {
+              "chunk_id": "a5affe9e5a4118c2",
+              "quote": "In addition, the model reproduces the flattening of the rate curve at the value of \u0393 near the band esc edge."
+            }
+          ]
+        },
+        {
+          "text": "Removing the temperature dependence of the scattering rate reveals that the counter-intuitive trend of increasing decay rates with decreasing temperature can be attributed to fundamental electron-phonon scattering processes alone.",
+          "evidence": [
+            {
+              "chunk_id": "a5affe9e5a4118c2",
+              "quote": "With the T-dependence of \u0393 esc removed, only the temperature dependence of the intraband electron-phonon scattering processes remains."
+            },
+            {
+              "chunk_id": "a5affe9e5a4118c2",
+              "quote": "This clearly demonstrates that the counter-intuitive trend of increasing decay rates with decreasing T can be attributed to fundamental electron-phonon scattering processes alone."
+            }
+          ]
+        }
+      ],
+      "limitations": [],
+      "limitations_note": "No explicit limitations were identified in the selected evidence; this does not establish that the paper has none.",
+      "follow_up_questions": [
+        "How do the identified bulk-to-surface scattering channels mediated by phonons quantitatively contribute to the total decay rate?",
+        "What is the specific role of the unoccupied topological surface state in the relaxation dynamics observed in n-type topological insulators?",
+        "Can the model be extended to regimes near the Fermi energy without assuming the Fermi-Dirac distribution is negligible?"
+      ]
+    },
+    "exchanges": [
+      {
+        "question": "What was the total energy resolution of the setup?",
+        "retrieval_query": "What was the total energy resolution of the setup?",
+        "answer": {
+          "status": "answered",
+          "claims": [
+            {
+              "text": "The setup has a total energy resolution of < 22meV (limited by the bandwidth of the 6eV pulses).",
+              "evidence": [
+                {
+                  "chunk_id": "4455b47adb1a80bf",
+                  "quote": "The setup has a total energy resolution of < 22meV (limited by the bandwidth of the 6eV pulses) and angular resolution < 0.5\u25e6."
+                }
+              ]
+            }
+          ],
+          "explanation": ""
+        },
+        "retrieved_ids": [
+          "4455b47adb1a80bf",
+          "e5d8315193e769fb",
+          "730fb36b3edfef52",
+          "9005e8502eaf245f",
+          "31efd5d91729b5ee",
+          "62090b4c650af517",
+          "8a138bf74372c623"
+        ],
+        "elapsed_seconds": 6.151,
+        "created_at": "2026-09-19T18:24:04.328296+00:00"
+      },
+      {
+        "question": "What was the total research budget in US dollars?",
+        "retrieval_query": "What was the total research budget in US dollars?",
+        "answer": {
+          "status": "insufficient_evidence",
+          "claims": [],
+          "explanation": "I could not find enough evidence in the retrieved passages to answer this question."
+        },
+        "retrieved_ids": [
+          "4455b47adb1a80bf",
+          "31efd5d91729b5ee",
+          "1bdb2834d5086d65",
+          "46aee8329a737ee4",
+          "86222866e8d78dc3",
+          "cbd0973f87fc1908",
+          "ce6604a8f6d1d1fc"
+        ],
+        "elapsed_seconds": 4.056,
+        "created_at": "2026-09-19T18:24:56.433285+00:00"
+      }
+    ]
+  },
+  "final_browser_runs": {
+    "bert_session": "7016d3da0645",
+    "bert_browser_briefing_seconds": 31,
+    "topic_session": "d757bedd4a1c",
+    "topic_browser_briefing_seconds": 36,
+    "topic_browser_supported_qa_seconds": 4.8,
+    "topic_browser_unsupported_qa_seconds": 1.5,
+    "fresh_model_generation": true,
+    "cache_reuse": "Final sessions reused verified PDFs/metadata and compatible indexes; these are not cold-cache timings."
+  }
+}

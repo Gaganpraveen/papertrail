@@ -1,3 +1,5 @@
+import json
+
 import httpx
 import pytest
 
@@ -95,6 +97,11 @@ def test_topic_broadens_once(tmp_path):
             {"search_query": "all:electron", "sortBy": "submittedDate", "sortOrder": "descending"},
         ),
         ("electron", 12, {"search_query": "all:electron", "max_results": "12"}),
+        (
+            "KV-cache compression",
+            8,
+            {"search_query": 'all:"kv-cache" AND all:compression'},
+        ),
     ],
 )
 def test_topic_406_canonical_retry_preserves_intent_and_limit(tmp_path, query, limit, expected):
@@ -148,8 +155,8 @@ def test_topic_406_fallback_stops_after_one_alternate_request(tmp_path):
         client.close()
 
 
-@pytest.mark.parametrize("query, status", [("KV-cache compression", 406), ("electron", 403)])
-def test_topic_fallback_never_rewrites_punctuation_or_other_errors(tmp_path, query, status):
+@pytest.mark.parametrize("status", [401, 403, 404])
+def test_topic_does_not_retry_nonretryable_errors(tmp_path, status):
     requests = []
 
     def handler(request):
@@ -161,8 +168,33 @@ def test_topic_fallback_never_rewrites_punctuation_or_other_errors(tmp_path, que
     )
     try:
         with pytest.raises(SourceError, match=f"HTTP {status}"):
-            client.search(understand(query))
+            client.search(understand("electron"))
         assert len(requests) == 1
+    finally:
+        client.close()
+
+
+def test_equivalent_success_is_cached_for_original_query(tmp_path):
+    requests = []
+
+    def handler(request):
+        requests.append(request)
+        if len(requests) == 1:
+            return httpx.Response(406)
+        return httpx.Response(
+            200,
+            text='<feed xmlns="http://www.w3.org/2005/Atom"><entry>'
+            "<id>https://arxiv.org/abs/1706.03762v7</id><title>Test</title></entry></feed>",
+        )
+
+    client = ArxivClient(
+        tmp_path, client=httpx.Client(transport=httpx.MockTransport(handler)), delay=0
+    )
+    try:
+        first, warnings = client.search(understand("electron"))
+        second, _ = client.search(understand("electron"))
+        assert first == second and warnings
+        assert len(requests) == 2
     finally:
         client.close()
 
@@ -197,6 +229,7 @@ def test_pdf_redirect_is_not_followed(tmp_path, paper, monkeypatch):
     )
     with pytest.raises(SourceError):
         client.download(paper, tmp_path / "paper.pdf")
+    assert len(calls) == 1
     assert all(url.startswith("https://arxiv.org/pdf/") for url in calls)
 
 
@@ -229,3 +262,107 @@ def test_version_fallback_cannot_substitute_newer_paper(tmp_path, paper, monkeyp
     monkeypatch.setattr(client, "_feed", feed)
     with pytest.raises(SourceError, match="different revision"):
         client.search(understand("1706.03762v2"))
+
+
+def test_unversioned_id_cannot_substitute_another_paper(tmp_path, paper, monkeypatch):
+    client = ArxivClient(tmp_path, delay=0)
+    monkeypatch.setattr(client, "_feed", lambda params: [paper])
+    with pytest.raises(SourceError, match="different paper"):
+        client.search(understand("1810.04805"))
+    client.close()
+
+
+def test_pdf_cached_by_exact_revision_and_verified_checksum(tmp_path, paper):
+    calls = []
+    payload = b"%PDF-1.4\n" + b"synthetic test document" * 20
+
+    def handler(request):
+        calls.append(request)
+        return httpx.Response(200, content=payload)
+
+    client = ArxivClient(
+        tmp_path / "cache", client=httpx.Client(transport=httpx.MockTransport(handler)), delay=0
+    )
+    try:
+        first_sha = client.download(paper, tmp_path / "first.pdf")
+        second_sha = client.download(paper, tmp_path / "second.pdf")
+        assert first_sha == second_sha
+        assert len(calls) == 1
+        assert (tmp_path / "second.pdf").read_bytes() == payload
+
+        # A corrupt cache must be fetched again, not copied into a new session.
+        cached, _ = client._pdf_cache_paths(paper)
+        cached.write_bytes(b"%PDF-1.4\n" + b"corrupted contents" * 20)
+        assert client.download(paper, tmp_path / "third.pdf") == first_sha
+        assert len(calls) == 2
+    finally:
+        client.close()
+
+
+def test_pdf_cache_cannot_substitute_revision_or_source_identity(tmp_path, paper):
+    calls = []
+    payload = b"%PDF-1.4\n" + b"synthetic test document" * 20
+
+    def handler(request):
+        calls.append(str(request.url))
+        return httpx.Response(200, content=payload)
+
+    client = ArxivClient(
+        tmp_path / "cache", client=httpx.Client(transport=httpx.MockTransport(handler)), delay=0
+    )
+    try:
+        client.download(paper, tmp_path / "first.pdf")
+        _, manifest = client._pdf_cache_paths(paper)
+        metadata = json.loads(manifest.read_text())
+        metadata["arxiv_id"] = "1706.03762v6"
+        manifest.write_text(json.dumps(metadata))
+        client.download(paper, tmp_path / "second.pdf")
+        assert len(calls) == 2
+
+        different = paper.model_copy(
+            update={"arxiv_id": "1706.03762v6", "pdf_url": "https://arxiv.org/pdf/1706.03762v6"}
+        )
+        client.download(different, tmp_path / "revision.pdf")
+        assert len(calls) == 3 and calls[-1].endswith("v6")
+    finally:
+        client.close()
+
+
+def test_unversioned_pdf_is_not_reused_across_sessions(tmp_path, paper):
+    calls = []
+    paper = paper.model_copy(
+        update={"arxiv_id": "1706.03762", "pdf_url": "https://arxiv.org/pdf/1706.03762"}
+    )
+
+    def handler(request):
+        calls.append(request)
+        return httpx.Response(200, content=b"%PDF-1.4\n" + b"synthetic test document" * 20)
+
+    client = ArxivClient(
+        tmp_path / "cache", client=httpx.Client(transport=httpx.MockTransport(handler)), delay=0
+    )
+    try:
+        client.download(paper, tmp_path / "first.pdf")
+        client.download(paper, tmp_path / "second.pdf")
+        assert len(calls) == 2
+    finally:
+        client.close()
+
+
+def test_metadata_transient_failure_has_bounded_retries(tmp_path, monkeypatch):
+    calls = []
+    monkeypatch.setattr("papertrail.sources.time.sleep", lambda seconds: None)
+
+    def handler(request):
+        calls.append(request)
+        return httpx.Response(503)
+
+    client = ArxivClient(
+        tmp_path, client=httpx.Client(transport=httpx.MockTransport(handler)), delay=0
+    )
+    try:
+        with pytest.raises(SourceError, match="after three attempts"):
+            client.search(understand("1810.04805"))
+        assert len(calls) == 3
+    finally:
+        client.close()

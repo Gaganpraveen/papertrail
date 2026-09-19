@@ -1,4 +1,4 @@
-from papertrail.retrieval import HybridIndex, bm25
+from papertrail.retrieval import HybridIndex, bm25, lexical_tokens
 from papertrail.schema import Chunk
 
 
@@ -24,6 +24,34 @@ def test_bm25_recognizes_exact_term():
         ],
     )
     assert scores[0] > scores[1] == scores[2] == 0
+
+
+def test_question_boilerplate_does_not_outrank_the_actual_definition():
+    scores = bm25(
+        "What does NOVA stand for?",
+        [
+            "NOVA stands for Neural Operator with Variable Attention.",
+            "What does the NOVA model do? This is a frequently asked question for users.",
+        ],
+    )
+    assert scores[0] > scores[1]
+
+
+def test_lexical_matching_handles_hyphen_variants_and_simple_plurals():
+    scores = bm25(
+        "pre-training tasks",
+        [
+            "The pretraining task predicts masked tokens.",
+            "The unrelated section describes results.",
+        ],
+    )
+    assert scores[0] > scores[1] == 0
+    assert {"pre", "training", "pretraining", "task"} <= set(lexical_tokens("pre-training tasks"))
+    assert lexical_tokens("analysis corpus loss") == ["analysis", "corpus", "loss"]
+
+
+def test_stop_word_only_question_does_not_create_lexical_evidence():
+    assert bm25("what is it", ["It is a description.", "What is the experiment?"]) == [0, 0]
 
 
 def test_persistent_vectors_and_reference_filter(tmp_path):

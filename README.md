@@ -1,86 +1,53 @@
 # PaperTrail
 
-An arXiv reading assistant with persistent sessions, structured briefings, and answers linked to inspectable source evidence. Enter a research topic, arXiv ID, or arXiv paper URL; PaperTrail selects one paper, parses its PDF, and saves the path from each accepted claim back to its quoted passage and page.
+PaperTrail turns an arXiv paper into a structured briefing and answers follow-up questions with inspectable quotations and PDF page references. It accepts an arXiv ID, URL, or research topic, selects one paper per session, and preserves its source, index, execution history, and answers.
 
-[Repository](https://github.com/Gaganpraveen/papertrail) · [Architecture](docs/architecture.md) · [Evaluation](docs/evaluation.md) · [Interview guide PDF](output/pdf/papertrail-guide.pdf) · [Reflection draft](docs/reflection-script.md)
+**Live application:** after setup, run `papertrail web` and open **[http://127.0.0.1:8765](http://127.0.0.1:8765)**. This runs new paper processing and local model inference.
 
-[Verified paper run](examples/release-attention/report.html) · [Verified topic run](examples/release-topic/report.html) · [Earlier CLI recording](examples/demo.cast) · [Release verification](docs/release-verification.md). These saved artifacts preserve real results and inspectable citations. Live processing runs locally through the CLI or browser interface. The complete release is published on [`codex/release-ready`](https://github.com/Gaganpraveen/papertrail/tree/codex/release-ready), with [PR #1](https://github.com/Gaganpraveen/papertrail/pull/1) open against `main`. The [Pages demo](https://gaganpraveen.github.io/papertrail/) serves a saved report; model processing runs locally.
+**[GitHub Pages](https://gaganpraveen.github.io/papertrail/) is a static saved report, not a live application.** Public inference is not deployed. The current server is deliberately limited to a local single-user session; it must not be exposed through a public tunnel or used to expose raw Ollama.
 
-## What it does
+[Architecture](docs/architecture.md) · [Browser guide](docs/web-demo.md) · [Release measurements](docs/release-rescue.md) · [Evaluation](docs/evaluation.md) · [BERT report](examples/rescue-bert/report.html) · [Topic report](examples/rescue-topic/report.html)
 
-- Searches the official arXiv API or resolves a supplied ID, preserves candidate metadata, and selects one revision per session.
-- Extracts page-aware PDF passages with section labels, including abstract and references, and records extraction warnings.
-- Combines local BGE embeddings in Qdrant with BM25 using reciprocal-rank fusion.
-- Produces a briefing with a summary, problem, method, results, mandatory limitations or a missing-evidence note, and suggested questions.
-- Answers follow-up questions with quoted evidence, or explicitly abstains when support is insufficient or validation fails.
-- Saves graph checkpoints, model configuration, source checksums, and conversation history; exports Markdown, JSON, and a portable HTML evidence reader.
+## Setup and run
 
-No paid API key, hosted database, or cloud inference account is required. Model downloads and access to arXiv require internet access. Inference and the vector database run on your computer; speed and memory use depend on the selected model and hardware.
-
-## Setup
-
-Use Python **3.12** for the documented setup. The package declares Python 3.11–3.13 support. Install [Ollama](https://ollama.com/download) and ensure its local service is running; if needed, run `ollama serve` in another terminal.
+Requirements: Python **3.12** for the documented setup, [Ollama](https://ollama.com/download), and sufficient memory for `qwen3.5:4b`. This model was tested on an Apple M5 with 16 GB RAM; its download is approximately 3.4 GB. The package declares Python 3.11–3.13 support. Model downloads and arXiv retrieval require internet access; inference and storage run locally without a paid text-generation provider.
 
 ```sh
-git clone --branch codex/release-ready https://github.com/Gaganpraveen/papertrail.git
+git clone --branch codex/release-rescue https://github.com/Gaganpraveen/papertrail.git
 cd papertrail
 python3.12 -m venv .venv
 source .venv/bin/activate
 python -m pip install -e '.[dev]'
-```
-
-On Windows, activate the environment with `.venv\Scripts\Activate.ps1` and use your Python 3.12 launcher in place of `python3.12`.
-
-The default local model is **`qwen3.5:4b`**, tested locally on an Apple M5 with 16 GB RAM. Its download is about 3.4 GB. The setup commands explicitly select this model; see [reproducibility notes](docs/reproducibility.md) for the tested dependency snapshot and model-pinning limits.
-
-```sh
 ollama pull qwen3.5:4b
-export PAPERTRAIL_MODEL=qwen3.5:4b
 papertrail doctor --warmup
-papertrail digest '1706.03762'
-```
-
-For PowerShell, set the model with `$env:PAPERTRAIL_MODEL = 'qwen3.5:4b'`. The first `doctor --warmup` also downloads the CPU embedding model. Allow several minutes for initial downloads and local generation; no hardware-independent latency is promised.
-
-The final command requests *Attention Is All You Need*. A base ID resolves through official metadata to a revision, which is then retained in the session. You can instead supply a versioned ID or a plain arXiv `/abs/` or `/pdf/` URL.
-
-## Local browser interface
-
-After setup, start the local interface:
-
-```sh
 papertrail web
 ```
 
-Open [http://127.0.0.1:8765](http://127.0.0.1:8765) in your browser. Keep the process and Ollama running for live processing and questions. This interface runs on your computer and is separate from the static Pages export. See the [local web demo guide](docs/web-demo.md) for the walkthrough.
+Ollama must be running; `ollama serve` starts it in another terminal if necessary. On Windows, activate with `.venv\Scripts\Activate.ps1` and use the installed Python 3.12 launcher. Initial setup also downloads the CPU embedding model. The tested dependency snapshot and platform scope are documented in [reproducibility notes](docs/reproducibility.md).
 
-## Use the saved session
+Open the local application, enter `https://arxiv.org/abs/1810.04805`, and select **Create briefing**. The selected title and revision appear above the briefing. Follow-up questions appear in the same report with expandable source quotations. Keep Ollama and the application process running.
 
-After a successful digest, copy its printed session ID. Replace `SESSION` below with that ID and `CHUNK` with a passage ID from an answer or export.
+The default Ollama address is `http://127.0.0.1:11434`. The original demonstration Mac uses a separate service on port 11435:
 
 ```sh
+PAPERTRAIL_OLLAMA_URL=http://127.0.0.1:11435 .venv/bin/papertrail web
+```
+
+## CLI example
+
+```sh
+papertrail digest 'https://arxiv.org/abs/1810.04805'
 papertrail sessions
 papertrail show SESSION
-papertrail ask SESSION 'How many GPUs were used, and how long was the big model trained?'
+papertrail ask SESSION 'What does BERT stand for?'
 papertrail ask SESSION 'What was the total training cost in US dollars?'
-papertrail chat SESSION
-papertrail inspect SESSION CHUNK
-papertrail export SESSION --output exports/attention
+papertrail export SESSION --output exports/bert
+papertrail resume SESSION
 ```
 
-The saved demo answered the hardware and base-training questions, abstained on dollar cost, and falsely abstained on label smoothing after its support checker rejected a valid interpretation of noisy extracted text. These outcomes remain visible; the demo does not hide the failure. Type `/exit` to leave interactive chat. Questions and accepted answers or abstentions are saved between CLI invocations. `show`, `inspect`, `sessions`, and export reading do not require a running language model.
+`SESSION` is the identifier printed by `digest` or `sessions`. A topic example is `papertrail digest 'research about electron'`. Topic availability depends on arXiv; a successful lookup does not guarantee successful parsing or generation. `papertrail chat SESSION` opens interactive QA, and `papertrail inspect SESSION CHUNK` displays a retrieved source passage.
 
-`digest` automatically writes an export under `.papertrail/runs/SESSION/export/`. Open `report.html` in a browser to expand quotations, follow PDF page links, and inspect the execution trail. The `export` command writes `report.html`, `briefing.md`, and `session.json` to the chosen directory. The HTML contains no live chat backend. Exported quotations remain readable offline; links to arXiv require internet access.
-
-Topic search uses the same pipeline:
-
-```sh
-papertrail digest 'recent work on KV-cache compression'
-```
-
-**Observed source limitation:** during validation, several syntactically valid topic queries received empty HTTP 406 responses from the arXiv API, while a documented example query and the base ID `1706.03762` returned metadata. The underlying cause has not been confirmed. Topic search remains implemented; a blocked topic request is reported as a source error. Retry the saved session later or use a known paper ID. A successful ID lookup does not imply that the complete briefing has succeeded.
-
-## Architecture
+## Architecture and state
 
 ```text
 understand → retrieve → select → fetch → parse → index → brief → validate → ready
@@ -90,138 +57,83 @@ understand → retrieve → select → fetch → parse → index → brief → v
                                 validated answer / abstention → saved history
 ```
 
-The transition map in [`graph.py`](src/papertrail/graph.py) is executable Python state, with Pydantic records and SQLite checkpoints after successful nodes. The LLM writes schema-constrained content; it cannot select arbitrary tools, modify source metadata, or choose download URLs. Failed or interrupted pipeline nodes can be re-entered without repeating already completed nodes.
+The graph in [`graph.py`](src/papertrail/graph.py) uses typed Pydantic state and SQLite checkpoints. arXiv metadata determines the paper and revision; the model cannot choose arbitrary download URLs. PDF parsing produces page-aware passages with section labels. Local BGE embeddings in Qdrant and BM25 retrieval are combined through reciprocal-rank fusion.
 
-| Component | Responsibility |
-| --- | --- |
-| `sources.py` | Input normalization, official Atom metadata, bounded PDF download, metadata caching |
-| `parsing.py` | PDF text extraction, section detection, page-aware chunks and provenance |
-| `retrieval.py` | FastEmbed BGE-small on CPU, persistent Qdrant vectors, BM25 and rank fusion |
-| `llm.py` / `grounding.py` | Ollama JSON generation, evidence resolution, validation and support review |
-| `graph.py` / `storage.py` | Explicit transitions, SQLite state, durable artifacts and operation locking |
-| `cli.py` / `web.py` / `rendering.py` | CLI, loopback HTTP jobs and browser interface, saved Markdown/JSON/HTML |
+A briefing covers the summary, problem, method, results, limitations or a missing-evidence note, and suggested questions. Generation is followed by deterministic provenance checks and a separate support-review pass through the same local model. QA uses the saved paper and index. Previous generated answers are not source evidence.
 
-The default data directory is `.papertrail/`: SQLite stores sessions, `vectors/` stores Qdrant collections, `models/` caches embeddings, and `runs/SESSION/` retains the source PDF, parsed passages, and exports. Each passage carries its paper ID, page, section, offsets, and stable chunk ID. One operation at a time holds the data-directory lock. See the [architecture and state documentation](docs/architecture.md) for the full graph and recovery boundaries.
+The browser starts one isolated worker per operation. It displays the actual stage, stage and total elapsed times, completed timings, and the operation deadline. On timeout, the parent stops the worker and releases its resources; incomplete model output is not accepted. Graph checkpoints avoid repeating completed downloads, parsing, and indexing during resume. Compatible cached PDFs and indexes are reused across sessions.
 
-The shared [`RunState`](src/papertrail/schema.py) contains the query and intent, candidate and selected paper metadata, model names, PDF checksum, page/chunk counts, vector collection reference, briefing and evidence IDs, QA exchanges, warnings, timings, status, and next node. PDF text and vectors are separate artifacts referenced by this durable state.
+## Grounding and tradeoffs
 
-### Repository structure
+The model selects evidence sentence IDs; Python resolves them to source quotations. Validation checks passage identity, quotation provenance, and numerical values, including numbers attached to units. Unicode normalization handles PDF ligatures consistently. Parser version 4 infers two-column reading order and records warnings where layout requires inspection. If no Abstract heading is detected, the first two opening-page passages are included in briefing evidence. New digests use the parser-versioned index; existing saved parsed artifacts are not silently rewritten. BM25 handles question boilerplate and simple plural/hyphen variants without requiring new embeddings.
 
-```text
-papertrail/
-├── src/papertrail/          # graph, schemas, sources, parsing, retrieval, generation,
-│                           # grounding, storage, CLI, local web, and rendering
-├── tests/                  # offline unit/integration checks with explicit test doubles
-├── evals/                  # source-pinned question labels
-├── scripts/                # evaluation, real demo recording/replay, PDF guide builder
-├── examples/attention/     # saved briefing.md, report.html, and session.json
-├── examples/               # terminal recording/transcript and evaluation reports
-├── docs/                   # architecture, tradeoffs, evaluation, guides, static index
-├── output/pdf/             # explanatory and interview guide
-├── .github/workflows/      # CI configuration
-├── pyproject.toml          # install metadata, dependencies, CLI entry point
-├── requirements-tested.txt # platform-scoped tested dependency snapshot
-└── .env.example            # documented optional environment settings
-```
+Rejected QA abstains. A rejected briefing paraphrase can instead become exact cited source wording, visibly labeled **“Source wording (automatic review requested inspection)”** with a warning. This is an inspectable fallback, not a successful semantic-review verdict. Rejected limitations are removed; absent limitations evidence is stated explicitly. Schema or evidence failures receive one bounded repair attempt.
 
-## Evidence checks and limits
+An explicit Python graph makes transitions and checkpoint recovery inspectable without an additional orchestration framework. SQLite and local Qdrant keep setup small; one operation at a time avoids conflicting writers. Local Ollama avoids per-token provider charges but requires model downloads, memory, and compute. Dense retrieval handles paraphrases while lexical retrieval preserves exact terms; neither guarantees that all relevant evidence is retrieved.
 
-The model selects sentence IDs before writing claims. Python resolves those IDs and copies quotations from the retrieved source; it checks quotation provenance and that numeric values in each claim occur in its evidence. A second pass through the same local model reviews whether the attached quotations support the claim. Invalid generation receives one bounded repair attempt with the rejected draft and validation reason.
+The support reviewer shares the generator's potential errors. Numeric agreement does not establish units, comparisons, or scientific validity. Dense numeric tables and displaced mathematical spans are conservatively withheld from generation, which can omit useful evidence. PDF layout heuristics can mishandle figures, tables, equations, or columns. OCR, arbitrary PDF upload, publisher-wide search, cross-paper synthesis, and multi-user hosting are not implemented. PDFs are limited to 30 MB and 100 pages. Model input uses a 32,768-token context with a conservative 28,000-byte message budget; oversize input fails explicitly.
 
-For briefings only, a paraphrase rejected by semantic review can be replaced with exact cited source wording, visibly labeled **“Source wording (automatic review requested inspection)”** and accompanied by a warning. This conservative fallback preserves something the reader can inspect when generation or review is unreliable. The replacement still undergoes deterministic provenance checks; it is not a successful semantic-review verdict. Rejected limitations are removed instead of receiving this fallback; when none remain, the briefing states that explicit limitations were not identified in the selected evidence. Unrepaired schema or evidence failures prevent acceptance. QA retains stricter behavior: a rejected draft produces an explicit evidence-validation abstention.
+## Recorded QA and browser verification
 
-Dense numeric excerpts that may be flattened tables are conservatively withheld from model generation; the original passages remain in the local index. This heuristic can also omit useful prose. Ordinary retrieval excludes references unless the question requests citations or references. Previous questions can supply conversational context; previous generated answers are never source evidence.
+A fresh BERT run resolved the URL above to `1810.04805v2`, *BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding*, session `7016d3da0645`. The browser operation took about **31 s**, using cached metadata/PDF and a compatible index. Generation and review were new. One result paraphrase became labeled source wording with a warning. The [report](examples/rescue-bert/report.html) and [session JSON](examples/rescue-bert/session.json) preserve these results.
 
-These checks **do not prove correctness**. The support reviewer shares the generator's potential errors and can also reject valid paraphrases. An exact source excerpt can omit context or be placed under an unsuitable briefing heading; inspect fallback wording in the paper before interpreting it. Matching numbers does not verify units or comparisons. Retrieval can miss evidence, so abstention means insufficient retrieved support, not proof that the paper lacks an answer. PDF section and column detection are heuristic; equations, complex tables, figures, scans, and non-English material can extract poorly. OCR and cross-paper synthesis are not implemented.
+| Question | Actual result | Evidence and timing |
+| --- | --- | --- |
+| What does BERT stand for? | “BERT stands for Bidirectional Encoder Representations from Transformers.” | Quotation verified in the browser and original [PDF page 1](https://arxiv.org/pdf/1810.04805v2#page=1), chunk `e1796cabe1b618c0`; backend 4.579 s, browser 5.3 s |
+| What was the total training cost in US dollars? | “I could not find enough evidence in the retrieved passages to answer this question.” | `insufficient_evidence`, no factual claims; backend 2.472 s, browser 3.2 s |
+| What was the total energy resolution of the setup? (physics topic) | “The setup has a total energy resolution of < 22meV (limited by the bandwidth of the 6eV pulses).” | [PDF page 3](https://arxiv.org/pdf/1401.3078v2#page=3), chunk `4455b47adb1a80bf`, verified in the browser and original PDF; backend 4.050 s, browser 4.8 s |
 
-PDFs are capped at 30 MB and 100 pages; insufficient readable text fails explicitly. Model requests use a 32,768-token context with a conservative 28,000-byte message budget, including repair history. This bound assumes the Qwen byte-level tokenizer; an alternative model must support the same context and tokenization assumptions. Oversized input is rejected instead of silently clipped by the application.
+The final fresh topic run, `research about electron`, selected arXiv `1401.3078v2`, *Ultrafast Electron Dynamics in the Topological Insulator Bi2Se3 Studied by Time-Resolved Photoemission Spectroscopy*, session `d757bedd4a1c`. It completed in **36 s** in the browser using cached source files and a compatible index. The summary is plain-English synthesis; one result still uses visibly labeled source wording with a warning. The research-budget question abstained in **0.800 s** in the backend and **1.5 s** in the browser. The [topic report](examples/rescue-topic/report.html) preserves the final results. Earlier session `51fc27237fea` failed after 44 s on attached-unit validation, then resumed in 28 s with a weak summary; that history is retained separately rather than presented as the final run.
+
+A real five-second deadline check stopped an in-flight operation at **5.1 s**. Ollama logged cancellation and release of the inference slot; a subsequent question on an existing paper completed in **3.7 s**. This verifies resource recovery, not fresh-paper correctness. [Release measurements](docs/release-rescue.md) distinguish fresh generation, cache reuse, failures, and nested stage timings. They are observations on one machine, not controlled latency benchmarks.
 
 ## Configuration and recovery
 
-Global options precede the command:
-
-```sh
-papertrail --data-dir ./my-reading --model qwen3.5:4b digest '1706.03762'
-papertrail --data-dir ./my-reading resume SESSION
-papertrail --debug resume SESSION
-```
+Settings are read from the process environment; `.env` files are not loaded automatically. [`.env.example`](.env.example) lists optional overrides. Saved sessions retain their model configuration.
 
 | Setting | Default | Purpose |
 | --- | --- | --- |
-| `PAPERTRAIL_MODEL` | `qwen3.5:4b` | Ollama model for new sessions |
+| `PAPERTRAIL_MODEL` | `qwen3.5:4b` | Local Ollama model |
 | `PAPERTRAIL_OLLAMA_URL` | `http://127.0.0.1:11434` | Ollama endpoint |
-| `PAPERTRAIL_DATA_DIR` | `.papertrail` | Sessions, source files, embeddings and vector storage |
-| `PAPERTRAIL_MODEL_TIMEOUT` | `240` | Per-request generation timeout in seconds |
+| `PAPERTRAIL_DATA_DIR` | `.papertrail` | Source files, sessions, embeddings, and indexes |
+| `PAPERTRAIL_MODEL_TIMEOUT` | `240` | Model HTTP request timeout, seconds |
+| `PAPERTRAIL_OPERATION_TIMEOUT` | `240` | Total browser operation deadline, including retrieval, review, and export |
 
-Settings come from the process environment. [`.env.example`](.env.example) documents the variables; the application does not automatically load an `.env` file. Saved sessions retain their model and embedding configuration. Start a new digest to change models for a paper.
+**Resume saved session** continues a failed pipeline checkpoint. **Retry last operation** retries failed QA or resumes a recoverable pipeline. **Refresh** reconnects to active work without creating a duplicate job. Invalid input must be corrected in a new session. A server restart preserves disk checkpoints but loses its in-memory job registry; interrupted QA must be retried.
 
-| Failure | Recovery |
-| --- | --- |
-| arXiv unavailable, timeout, or HTTP 406 | Keep the printed session ID and run `resume SESSION` later; a known-ID digest is an alternative to topic search |
-| Ollama unavailable or model missing | Start Ollama, pull the required model, run `doctor`, then resume the pipeline or retry `ask` |
-| Generation exceeds the timeout | Increase `PAPERTRAIL_MODEL_TIMEOUT`, then retry; changing models requires a new digest |
-| Briefing uses labeled source wording | Inspect the warning, quotation, and original page before interpreting the excerpt |
-| Briefing schema or evidence validation still fails | Inspect the failure and retry `resume`; repeated rejection is a limitation, not a verified result |
-| QA lacks support or fails evidence validation | Read the abstention, inspect retrieved passages, or ask a more specific question |
-| Another operation holds the lock | Wait for it to finish or exit an open `chat`; keep the same data directory for existing sessions |
-| PDF unreadable, oversized, or saved passages/index missing | Read the actionable error; use a suitable paper or create a new digest to rebuild missing artifacts |
+Transient source failures and HTTP 429/5xx receive at most three attempts. HTTP 401/403 are not repeatedly retried. Some valid arXiv topics return empty HTTP 406 responses; one equivalent canonical query preserves the terms and sort intent, and a successful response is cached. Persistent failures remain explicit. No canned paper replaces a failed lookup. Missing models require starting Ollama and pulling the saved session's model. Failed grounding checks remain failures or abstentions rather than successful results.
 
-## Verification and assessment material
+## Tests and evaluation
 
-The frozen release passes **130 automated tests**, including the local HTTP adapter. Ruff lint and formatting, dependency checks, and an isolated wheel-install smoke test also pass. [Release verification](docs/release-verification.md) records the real browser scenarios and remaining publication steps. Run the automated checks:
+The complete local regression passed **175 tests in 20.99 s** before the final opening-page evidence correction. After that correction and artifact-path redaction, all **12 affected graph/evaluation tests passed in 0.44 s**, including the new regression. Ruff lint and formatting, dependency checks, and wheel/CLI verification passed. The final full GitHub CI result is reported separately; these local checks do not establish arXiv availability or model correctness.
 
 ```sh
 pytest -q
 ruff check src tests scripts
 ruff format --check src tests scripts
+python -m pip check
 papertrail --help
 ```
 
-Offline tests cover source validation and caching, parsing, persistent retrieval, checkpoint recovery, evidence validation, safe abstention, generation repair/context limits, rendering, and evaluation helpers. They use explicit test doubles and do not establish live model quality or arXiv availability. [GitHub Actions](https://github.com/Gaganpraveen/papertrail/actions/runs/35457051935) independently passed all 130 tests, lint, formatting, and CLI smoke checks on Ubuntu with Python 3.11 and 3.12 for the published application snapshot.
+Tests cover source validation, parsing, persistent retrieval, checkpoint recovery, evidence validation, abstention, context/repair limits, HTTP boundaries, and timeout cleanup. External services and model behavior are represented by explicit test doubles in offline tests. GitHub Actions runs the automated checks on Python 3.11 and 3.12.
 
-The [evaluation protocol](docs/evaluation.md) documents a developer-constructed, single-paper smoke evaluation: ten answerable questions and three unanswerable controls. It compares the application's dense, BM25, and hybrid retrieval and separates optional answer checks from retrieval metrics. The [final release evaluation](examples/evaluation-release.json) recorded 11/13 expected-status matches: 8/10 answerable questions answered, all 3 unanswerable controls abstained, and two false abstentions. All three retrieval modes found labeled support in their top five results for 10/10 questions. The [earlier report](examples/evaluation.json) remains available, with provenance and qualitative review in the evaluation notes. The sample is neither blind nor held out, and status agreement does not establish answer correctness.
+The [retrieval-only regression](examples/evaluation-rescue.json) found labeled support in the top five for **10/10** existing Attention questions in dense, BM25, and hybrid modes; hybrid mean reciprocal rank was **1.0**. The model-answer evaluation was not rerun for the rescue changes. The [earlier answer evaluation](examples/evaluation-release.json) recorded 8/10 answerable questions answered and 3/3 unsupported controls abstained, with two false abstentions. This is a developer-constructed, single-paper smoke evaluation, not a blind or held-out benchmark. [Evaluation notes](docs/evaluation.md) and [failure history](examples/rescue-verification.json) retain the protocol and observed problems.
 
-Additional materials:
+## Repository structure
 
-- [Design decisions and tradeoffs](docs/design-decisions.md)
-- [Interview guide PDF](output/pdf/papertrail-guide.pdf) and [Markdown guide](docs/interview-guide.md)
-- [Reflection recording draft](docs/reflection-script.md), to adapt to the presenter's actual contribution and record personally
-- [Demo recorder](scripts/record_demo.py), which records real CLI subprocess output and stops on failure
+```text
+src/papertrail/       graph, sources, parsing, retrieval, grounding, storage, CLI, web
+tests/              offline regression and integration tests
+evals/              source-pinned question labels
+scripts/            evaluation and reproducible demo tooling
+examples/           saved reports, session records, timings, and evaluation results
+docs/               architecture, evaluation, run instructions, static report
+.github/workflows/  automated CI
+pyproject.toml      package metadata, dependencies, and CLI entry point
+requirements-tested.txt  platform-scoped dependency snapshot
+.env.example        optional environment settings
+```
 
-Application code is available under the [MIT License](LICENSE). Model weights and source papers retain their respective licenses. Downloaded PDFs, model weights, local databases, and environment secrets are excluded from the repository.
+Published historical records replace the local workspace prefix with `<project>`; answers, timings, and source hashes are unchanged.
 
-## Design decisions and tradeoffs
-
-The core submission is an explicit Python graph with typed shared state and SQLite checkpoints. This makes transitions and recovery easy to inspect without introducing an orchestration framework for a short sequential pipeline. The QA loop uses the same saved paper and index across process restarts. One paper is selected per session; cross-paper comparisons and conflicting claims require a broader evidence design.
-
-Local Ollama, CPU embeddings, and Qdrant avoid paid API credentials and cloud database setup. They require model downloads and sufficient local memory, and generation speed depends on hardware. Dense retrieval handles paraphrases while BM25 preserves exact terms; reciprocal-rank fusion combines their rankings. The small evaluation compares these choices without claiming general superiority.
-
-Evidence IDs, copied quotations, and numeric checks make provenance inspectable. The same-model support reviewer adds another check but can repeat the generator's errors or reject valid answers. Briefing-only source-excerpt fallback is visible and needs human inspection; QA instead abstains on rejected support. PDF layout heuristics, unresolved source contradictions, and missed retrieval evidence remain material limitations.
-
-The CLI fulfills the assessment's interaction requirement. The local web adapter and static export are optional presentation aids; public inference, authentication, and production deployment are not part of the system. With more time, the priority would be a held-out evaluation across papers and layouts, human review of claim support and abstention, and improvements guided by whether errors originate in parsing, retrieval, or generation. The full [design notes](docs/design-decisions.md) expand these choices.
-
-## Recorded demonstration
-
-Session `4ca1290ef789` processed 15 pages into 55 passages. Its execution trail retains the initial generation failure and successful checkpoint recovery. The terminal recording shows the saved briefing followed by three fresh QA calls; the final HTML also includes a fourth question submitted through the live browser interface. Replay with `python scripts/replay_demo.py examples/demo.cast` (idle gaps are capped at three seconds by default). Generate your own recording with `python scripts/record_demo.py`.
-
-A source inconsistency is visible in this paper: its abstract reports 41.8 English–French BLEU, while the results prose reports 41.0. The briefing cites the abstract value; the attached source passages preserve both. PaperTrail does not automatically reconcile contradictory source claims.
-
-### Actual input, briefing, and three saved QA exchanges
-
-**Input:** `papertrail digest '1706.03762'`. The resulting saved session is `4ca1290ef789`, using `qwen3.5:4b`, for *Attention Is All You Need*, arXiv `1706.03762v7`, published 2017-06-12. The [complete briefing](examples/attention/briefing.md) includes its authors, problem, method, results, explicit limitations note, and suggested questions.
-
-**Saved summary:** “The authors propose the Transformer, a new network architecture based solely on attention mechanisms that dispenses with recurrence and convolutions entirely. Experiments on machine translation tasks demonstrate that these models are superior in quality while being more parallelizable and requiring significantly less time to train.” [Source: PDF page 1, Abstract](https://arxiv.org/pdf/1706.03762v7#page=1), chunk `c8b5eec8c07826e6`.
-
-The following answers are copied from the [saved session JSON](examples/attention/session.json), not newly generated for this README:
-
-1. **Question:** “How many GPUs were used, and how long was the big model trained?” **Answer:** “8 NVIDIA P100 GPUs were used to train the big model.” “The big model was trained for 3.5 days.” [Source: PDF page 7, Hardware and Schedule](https://arxiv.org/pdf/1706.03762v7#page=7), chunk `abf6f22b8f92a712`; corroborating [page 8](https://arxiv.org/pdf/1706.03762v7#page=8), chunk `b37abe7f7725f407`.
-2. **Question:** “How many training steps and hours did the base Transformer models use?” **Answer:** “The base models were trained for a total of 100,000 steps or 12 hours.” “For the base models, each training step took about 0.4 seconds.” [Source: PDF page 7, Hardware and Schedule](https://arxiv.org/pdf/1706.03762v7#page=7), chunk `abf6f22b8f92a712`.
-3. **Question:** “What was the total training cost in US dollars?” **Answer:** “I could not find enough evidence in the retrieved passages to answer this question.” Status: `insufficient_evidence`. This abstention makes no factual claim requiring a paper citation; its retrieval IDs and response are preserved in the [saved exchange](examples/attention/session.json).
-
-The saved label-smoothing question also produced an evidence-validation abstention despite relevant source material; it remains visible in the full transcript. The required personal reflection video is a separate deliverable: [the script](docs/reflection-script.md) is preparation material and does not replace a recording of at most four minutes.
-
-## Final browser verification
-
-The release was exercised through the browser, including a fresh versioned URL, natural-language search, answerable QA, abstention, and invalid-input handling. [Current attention-paper run](examples/release-attention/report.html) contains the hardware answer, dollar-cost abstention, and a supported answer of 4,000 warmup steps. [Natural-language topic run](examples/release-topic/report.html) records `research about electron`, actual arXiv candidate selection, a downloaded 15-page paper, and cited QA. These are saved exports; use `papertrail web` for live local interaction.
-
-On HTTP 406, a simple alphanumeric topic receives one equivalent canonical arXiv API query preserving its terms and sort intent. This enabled the recorded topic run; some other queries still fail upstream. The generation context retains short factual sentences and conservatively withholds displaced formula spans and dense numeric tables. A lexical uncertainty check prevents dropping words such as “may” or “appear”; these heuristics can omit useful evidence or cause false abstentions and do not prove semantic correctness.
+Runtime data lives under `.papertrail/` and is excluded from Git. Model weights, downloaded paper PDFs, local databases, caches, and secrets are not part of the source repository. Application code uses the [MIT License](LICENSE); model weights and source papers retain their respective licenses.

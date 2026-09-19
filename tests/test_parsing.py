@@ -1,8 +1,10 @@
+import pdfplumber
 import pytest
+from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.pdfgen import canvas
 
 from papertrail.errors import ParseError
-from papertrail.parsing import HEADING, chunk_section, parse_pdf
+from papertrail.parsing import HEADING, chunk_section, page_text, parse_pdf
 
 
 def test_chunks_keep_page_offsets():
@@ -68,3 +70,49 @@ def test_equations_and_table_rows_are_not_section_headings():
     assert not HEADING.fullmatch("1 n 1 n i i")
     assert not HEADING.fullmatch("8 4.88 25.5 80")
     assert HEADING.fullmatch("3.2.2 Multi-Head Attention")
+
+
+def test_narrow_gutter_columns_preserve_reading_order_and_spanning_header(tmp_path):
+    path = tmp_path / "two-columns.pdf"
+    doc = canvas.Canvas(str(path), pagesize=(612, 792))
+    doc.setFont("Helvetica", 12)
+    doc.drawCentredString(306, 740, "FULLWIDTHHEADER")
+    doc.setFont("Helvetica", 10)
+    for row in range(20):
+        left = f"Left column sentence {row:02d} explains the method."
+        right = f"Right column sentence {row:02d} discusses the results."
+        # A realistic 16pt gutter was missed by the previous 4.5%-width rule.
+        doc.drawString(298 - stringWidth(left, "Helvetica", 10), 630 - row * 16, left)
+        doc.drawString(314, 630 - row * 16, right)
+    doc.saveState()
+    doc.translate(18, 200)
+    doc.rotate(90)
+    doc.drawString(0, 0, "ROTATEDMARGINSTAMP")
+    doc.restoreState()
+    doc.save()
+
+    with pdfplumber.open(path) as document:
+        text, columns = page_text(document.pages[0])
+    assert columns is True
+    assert text.splitlines()[0] == "FULLWIDTHHEADER"
+    assert text.index("Left column sentence 19") < text.index("Right column sentence 00")
+    assert "ROTATEDMARGINSTAMP" not in text
+    assert all(f"Left column sentence {row:02d}" in text for row in range(20))
+    assert all(f"Right column sentence {row:02d}" in text for row in range(20))
+
+
+def test_single_column_prose_is_not_split_at_normal_word_spaces(tmp_path):
+    path = tmp_path / "one-column.pdf"
+    doc = canvas.Canvas(str(path), pagesize=(612, 792))
+    doc.setFont("Helvetica", 10)
+    for row in range(20):
+        doc.drawString(
+            50,
+            650 - row * 18,
+            f"Sentence {row:02d} explains the research method and the evidence supporting the reported results.",
+        )
+    doc.save()
+    with pdfplumber.open(path) as document:
+        text, columns = page_text(document.pages[0])
+    assert columns is False
+    assert all(f"Sentence {row:02d} explains" in text for row in range(20))

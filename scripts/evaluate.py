@@ -219,7 +219,11 @@ def run(args: argparse.Namespace) -> dict | None:
         "created_at": now(),
         "evaluation_kind": "developer_constructed_smoke_eval_not_held_out",
         "dataset": {
-            "path": str(args.questions),
+            "path": (
+                str(args.questions.resolve().relative_to(Path(__file__).resolve().parents[1]))
+                if args.questions.resolve().is_relative_to(Path(__file__).resolve().parents[1])
+                else args.questions.name
+            ),
             "sha256": hashlib.sha256(dataset_raw).hexdigest(),
             "methodology": dataset["methodology"],
         },

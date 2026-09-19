@@ -157,7 +157,11 @@ class Agent:
         abstracts = [
             c for c in chunks if section_label(c.section) == "abstract" and not c.reference
         ]
-        selected = {c.id: c for c in abstracts[:1]}
+        # Some papers print an opening abstract without an Abstract heading.
+        # Retain bounded first-page context so a summary is not built solely
+        # from methods/results passages; all claims still require quote checks.
+        opening = abstracts[:1] or [c for c in chunks if c.page == 1 and not c.reference][:2]
+        selected = {c.id: c for c in opening}
         for query, section_pattern, count in (
             ("problem motivation contribution", r"intro|background|problem", 2),
             (
@@ -183,8 +187,23 @@ class Agent:
                 selected.setdefault(hit.chunk.id, hit.chunk)
         return list(selected.values())[:11]
 
-    def _brief(self, state):
+    def _model_progress(self, state, event):
+        # Save each completed substage before the next model call. A worker
+        # deadline can then recover both the checkpoint and its timings.
+        if event.status != "running":
+            state.events.append(event)
+            self.store.save(state)
+        self.observer(event)
+
+    def _prepare_model(self, state):
+        self.llm.observer = lambda event: self._model_progress(state, event)
         self.llm.available()
+        warmup = getattr(self.llm, "warmup", None)
+        if callable(warmup):
+            warmup()
+
+    def _brief(self, state):
+        self._prepare_model(state)
         evidence = self.briefing_evidence(state)
         state.briefing_evidence_ids = [c.id for c in evidence]
         state.briefing = self.llm.briefing(state.paper, evidence)
@@ -218,6 +237,7 @@ class Agent:
         if state.model != self.llm.model:
             raise PaperTrailError(f"This session uses {state.model}. Pass --model {state.model}.")
         started = time.monotonic()
+        self.observer(Event(node="qa.retrieve", status="running", detail=state.id))
         # Only expand genuinely referential questions, avoiding unrelated conversation contamination.
         contextual = bool(
             re.search(
@@ -234,13 +254,14 @@ class Agent:
         hits = self.index.search(
             state.collection, chunks, retrieval_query, include_references=include_references
         )
-        state.events.append(
+        self._model_progress(
+            state,
             Event(
                 node="qa.retrieve",
                 status="completed",
                 seconds=round(time.monotonic() - started, 3),
                 detail=f"{len(hits)} passages",
-            )
+            ),
         )
         try:
             if not hits:
@@ -249,7 +270,7 @@ class Agent:
                     explanation="No readable source passages were retrieved.",
                 )
             else:
-                self.llm.available()
+                self._prepare_model(state)
                 answer = self.llm.answer(
                     question, [h.chunk for h in hits], [e.question for e in state.exchanges]
                 )
@@ -258,9 +279,11 @@ class Agent:
                 status="insufficient_evidence",
                 explanation="A draft answer failed evidence validation; no unverified answer is shown.",
             )
-            state.events.append(Event(node="qa.validate", status="rejected", detail=str(exc)))
+            self._model_progress(
+                state, Event(node="qa.validate", status="rejected", detail=str(exc))
+            )
         except PaperTrailError as exc:
-            state.events.append(Event(node="qa.answer", status="failed", detail=str(exc)))
+            self._model_progress(state, Event(node="qa.answer", status="failed", detail=str(exc)))
             self.store.save(state)
             raise
         elapsed = round(time.monotonic() - started, 3)

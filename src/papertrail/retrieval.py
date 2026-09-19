@@ -14,23 +14,46 @@ from papertrail.errors import PaperTrailError
 from papertrail.parsing import PARSER_VERSION
 from papertrail.schema import Chunk, Hit, Intent, Paper
 
+QUERY_STOP_WORDS = frozenset(
+    "a an the of for with and or in to from about on by at is are was were be been being "
+    "what which how when where who whom why do does did can could would should has have had "
+    "this that those these it its their them they we our such as".split()
+)
+
 
 def tokens(value: str) -> list[str]:
     return re.findall(r"[a-z0-9]+", value.lower())
+
+
+def lexical_tokens(value: str) -> list[str]:
+    """Normalize question boilerplate and common surface variants for BM25 only."""
+    result = []
+    for compound in re.findall(r"[a-z0-9]+(?:-[a-z0-9]+)*", value.lower()):
+        parts = compound.split("-")
+        # Retain both individual words and the joined spelling, so readable
+        # hyphens and PDF line-wrap normalization do not prevent a lexical match.
+        terms = parts + (["".join(parts)] if len(parts) > 1 else [])
+        for term in terms:
+            if term in QUERY_STOP_WORDS:
+                continue
+            if len(term) > 4 and term.endswith("s") and not term.endswith(("ss", "us", "is")):
+                term = term[:-1]
+            result.append(term)
+    return result
 
 
 def bm25(query: str, documents: list[str]) -> list[float]:
     """Okapi BM25 (k1=1.5, b=.75). Small per-paper corpus; no extra service."""
     if not documents:
         return []
-    terms = [Counter(tokens(document)) for document in documents]
+    terms = [Counter(lexical_tokens(document)) for document in documents]
     lengths = [sum(term.values()) for term in terms]
     mean_length = max(sum(lengths) / len(lengths), 1)
     frequency = Counter(word for term in terms for word in term)
     scores = []
     for term, length in zip(terms, lengths, strict=True):
         score = 0.0
-        for word in set(tokens(query)):
+        for word in set(lexical_tokens(query)):
             df, tf = frequency[word], term[word]
             idf = math.log(1 + (len(terms) - df + 0.5) / (df + 0.5))
             score += idf * tf * 2.5 / (tf + 1.5 * (0.25 + 0.75 * length / mean_length))
