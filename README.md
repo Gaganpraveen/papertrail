@@ -4,7 +4,7 @@ An arXiv reading assistant with persistent sessions, structured briefings, and a
 
 [Repository](https://github.com/Gaganpraveen/papertrail) · [Architecture](docs/architecture.md) · [Evaluation](docs/evaluation.md) · [Interview guide PDF](output/pdf/papertrail-guide.pdf) · [Reflection draft](docs/reflection-script.md)
 
-[Verified paper run](examples/release-attention/report.html) · [Verified topic run](examples/release-topic/report.html) · [Earlier CLI recording](examples/demo.cast) · [Release verification](docs/release-verification.md). These saved artifacts preserve real results and inspectable citations. Live processing runs locally through the CLI or browser interface. **Public publishing remains blocked by GitHub authentication**; the [planned Pages demo](https://gaganpraveen.github.io/papertrail/) is not a verified deployment. Pages will serve saved results, not a live model backend.
+[Verified paper run](examples/release-attention/report.html) · [Verified topic run](examples/release-topic/report.html) · [Earlier CLI recording](examples/demo.cast) · [Release verification](docs/release-verification.md). These saved artifacts preserve real results and inspectable citations. Live processing runs locally through the CLI or browser interface. The complete release is published on [`codex/release-ready`](https://github.com/Gaganpraveen/papertrail/tree/codex/release-ready), with [PR #1](https://github.com/Gaganpraveen/papertrail/pull/1) open against `main`. The [Pages demo](https://gaganpraveen.github.io/papertrail/) serves a saved report; model processing runs locally.
 
 ## What it does
 
@@ -22,7 +22,7 @@ No paid API key, hosted database, or cloud inference account is required. Model 
 Use Python **3.12** for the documented setup. The package declares Python 3.11–3.13 support. Install [Ollama](https://ollama.com/download) and ensure its local service is running; if needed, run `ollama serve` in another terminal.
 
 ```sh
-git clone https://github.com/Gaganpraveen/papertrail.git
+git clone --branch codex/release-ready https://github.com/Gaganpraveen/papertrail.git
 cd papertrail
 python3.12 -m venv .venv
 source .venv/bin/activate
@@ -177,7 +177,7 @@ ruff format --check src tests scripts
 papertrail --help
 ```
 
-Offline tests cover source validation and caching, parsing, persistent retrieval, checkpoint recovery, evidence validation, safe abstention, generation repair/context limits, rendering, and evaluation helpers. They use explicit test doubles and do not establish live model quality or arXiv availability. CI runs the offline checks on Python 3.11 and 3.12.
+Offline tests cover source validation and caching, parsing, persistent retrieval, checkpoint recovery, evidence validation, safe abstention, generation repair/context limits, rendering, and evaluation helpers. They use explicit test doubles and do not establish live model quality or arXiv availability. [GitHub Actions](https://github.com/Gaganpraveen/papertrail/actions/runs/35457051935) independently passed all 130 tests, lint, formatting, and CLI smoke checks on Ubuntu with Python 3.11 and 3.12 for the published application snapshot.
 
 The [evaluation protocol](docs/evaluation.md) documents a developer-constructed, single-paper smoke evaluation: ten answerable questions and three unanswerable controls. It compares the application's dense, BM25, and hybrid retrieval and separates optional answer checks from retrieval metrics. The [final release evaluation](examples/evaluation-release.json) recorded 11/13 expected-status matches: 8/10 answerable questions answered, all 3 unanswerable controls abstained, and two false abstentions. All three retrieval modes found labeled support in their top five results for 10/10 questions. The [earlier report](examples/evaluation.json) remains available, with provenance and qualitative review in the evaluation notes. The sample is neither blind nor held out, and status agreement does not establish answer correctness.
 
