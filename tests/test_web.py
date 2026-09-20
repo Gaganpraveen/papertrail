@@ -2,7 +2,9 @@ import json
 import os
 import threading
 import time
+from dataclasses import replace
 from http.client import HTTPConnection
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -11,7 +13,7 @@ from papertrail.config import Settings
 from papertrail.errors import PaperTrailError
 from papertrail.schema import Answer, Chunk, Event, Exchange, Node, RunState
 from papertrail.storage import Store
-from papertrail.web import MAX_BODY, make_server
+from papertrail.web import MAX_BODY, Handler, make_server
 
 
 @pytest.fixture
@@ -59,6 +61,30 @@ def web(tmp_path, paper, chunk, briefing):
                     elapsed_seconds=0,
                 )
             )
+            self.store.save(state)
+            return state
+
+        def new_upload(self, path, filename):
+            calls.append(("upload", path.name, filename, path.read_bytes()))
+            self.observer(Event(node="parse", status="running", detail=ready.id))
+            if not gate.wait(5):
+                raise PaperTrailError("Timed out in the test fixture.")
+            state = ready.model_copy(deep=True, update={"query": filename})
+            state.paper = paper.model_copy(
+                update={
+                    "source": "upload",
+                    "arxiv_id": "",
+                    "document_id": "upload:" + "a" * 64,
+                    "source_filename": filename,
+                    "title": filename,
+                    "authors": [],
+                    "published": "",
+                    "updated": "",
+                    "abstract_url": "",
+                    "pdf_url": "",
+                }
+            )
+            (self.store.run_dir(state.id) / "paper.pdf").write_bytes(path.read_bytes())
             self.store.save(state)
             return state
 
@@ -123,6 +149,155 @@ def test_home_is_local_interface_with_no_external_assets(web):
     assert headers["Cache-Control"] == "no-store"
     assert "default-src 'none'" in headers["Content-Security-Policy"]
     assert "Access-Control-Allow-Origin" not in headers
+    assert b"Choose PDF" in body and b"/api/upload" in body
+    assert b'data-max-bytes="31457280"' in body
+    assert b"addEventListener('drop'" in body
+    assert b"if(!busy) choose(session)" in body
+
+
+def test_upload_uses_safe_path_local_worker_and_private_document_route(web):
+    document = b"%PDF-1.7\nfixture content"
+    status, body, _ = request(
+        web,
+        "POST",
+        "/api/upload",
+        raw=document,
+        headers={"Content-Type": "application/pdf", "X-Filename": "..%2F..%2Fresearch.pdf"},
+    )
+    assert status == 202
+    initial = json.loads(body)
+    assert initial["filename"] == "research.pdf"
+    assert initial["retry"] is None
+    job = wait_job(web, initial["id"])
+    assert job["status"] == "succeeded"
+    upload = next(call for call in web.calls if call[0] == "upload")
+    assert upload[1].endswith(".pdf") and len(upload[1]) == 36
+    assert upload[2:] == ("research.pdf", document)
+    assert not list((web.root / "uploads").iterdir())
+    path = f"/document/{job['session']}/paper.pdf"
+    status, content, metadata = request(web, path=path)
+    assert status == 200 and content == document
+    assert metadata["Content-Type"] == "application/pdf"
+    assert metadata["Cache-Control"] == "no-store"
+    assert request(web, path=path, headers={"Origin": "https://evil.example"})[0] == 403
+    assert path.encode() in request(web, path=job["report"])[1]
+    state = Store(web.root).load(job["session"])
+    assert state.paper.source == "upload"
+
+
+@pytest.mark.parametrize(
+    "filename, content, expected",
+    [
+        ("paper.pdf", b"not a PDF", 400),
+        ("paper.pdf", b"", 413),
+        ("paper.exe", b"%PDF-1.7", 400),
+        ("bad%00.pdf", b"%PDF-1.7", 400),
+        ("%FF.pdf", b"%PDF-1.7", 400),
+    ],
+)
+def test_invalid_upload_does_not_start_work_and_cleans_staging(web, filename, content, expected):
+    status, _, _ = request(
+        web,
+        "POST",
+        "/api/upload",
+        raw=content,
+        headers={"Content-Type": "application/pdf", "X-Filename": filename},
+    )
+    assert status == expected
+    assert not web.calls
+    assert not list((web.root / "uploads").glob("*.pdf"))
+
+
+def test_upload_size_media_type_and_existing_work_are_bounded(web):
+    headers = {"Content-Type": "application/pdf", "X-Filename": "paper.pdf"}
+    web.server.app.settings = replace(web.server.app.settings, max_pdf_bytes=20)
+    assert request(web, "POST", "/api/upload", raw=b"x" * 21, headers=headers)[0] == 413
+    assert request(web, "POST", "/api/upload", raw=b"%PDF-1.7")[0] == 415
+    web.gate.clear()
+    _, body, _ = request(web, "POST", "/api/digest", {"query": "busy"})
+    assert request(web, "POST", "/api/upload", raw=b"%PDF-1.7", headers=headers)[0] == 409
+    web.gate.set()
+    wait_job(web, json.loads(body)["id"])
+
+
+def test_interrupted_upload_has_deadline_and_removes_partial_file(web, monkeypatch):
+    cleanup_at_response = []
+    original_send = Handler.send
+
+    def observe_response(handler, status, payload, *args):
+        if status == 408:
+            cleanup_at_response.append(
+                (
+                    not list((web.root / "uploads").glob("*.pdf")),
+                    not web.server.app.upload_lock.locked(),
+                )
+            )
+        return original_send(handler, status, payload, *args)
+
+    monkeypatch.setattr(Handler, "send", observe_response)
+    monkeypatch.setattr("papertrail.web.UPLOAD_READ_SECONDS", 0.05)
+    connection = HTTPConnection("127.0.0.1", web.server.server_port, timeout=2)
+    connection.putrequest("POST", "/api/upload")
+    connection.putheader("Origin", f"http://127.0.0.1:{web.server.server_port}")
+    connection.putheader("Content-Type", "application/pdf")
+    connection.putheader("X-Filename", "paper.pdf")
+    connection.putheader("Content-Length", "100")
+    connection.endheaders(b"%PDF-1.7")
+    response = connection.getresponse()
+    assert response.status == 408
+    assert b"timed out" in response.read()
+    assert cleanup_at_response == [(True, True)]
+    connection.close()
+    assert not list((web.root / "uploads").glob("*.pdf"))
+    assert not web.server.app.upload_lock.locked()
+
+
+def test_document_path_symlink_and_unknown_session_are_rejected(web):
+    assert request(web, path="/document/abcdef123456/paper.pdf")[0] == 404
+    assert request(web, path="/document/../../private.pdf")[0] == 404
+    _, body, _ = request(
+        web,
+        "POST",
+        "/api/upload",
+        raw=b"%PDF-1.7",
+        headers={"Content-Type": "application/pdf", "X-Filename": "paper.pdf"},
+    )
+    job = wait_job(web, json.loads(body)["id"])
+    document = web.root / "runs" / job["session"] / "paper.pdf"
+    other = web.root / "private.pdf"
+    other.write_bytes(b"private")
+    document.unlink()
+    document.symlink_to(other)
+    assert request(web, path=f"/document/{job['session']}/paper.pdf")[0] == 404
+
+
+@pytest.mark.parametrize("valid", [False, True])
+def test_staging_cleanup_failure_never_keeps_operation_locks(web, monkeypatch, valid):
+    unlink = Path.unlink
+
+    def fail_staging_cleanup(path, *args, **kwargs):
+        if path.parent.name == "uploads":
+            raise PermissionError("Test cleanup failure")
+        return unlink(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "unlink", fail_staging_cleanup)
+    status, body, _ = request(
+        web,
+        "POST",
+        "/api/upload",
+        raw=b"%PDF-1.7" if valid else b"corrupt",
+        headers={"Content-Type": "application/pdf", "X-Filename": "paper.pdf"},
+    )
+    assert status == (202 if valid else 400)
+    if valid:
+        identity = json.loads(body)["id"]
+        assert wait_job(web, identity)["status"] == "succeeded"
+        deadline = time.monotonic() + 1
+        while web.server.app.active.locked() and time.monotonic() < deadline:
+            time.sleep(0.01)
+        assert "temporary upload" in web.server.app.snapshot(identity)["cleanup_warning"]
+    assert not web.server.app.upload_lock.locked()
+    assert not web.server.app.active.locked()
 
 
 def test_digest_job_is_nonblocking_and_concurrent_work_is_rejected(web):

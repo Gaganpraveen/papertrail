@@ -3,6 +3,7 @@
 import re
 import time
 from dataclasses import replace
+from pathlib import Path
 from uuid import uuid4
 
 from papertrail.config import Settings
@@ -14,6 +15,7 @@ from papertrail.retrieval import Embedder, HybridIndex, rank_papers
 from papertrail.schema import Answer, Event, Exchange, Node, ParsedPaper, RunState
 from papertrail.sources import ArxivClient, understand
 from papertrail.storage import Store, atomic_json
+from papertrail.uploads import copy_upload
 
 EDGES = {
     Node.UNDERSTAND: Node.RETRIEVE,
@@ -47,6 +49,29 @@ class Agent:
             query=query,
             model=self.settings.model,
             embedding_model=self.settings.embedding_model,
+        )
+        self.store.save(state)
+        return self.run(state)
+
+    def new_upload(self, path: Path, filename: str) -> RunState:
+        run_id = uuid4().hex[:12]
+        paper, sha256 = copy_upload(
+            path,
+            self.store.run_dir(run_id) / "paper.pdf",
+            filename,
+            self.settings.max_pdf_bytes,
+        )
+        state = RunState(
+            id=run_id,
+            query=paper.source_filename,
+            model=self.settings.model,
+            embedding_model=self.settings.embedding_model,
+            node=Node.PARSE,
+            paper=paper,
+            pdf_sha256=sha256,
+            warnings=[
+                "Uploaded PDF: the filename is a display label. Bibliographic title, authors, publication date and source URL have not been verified."
+            ],
         )
         self.store.save(state)
         return self.run(state)
@@ -100,6 +125,8 @@ class Agent:
                     recovery = (
                         "Start a new briefing with a corrected ID or topic."
                         if current == Node.UNDERSTAND
+                        else "Choose a supported, text-readable PDF to start a new briefing."
+                        if current == Node.PARSE and state.paper and state.paper.source == "upload"
                         else f"Retry: papertrail resume {state.id}"
                     )
                     raise PaperTrailError(
@@ -140,17 +167,23 @@ class Agent:
     def _parse(self, state):
         parsed = parse_pdf(
             self.store.run_dir(state.id) / "paper.pdf",
-            state.paper.arxiv_id,
+            state.paper.identity,
             self.settings.max_pages,
         )
         if state.pdf_sha256 != parsed.sha256:
-            raise PaperTrailError("The downloaded PDF changed before parsing. Start a new digest.")
+            raise PaperTrailError("The saved PDF changed before parsing. Start a new digest.")
         state.pages, state.chunk_count = parsed.pages, len(parsed.chunks)
         state.warnings.extend(parsed.warnings)
         atomic_json(self.store.run_dir(state.id) / "parsed.json", parsed.model_dump())
 
     def _index(self, state):
-        state.collection = self.index.build(self.parsed(state).chunks, state.pdf_sha256)
+        # The same PDF can enter through arXiv and upload with different chunk
+        # identities. Keep their vector payloads separate while allowing repeat
+        # uploads of identical bytes to reuse a compatible collection.
+        cache_key = state.pdf_sha256
+        if state.paper.source == "upload":
+            cache_key = f"{cache_key}|{state.paper.identity}"
+        state.collection = self.index.build(self.parsed(state).chunks, cache_key)
 
     def briefing_evidence(self, state):
         chunks = self.parsed(state).chunks

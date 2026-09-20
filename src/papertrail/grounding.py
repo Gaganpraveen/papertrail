@@ -64,10 +64,23 @@ def briefing_claims(briefing: Briefing) -> list[Claim]:
 
 
 def validate_briefing(briefing: Briefing, chunks: dict[str, Chunk]) -> None:
-    for claim in briefing_claims(briefing):
-        validate_claim(claim, chunks)
+    labelled_claims = [("summary", briefing.summary), ("problem", briefing.problem)]
+    for field in ("method", "results", "limitations"):
+        labelled_claims.extend(
+            (f"{field}[{index}]", claim) for index, claim in enumerate(getattr(briefing, field))
+        )
+    errors = []
+    # A bounded repair needs every failing field, not just the first rejection.
+    # Each claim still passes through the same strict provenance checks.
+    for label, claim in labelled_claims:
+        try:
+            validate_claim(claim, chunks)
+        except GroundingError as exc:
+            errors.append(f"{label}: {exc}")
     if not briefing.limitations and not briefing.limitations_note.strip():
-        raise GroundingError("Missing explicit limitations or missing-evidence note.")
+        errors.append("limitations_note: Missing explicit limitations or missing-evidence note.")
+    if errors:
+        raise GroundingError("\n".join(errors))
 
 
 def validate_answer(answer: Answer, chunks: dict[str, Chunk]) -> None:
