@@ -562,19 +562,23 @@ class Handler(BaseHTTPRequestHandler):
             job = app.submit("upload", {"path": str(staging), "filename": filename})
             if job:
                 accepted = True
-                return self.send(202, job)
-            return self.send(
-                409,
-                {"error": "Another local job is running. Choose the PDF again after it finishes."},
-            )
+                status, payload = 202, job
+            else:
+                status, payload = (
+                    409,
+                    {
+                        "error": "Another local job is running. Choose the PDF again after it finishes."
+                    },
+                )
         except TimeoutError:
-            return self.send(
-                408, {"error": "PDF upload timed out. Choose the file again to retry."}
+            status, payload = (
+                408,
+                {"error": "PDF upload timed out. Choose the file again to retry."},
             )
         except ValueError as exc:
-            return self.send(400, {"error": str(exc)})
+            status, payload = 400, {"error": str(exc)}
         except OSError:
-            return self.send(
+            status, payload = (
                 500,
                 {"error": "The PDF could not be saved locally. Check free disk space and retry."},
             )
@@ -588,6 +592,7 @@ class Handler(BaseHTTPRequestHandler):
                 )
             finally:
                 app.upload_lock.release()
+        return self.send(status, payload)
 
     def do_POST(self):
         if not self.trusted():

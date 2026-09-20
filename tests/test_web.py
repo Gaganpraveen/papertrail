@@ -13,7 +13,7 @@ from papertrail.config import Settings
 from papertrail.errors import PaperTrailError
 from papertrail.schema import Answer, Chunk, Event, Exchange, Node, RunState
 from papertrail.storage import Store
-from papertrail.web import MAX_BODY, make_server
+from papertrail.web import MAX_BODY, Handler, make_server
 
 
 @pytest.fixture
@@ -221,6 +221,20 @@ def test_upload_size_media_type_and_existing_work_are_bounded(web):
 
 
 def test_interrupted_upload_has_deadline_and_removes_partial_file(web, monkeypatch):
+    cleanup_at_response = []
+    original_send = Handler.send
+
+    def observe_response(handler, status, payload, *args):
+        if status == 408:
+            cleanup_at_response.append(
+                (
+                    not list((web.root / "uploads").glob("*.pdf")),
+                    not web.server.app.upload_lock.locked(),
+                )
+            )
+        return original_send(handler, status, payload, *args)
+
+    monkeypatch.setattr(Handler, "send", observe_response)
     monkeypatch.setattr("papertrail.web.UPLOAD_READ_SECONDS", 0.05)
     connection = HTTPConnection("127.0.0.1", web.server.server_port, timeout=2)
     connection.putrequest("POST", "/api/upload")
@@ -232,6 +246,7 @@ def test_interrupted_upload_has_deadline_and_removes_partial_file(web, monkeypat
     response = connection.getresponse()
     assert response.status == 408
     assert b"timed out" in response.read()
+    assert cleanup_at_response == [(True, True)]
     connection.close()
     assert not list((web.root / "uploads").glob("*.pdf"))
     assert not web.server.app.upload_lock.locked()
