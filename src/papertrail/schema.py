@@ -16,16 +16,23 @@ class Record(BaseModel):
 
 
 class Paper(Record):
-    arxiv_id: str
+    arxiv_id: str = ""
     title: str
-    authors: list[str]
-    abstract: str
-    published: str
-    updated: str
-    categories: list[str]
-    url: str
-    pdf_url: str
+    authors: list[str] = Field(default_factory=list)
+    abstract: str = ""
+    published: str = ""
+    updated: str = ""
+    categories: list[str] = Field(default_factory=list)
+    url: str = ""
+    pdf_url: str = ""
     relevance: float = 0.0
+    source: Literal["arxiv", "upload"] = "arxiv"
+    document_id: str = ""
+    source_filename: str = ""
+
+    @property
+    def identity(self) -> str:
+        return self.document_id if self.source == "upload" else self.arxiv_id
 
 
 class Intent(Record):

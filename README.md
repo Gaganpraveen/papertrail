@@ -1,19 +1,19 @@
 # PaperTrail
 
-PaperTrail turns an arXiv paper into a structured briefing and answers follow-up questions with inspectable quotations and PDF page references. It accepts an arXiv ID, URL, or research topic, selects one paper per session, and preserves its source, index, execution history, and answers.
+PaperTrail turns an uploaded research PDF or arXiv paper into a structured briefing and answers follow-up questions with inspectable quotations and PDF page references. It accepts a PDF upload, arXiv ID, URL, or research topic, selects one paper per session, and preserves its source, index, execution history, and answers.
 
 **Live application:** after setup, run `papertrail web` and open **[http://127.0.0.1:8765](http://127.0.0.1:8765)**. This runs new paper processing and local model inference.
 
 **[GitHub Pages](https://gaganpraveen.github.io/papertrail/) is a static saved report, not a live application.** Public inference is not deployed. The current server is deliberately limited to a local single-user session; it must not be exposed through a public tunnel or used to expose raw Ollama.
 
-[Architecture](docs/architecture.md) · [Browser guide](docs/web-demo.md) · [Release measurements](docs/release-rescue.md) · [Evaluation](docs/evaluation.md) · [BERT report](examples/rescue-bert/report.html) · [Topic report](examples/rescue-topic/report.html)
+[Architecture](docs/architecture.md) · [Browser guide](docs/web-demo.md) · [Upload verification and limitations](docs/pdf-upload-verification.md) · [Earlier release measurements](docs/release-rescue.md) · [Evaluation](docs/evaluation.md) · [BERT report](examples/rescue-bert/report.html) · [Topic report](examples/rescue-topic/report.html)
 
 ## Setup and run
 
 Requirements: Python **3.12** for the documented setup, [Ollama](https://ollama.com/download), and sufficient memory for `qwen3.5:4b`. This model was tested on an Apple M5 with 16 GB RAM; its download is approximately 3.4 GB. The package declares Python 3.11–3.13 support. Model downloads and arXiv retrieval require internet access; inference and storage run locally without a paid text-generation provider.
 
 ```sh
-git clone --branch codex/release-rescue https://github.com/Gaganpraveen/papertrail.git
+git clone --branch codex/pdf-upload https://github.com/Gaganpraveen/papertrail.git
 cd papertrail
 python3.12 -m venv .venv
 source .venv/bin/activate
@@ -33,6 +33,14 @@ The default Ollama address is `http://127.0.0.1:11434`. The original demonstrati
 PAPERTRAIL_OLLAMA_URL=http://127.0.0.1:11435 .venv/bin/papertrail web
 ```
 
+## Upload a research PDF
+
+Drag one PDF onto the upload area or select **Choose PDF**. Processing starts immediately and shows the filename, current stage and elapsed time. Once the briefing is ready, use **Ask about this paper** and expand **Inspect evidence** to view quotations and original PDF pages. The arXiv input remains available below the upload control.
+
+Uploads enter the same state graph at parsing, without arXiv searches or downloads. Each document has a SHA-256 identity; each session has separate questions and answers. The filename is a display title. Authors, publication date, arXiv ID and source URL are left unknown rather than inferred. Files stay under the local data directory, which is excluded from Git. Exported reports can contain document quotations; share them only intentionally.
+
+Text-readable PDFs up to 30 MiB and 100 pages are supported. Corrupt, encrypted and image-only PDFs fail with an explanation. OCR is not implemented. Upload transfer is bounded to 30 seconds; accepted processing uses the existing 240-second operation deadline. A failed processing stage can resume from its saved checkpoint; an invalid file must be replaced.
+
 ## CLI example
 
 ```sh
@@ -50,7 +58,8 @@ papertrail resume SESSION
 ## Architecture and state
 
 ```text
-understand → retrieve → select → fetch → parse → index → brief → validate → ready
+arXiv: understand → retrieve → select → fetch ─┐
+PDF upload: validate size → save source ───────┴→ parse → index → brief → validate → ready
                                                                            │
                                     retrieve evidence ← follow-up question ┘
                                             ↓
@@ -65,13 +74,13 @@ The browser starts one isolated worker per operation. It displays the actual sta
 
 ## Grounding and tradeoffs
 
-The model selects evidence sentence IDs; Python resolves them to source quotations. Validation checks passage identity, quotation provenance, and numerical values, including numbers attached to units. Unicode normalization handles PDF ligatures consistently. Parser version 4 infers two-column reading order and records warnings where layout requires inspection. If no Abstract heading is detected, the first two opening-page passages are included in briefing evidence. New digests use the parser-versioned index; existing saved parsed artifacts are not silently rewritten. BM25 handles question boilerplate and simple plural/hyphen variants without requiring new embeddings.
+The model selects evidence sentence IDs; Python resolves them to source quotations. Validation checks passage identity, quotation provenance, and numerical values, including numbers attached to units. Unicode normalization handles PDF ligatures consistently. Parser version 5 groups near-aligned baselines, preserves full-width caption prefixes, infers two-column reading order and records warnings where layout requires inspection. If no Abstract heading is detected, the first two opening-page passages are included in briefing evidence. New digests use the parser-versioned index; existing saved parsed artifacts are not silently rewritten. BM25 handles question boilerplate and simple plural/hyphen variants without requiring new embeddings.
 
 Rejected QA abstains. A rejected briefing paraphrase can instead become exact cited source wording, visibly labeled **“Source wording (automatic review requested inspection)”** with a warning. This is an inspectable fallback, not a successful semantic-review verdict. Rejected limitations are removed; absent limitations evidence is stated explicitly. Schema or evidence failures receive one bounded repair attempt.
 
 An explicit Python graph makes transitions and checkpoint recovery inspectable without an additional orchestration framework. SQLite and local Qdrant keep setup small; one operation at a time avoids conflicting writers. Local Ollama avoids per-token provider charges but requires model downloads, memory, and compute. Dense retrieval handles paraphrases while lexical retrieval preserves exact terms; neither guarantees that all relevant evidence is retrieved.
 
-The support reviewer shares the generator's potential errors. Numeric agreement does not establish units, comparisons, or scientific validity. Dense numeric tables and displaced mathematical spans are conservatively withheld from generation, which can omit useful evidence. PDF layout heuristics can mishandle figures, tables, equations, or columns. OCR, arbitrary PDF upload, publisher-wide search, cross-paper synthesis, and multi-user hosting are not implemented. PDFs are limited to 30 MB and 100 pages. Model input uses a 32,768-token context with a conservative 28,000-byte message budget; oversize input fails explicitly.
+The support reviewer shares the generator's potential errors. Numeric agreement does not establish units, comparisons, or scientific validity. Dense numeric tables and displaced mathematical spans are conservatively withheld from generation, which can omit useful evidence. PDF layout heuristics can mishandle figures, tables, equations, or columns. OCR, publisher-wide search, cross-paper synthesis, and multi-user hosting are not implemented. PDFs are limited to 30 MB and 100 pages. Model input uses a 32,768-token context with a conservative 28,000-byte message budget; oversize input fails explicitly.
 
 ## Recorded QA and browser verification
 
@@ -85,7 +94,7 @@ A fresh BERT run resolved the URL above to `1810.04805v2`, *BERT: Pre-training o
 
 The final fresh topic run, `research about electron`, selected arXiv `1401.3078v2`, *Ultrafast Electron Dynamics in the Topological Insulator Bi2Se3 Studied by Time-Resolved Photoemission Spectroscopy*, session `d757bedd4a1c`. It completed in **36 s** in the browser using cached source files and a compatible index. The summary is plain-English synthesis; one result still uses visibly labeled source wording with a warning. The research-budget question abstained in **0.800 s** in the backend and **1.5 s** in the browser. The [topic report](examples/rescue-topic/report.html) preserves the final results. Earlier session `51fc27237fea` failed after 44 s on attached-unit validation, then resumed in 28 s with a weak summary; that history is retained separately rather than presented as the final run.
 
-A real five-second deadline check stopped an in-flight operation at **5.1 s**. Ollama logged cancellation and release of the inference slot; a subsequent question on an existing paper completed in **3.7 s**. This verifies resource recovery, not fresh-paper correctness. [Release measurements](docs/release-rescue.md) distinguish fresh generation, cache reuse, failures, and nested stage timings. They are observations on one machine, not controlled latency benchmarks.
+A real five-second deadline check stopped an in-flight operation at **5.1 s**. Ollama logged cancellation and release of the inference slot; a subsequent question on an existing paper completed in **3.7 s**. This verifies resource recovery, not fresh-paper correctness. [Upload verification and limitations](docs/pdf-upload-verification.md) · [Earlier release measurements](docs/release-rescue.md) distinguish fresh generation, cache reuse, failures, and nested stage timings. They are observations on one machine, not controlled latency benchmarks.
 
 ## Configuration and recovery
 
@@ -101,9 +110,11 @@ Settings are read from the process environment; `.env` files are not loaded auto
 
 **Resume saved session** continues a failed pipeline checkpoint. **Retry last operation** retries failed QA or resumes a recoverable pipeline. **Refresh** reconnects to active work without creating a duplicate job. Invalid input must be corrected in a new session. A server restart preserves disk checkpoints but loses its in-memory job registry; interrupted QA must be retried.
 
-Transient source failures and HTTP 429/5xx receive at most three attempts. HTTP 401/403 are not repeatedly retried. Some valid arXiv topics return empty HTTP 406 responses; one equivalent canonical query preserves the terms and sort intent, and a successful response is cached. Persistent failures remain explicit. No canned paper replaces a failed lookup. Missing models require starting Ollama and pulling the saved session's model. Failed grounding checks remain failures or abstentions rather than successful results.
+Transient source failures and HTTP 429/5xx receive at most three attempts. HTTP 401/403 are not repeatedly retried. Exact-ID requests rejected by the API with HTTP 406 can use the official arXiv abstract page. Its paper ID, explicit revision marker and citation metadata must match before a trusted PDF URL is constructed. This fallback does not replace a requested revision or bypass HTTP 401/403 access denials. Some valid arXiv topics return empty HTTP 406 responses; one equivalent canonical query preserves the terms and sort intent, and a successful response is cached. Persistent failures remain explicit. No canned paper replaces a failed lookup. Missing models require starting Ollama and pulling the saved session's model. Failed grounding checks remain failures or abstentions rather than successful results.
 
 ## Tests and evaluation
+
+The upload release was tested with a new non-arXiv PDF and exact arXiv revision through the browser. A fresh quantum topic retrieved the correct paper but its briefing failed strict evidence checks, including after resume; an acronym question also falsely abstained. These are remaining limitations, documented with actual timings in [upload verification](docs/pdf-upload-verification.md). No raw uploaded PDF or private session data is published.
 
 The complete local regression passed **175 tests in 20.99 s** before the final opening-page evidence correction. After that correction and artifact-path redaction, all **12 affected graph/evaluation tests passed in 0.44 s**, including the new regression. Ruff lint and formatting, dependency checks, and wheel/CLI verification passed. The final full GitHub CI result is reported separately; these local checks do not establish arXiv availability or model correctness.
 

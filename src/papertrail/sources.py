@@ -1,10 +1,12 @@
-"""Official arXiv API only; bounded, serialized requests and validated download URLs."""
+"""Official arXiv metadata; bounded requests and verified paper identities."""
 
 import hashlib
 import json
 import re
 import shutil
 import time
+from datetime import datetime
+from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import unquote, urlencode, urlparse
 
@@ -130,6 +132,95 @@ def parse_feed(body: bytes) -> list[Paper]:
     return result
 
 
+class _ArxivMetadata(HTMLParser):
+    """Read citation metadata and the page's explicit 'for this version' cell."""
+
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.metadata = {}
+        self.version_links = []
+        self.subjects = []
+        self.in_version = self.in_subjects = False
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if tag == "meta" and attrs.get("name", "").startswith("citation_"):
+            self.metadata.setdefault(attrs["name"], []).append(attrs.get("content", "").strip())
+        if tag == "td":
+            classes = attrs.get("class", "").split()
+            self.in_version = "arxividv" in classes
+            self.in_subjects = "subjects" in classes
+        if tag == "a" and self.in_version:
+            self.version_links.append(attrs.get("href", ""))
+
+    def handle_endtag(self, tag):
+        if tag == "td":
+            self.in_version = self.in_subjects = False
+
+    def handle_data(self, data):
+        if self.in_subjects:
+            self.subjects.append(data)
+
+
+def parse_html_metadata(body: bytes, requested: str) -> Paper:
+    """Fail closed when an official abstract page cannot identify its exact revision."""
+    parser = _ArxivMetadata()
+    parser.feed(body.decode("utf-8", errors="strict"))
+
+    def field(name):
+        values = parser.metadata.get("citation_" + name, [])
+        if len(values) != 1 or not values[0]:
+            raise SourceError("The official arXiv page has missing or ambiguous citation metadata.")
+        return " ".join(values[0].split())
+
+    base = re.sub(r"v\d+$", "", requested)
+    if normalize_id(field("arxiv_id")) not in {base, requested}:
+        raise SourceError("The official arXiv page identifies a different paper.")
+    versions = set()
+    for link in parser.version_links:
+        if link.startswith("/abs/"):
+            link = "https://arxiv.org" + link
+        if not link.startswith("https://arxiv.org/abs/"):
+            raise SourceError("The official arXiv page has an untrusted revision link.")
+        identity = normalize_id(link)
+        if identity and re.search(r"v[1-9]\d*$", identity):
+            versions.add(identity)
+    if len(versions) != 1:
+        raise SourceError("The official arXiv page does not identify one unambiguous revision.")
+    identity = versions.pop()
+    if re.sub(r"v\d+$", "", identity) != base:
+        raise SourceError("The official arXiv page identifies a different paper.")
+    if re.search(r"v\d+$", requested) and identity != requested:
+        raise SourceError("The official arXiv page identifies a different revision.")
+    # Metadata never chooses a download host, path, or revision. A base PDF link
+    # is common even on versioned pages; construct the exact verified URL below.
+    if field("pdf_url") not in {
+        f"https://arxiv.org/pdf/{base}",
+        f"https://arxiv.org/pdf/{identity}",
+    }:
+        raise SourceError("The official arXiv page has an untrusted PDF URL.")
+    authors = parser.metadata.get("citation_author", [])
+    categories = re.findall(r"\(([A-Za-z-]+(?:\.[A-Za-z-]+)?)\)", " ".join(parser.subjects))
+    if not authors or any(not author for author in authors) or not categories:
+        raise SourceError("The official arXiv page is missing authors or subject metadata.")
+    try:
+        published = datetime.strptime(field("date"), "%Y/%m/%d").date().isoformat()
+        updated = datetime.strptime(field("online_date"), "%Y/%m/%d").date().isoformat()
+    except ValueError as exc:
+        raise SourceError("The official arXiv page has an unsupported publication date.") from exc
+    return Paper(
+        arxiv_id=identity,
+        title=field("title"),
+        authors=authors,
+        abstract=field("abstract"),
+        published=published,
+        updated=updated,
+        categories=categories,
+        url=f"https://arxiv.org/abs/{identity}",
+        pdf_url=f"https://arxiv.org/pdf/{identity}",
+    )
+
+
 class ArxivClient:
     def __init__(
         self, cache: Path, max_bytes: int = 30 * 1024 * 1024, client=None, delay: float = 3.0
@@ -207,17 +298,25 @@ class ArxivClient:
             try:
                 papers = self._feed({"id_list": intent.value})
             except SourceError as exc:
-                if "HTTP 406" not in str(exc) or not re.search(r"v\d+$", intent.value):
+                if "HTTP 406" not in str(exc):
                     raise
-                papers = self._feed({"id_list": re.sub(r"v\d+$", "", intent.value)})
-                if not papers or papers[0].arxiv_id != intent.value:
-                    raise SourceError(
-                        "arXiv rejected the version-specific lookup and the base lookup returned a different revision. Refusing to substitute versions."
-                    ) from exc
+                papers = []
+                if re.search(r"v\d+$", intent.value):
+                    try:
+                        papers = self._feed({"id_list": re.sub(r"v\d+$", "", intent.value)})
+                    except SourceError as base_error:
+                        if "HTTP 406" not in str(base_error):
+                            raise
+                if len(papers) == 1 and papers[0].arxiv_id == intent.value:
+                    warnings.append(
+                        "Version-specific metadata lookup returned HTTP 406; the base lookup was verified to refer to the exact requested revision."
+                    )
+                else:
+                    papers = [self._html_paper(intent.value)]
+                    warnings.append(
+                        "The arXiv API returned HTTP 406. Metadata came from the official arXiv abstract page; the exact paper revision was verified before downloading."
+                    )
                 self._save_feed({"id_list": intent.value}, papers)
-                warnings.append(
-                    "Version-specific metadata lookup returned HTTP 406; the base lookup was verified to refer to the exact requested revision."
-                )
             if re.search(r"v\d+$", intent.value) and any(
                 p.arxiv_id != intent.value for p in papers
             ):
@@ -280,6 +379,27 @@ class ArxivClient:
                 "No matching arXiv papers found. Check the ID or try a more specific/reworded topic."
             )
         return papers, warnings
+
+    def _html_paper(self, requested: str) -> Paper:
+        if normalize_id(requested) != requested:
+            raise SourceError("Refusing an invalid arXiv metadata request.")
+        endpoint = f"https://arxiv.org/abs/{requested}"
+        self._throttle()
+        try:
+            with self.client.stream("GET", endpoint) as response:
+                response.raise_for_status()
+                body = bytearray()
+                for block in response.iter_bytes(chunk_size=65536):
+                    body.extend(block)
+                    if len(body) > 2_000_000:
+                        raise SourceError("The official arXiv abstract page is unexpectedly large.")
+            return parse_html_metadata(bytes(body), requested)
+        except httpx.HTTPStatusError as exc:
+            raise source_http_error(exc.response.status_code, "abstract page") from exc
+        except (httpx.HTTPError, UnicodeError) as exc:
+            raise SourceError(
+                "The official arXiv abstract page could not be read. Your session is saved; retry later."
+            ) from exc
 
     def download(self, paper: Paper, destination: Path) -> str:
         expected = f"https://arxiv.org/pdf/{paper.arxiv_id}"

@@ -11,7 +11,8 @@ def citation(claim: Claim, chunks: dict[str, Chunk], pdf_url: str) -> str:
     refs = []
     for ev in claim.evidence:
         c = chunks[ev.chunk_id]
-        refs.append(f"[p. {c.page}, {c.section}]({pdf_url}#page={c.page})")
+        label = f"p. {c.page}, {c.section}"
+        refs.append(f"[{label}]({pdf_url}#page={c.page})" if pdf_url else label)
     return claim.text + " " + "; ".join(refs)
 
 
@@ -23,8 +24,14 @@ def markdown(state: RunState, chunks: list[Chunk]) -> str:
     lines = [
         f"# {paper.title}",
         "",
-        f"**Authors:** {', '.join(paper.authors)}",
-        f"**arXiv:** [{paper.arxiv_id}]({paper.url}) · **Published:** {paper.published[:10]}",
+        f"**Authors:** {', '.join(paper.authors) or ('Not extracted' if paper.source == 'upload' else 'Not supplied')}",
+        (
+            f"**Uploaded file:** {paper.source_filename} · **Document ID:** `{paper.identity}`\n"
+            "**Title:** Filename shown; publication metadata has not been extracted.\n"
+            "**arXiv ID / publication date / source URL:** Not supplied"
+            if paper.source == "upload"
+            else f"**arXiv:** [{paper.arxiv_id}]({paper.url}) · **Published:** {paper.published[:10]}"
+        ),
         f"**Local model:** {state.model} · **Session:** `{state.id}`",
         "",
         "## Why this paper matters",
@@ -103,19 +110,38 @@ CSS = """
 """
 
 
-def report_html(state: RunState, chunks: list[Chunk]) -> str:
+def report_html(state: RunState, chunks: list[Chunk], pdf_url: str | None = None) -> str:
     esc = html.escape
     paper, briefing = state.paper, state.briefing
     if not paper or not briefing:
         return f"<!doctype html><title>PaperTrail</title><p>{esc(state.error or state.status)}</p>"
     lookup = {c.id: c for c in chunks}
+    source_pdf = paper.pdf_url if pdf_url is None else pdf_url
+    if paper.source == "upload":
+        metadata = (
+            f"Uploaded file: {esc(paper.source_filename)}. Filename shown as title; "
+            "bibliographic title, authors and publication date have not been extracted. No arXiv ID or source URL was provided."
+        )
+        source_note = "Uploaded document stored locally"
+    else:
+        metadata = (
+            f"Published {esc(paper.published[:10])} &nbsp; / &nbsp; "
+            f'<a href="{esc(paper.url)}">View on arXiv ↗</a>'
+        )
+        source_note = "Sources remain available on arXiv"
 
     def claim_html(claim):
         quotes = []
         for ev in claim.evidence:
             c = lookup[ev.chunk_id]
+            label = f"Page {c.page} · {esc(c.section)}"
+            reference = (
+                f'<a href="{esc(source_pdf)}#page={c.page}" target="_blank" rel="noopener noreferrer">{label} ↗</a>'
+                if source_pdf
+                else label
+            )
             quotes.append(
-                f'<blockquote>{esc(ev.quote)}<footer><a href="{esc(paper.pdf_url)}#page={c.page}" target="_blank" rel="noopener noreferrer">Page {c.page} · {esc(c.section)} ↗</a><br><code>{c.id}</code></footer></blockquote>'
+                f"<blockquote>{esc(ev.quote)}<footer>{reference}<br><code>{c.id}</code></footer></blockquote>"
             )
         return f'<div class="claim"><p>{esc(claim.text)}</p><details><summary>Inspect evidence · {len(quotes)} passage(s)</summary>{"".join(quotes)}</details></div>'
 
@@ -136,10 +162,12 @@ def report_html(state: RunState, chunks: list[Chunk]) -> str:
         f'<li><a href="{esc(p.url)}">{esc(p.title)}</a> <span class="note">{p.relevance:.3f} ranking score</span></li>'
         for p in state.candidates
     )
-    return f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light"><title>{esc(paper.title)} · PaperTrail</title><style>{CSS}</style></head><body><div class="shell"><aside><div class="brand">papertrail<span>.</span></div><div class="eyebrow">Research with receipts</div><nav><a href="#overview">01 / Overview</a><a href="#method">02 / Method & results</a><a href="#limitations">03 / Limitations</a><a href="#questions">04 / Questions & answers</a><a href="#execution">05 / Execution trail</a></nav><p>A saved, inspectable research session.<br><br>Expand any evidence link to read the exact quotation used.</p></aside><main><header id="overview"><div class="top"><div class="eyebrow">Research briefing / {esc(paper.arxiv_id)}</div><span class="badge">SAVED RUN · {esc(state.created_at[:10])}</span></div><h1>{esc(paper.title)}</h1><p class="meta">{esc(", ".join(paper.authors))}</p><p class="meta">Published {esc(paper.published[:10])} &nbsp; / &nbsp; <a href="{esc(paper.url)}">View on arXiv ↗</a></p></header><div class="stats"><div class="stat"><b>{state.pages}</b><span>Pages parsed</span></div><div class="stat"><b>{state.chunk_count}</b><span>Indexed passages</span></div><div class="stat"><b>{len(state.exchanges)}</b><span>Follow-up questions</span></div></div><section class="summary">{claim_html(briefing.summary)}</section>{section("The problem", [briefing.problem], "problem")}<div class="grid">{section("How it works", briefing.method, "method")}{section("What the paper reports", briefing.results, "results")}</div>{section("Limitations", briefing.limitations, "limitations")}<p class="notice">{esc(briefing.limitations_note)}</p><section id="questions"><h2>Questions, with evidence</h2>{exchanges}<details><summary>Suggested follow-up questions</summary><ul>{questions}</ul></details></section><section id="execution"><div class="eyebrow">Inspect the process</div><h2>The execution trail</h2><div class="trace">{trace}</div><p class="note">Model: {esc(state.model)} · Embeddings: {esc(state.embedding_model)}<br>PDF SHA-256: <code>{esc(state.pdf_sha256 or "")}</code></p><details><summary>Candidate papers</summary><ol>{candidates}</ol></details><details><summary>Parsing and retrieval notes ({len(state.warnings)})</summary><ul>{warnings or "<li>No parsing warnings were recorded.</li>"}</ul></details></section><div class="notice">This is an exported result of a real run, not a live chat. Run PaperTrail locally to process another paper or ask new questions. Quote checks establish provenance; they do not prove that every interpretation is correct.</div><p class="foot">PaperTrail · Session {state.id} · No paid API required · Sources remain available on arXiv</p></main></div></body></html>'''
+    return f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="color-scheme" content="light"><title>{esc(paper.title)} · PaperTrail</title><style>{CSS}</style></head><body><div class="shell"><aside><div class="brand">papertrail<span>.</span></div><div class="eyebrow">Research with receipts</div><nav><a href="#overview">01 / Overview</a><a href="#method">02 / Method & results</a><a href="#limitations">03 / Limitations</a><a href="#questions">04 / Questions & answers</a><a href="#execution">05 / Execution trail</a></nav><p>A saved, inspectable research session.<br><br>Expand any evidence link to read the exact quotation used.</p></aside><main><header id="overview"><div class="top"><div class="eyebrow">Research briefing / {esc(paper.identity)}</div><span class="badge">SAVED RUN · {esc(state.created_at[:10])}</span></div><h1>{esc(paper.title)}</h1><p class="meta">{esc(", ".join(paper.authors) or ("Authors not extracted" if paper.source == "upload" else "Authors not supplied"))}</p><p class="meta">{metadata}</p></header><div class="stats"><div class="stat"><b>{state.pages}</b><span>Pages parsed</span></div><div class="stat"><b>{state.chunk_count}</b><span>Indexed passages</span></div><div class="stat"><b>{len(state.exchanges)}</b><span>Follow-up questions</span></div></div><section class="summary">{claim_html(briefing.summary)}</section>{section("The problem", [briefing.problem], "problem")}<div class="grid">{section("How it works", briefing.method, "method")}{section("What the paper reports", briefing.results, "results")}</div>{section("Limitations", briefing.limitations, "limitations")}<p class="notice">{esc(briefing.limitations_note)}</p><section id="questions"><h2>Questions, with evidence</h2>{exchanges}<details><summary>Suggested follow-up questions</summary><ul>{questions}</ul></details></section><section id="execution"><div class="eyebrow">Inspect the process</div><h2>The execution trail</h2><div class="trace">{trace}</div><p class="note">Model: {esc(state.model)} · Embeddings: {esc(state.embedding_model)}<br>PDF SHA-256: <code>{esc(state.pdf_sha256 or "")}</code></p><details><summary>Candidate papers</summary><ol>{candidates}</ol></details><details><summary>Parsing and retrieval notes ({len(state.warnings)})</summary><ul>{warnings or "<li>No parsing warnings were recorded.</li>"}</ul></details></section><div class="notice">This is an exported result of a real run, not a live chat. Run PaperTrail locally to process another paper or ask new questions. Quote checks establish provenance; they do not prove that every interpretation is correct.</div><p class="foot">PaperTrail · Session {state.id} · No paid API required · {source_note}</p></main></div></body></html>"""
 
 
-def export_run(state: RunState, chunks: list[Chunk], destination: Path) -> dict[str, Path]:
+def export_run(
+    state: RunState, chunks: list[Chunk], destination: Path, pdf_url: str | None = None
+) -> dict[str, Path]:
     destination.mkdir(parents=True, exist_ok=True)
     files = {
         "markdown": destination / "briefing.md",
@@ -148,5 +176,5 @@ def export_run(state: RunState, chunks: list[Chunk], destination: Path) -> dict[
     }
     files["markdown"].write_text(markdown(state, chunks), encoding="utf-8")
     atomic_json(files["json"], state.model_dump(mode="json"))
-    files["html"].write_text(report_html(state, chunks), encoding="utf-8")
+    files["html"].write_text(report_html(state, chunks, pdf_url=pdf_url), encoding="utf-8")
     return files

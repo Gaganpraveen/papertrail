@@ -1,5 +1,7 @@
 """One isolated browser operation; the parent owns its wall-clock deadline."""
 
+from pathlib import Path
+
 from papertrail.errors import PaperTrailError
 from papertrail.graph import Agent, settings_for_session
 from papertrail.rendering import export_run
@@ -23,12 +25,21 @@ def run_operation(settings, action, payload, send, agent_factory=Agent):
             try:
                 if action == "ask":
                     state = agent.ask(payload["session"], payload["question"])
+                elif action == "upload":
+                    state = agent.new_upload(Path(payload["path"]), payload["filename"])
                 elif action == "resume":
                     state = agent.resume(payload["session"])
                 else:
                     state = agent.new(payload["query"])
                 observe(Event(node="export", status="running", detail=state.id))
-                export_run(state, agent.parsed(state).chunks, store.run_dir(state.id) / "export")
+                export_run(
+                    state,
+                    agent.parsed(state).chunks,
+                    store.run_dir(state.id) / "export",
+                    pdf_url=f"/document/{state.id}/paper.pdf"
+                    if state.paper and state.paper.source == "upload"
+                    else None,
+                )
             finally:
                 agent.close()
         send({"status": "succeeded", "session": state.id, "report": f"/report/{state.id}"})
