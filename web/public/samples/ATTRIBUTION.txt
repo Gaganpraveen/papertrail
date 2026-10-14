@@ -1,0 +1,11 @@
+Active Retrieval Augmented Generation (2023)
+Zhengbao Jiang, Frank Xu, Luyu Gao, Zhiqing Sun, Qian Liu, Jane Dwivedi-Yu,
+Yiming Yang, Jamie Callan, and Graham Neubig.
+Proceedings of EMNLP 2023, pages 7969–7992. Association for Computational Linguistics.
+Source: https://aclanthology.org/2023.emnlp-main.495/
+PDF: https://aclanthology.org/2023.emnlp-main.495.pdf
+Copyright © 2023 Association for Computational Linguistics.
+Licensed under CC BY 4.0: https://creativecommons.org/licenses/by/4.0/
+License policy: https://aclanthology.org/faq/copyright/
+The PDF is redistributed unchanged. Analysis is computed in the visitor's browser.
+This sample PDF is not covered by PaperTrail's MIT source-code license.

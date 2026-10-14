@@ -2,9 +2,9 @@
 
 PaperTrail turns an uploaded research PDF or arXiv paper into a structured briefing and answers follow-up questions with inspectable quotations and PDF page references. It accepts a PDF upload, arXiv ID, URL, or research topic, selects one paper per session, and preserves its source, index, execution history, and answers.
 
-**Live application:** after setup, run `papertrail web` and open **[http://127.0.0.1:8765](http://127.0.0.1:8765)**. This runs new paper processing and local model inference.
+**Browser application (Pages deployment):** [Open PaperTrail](https://gaganpraveen.github.io/papertrail/). The browser edition processes PDFs on the visitor's device with MiniLM embeddings, hybrid retrieval and extractive briefings. It needs no API key or Python installation. Choose a PDF or select **Try a sample paper**, then inspect the briefing, reported measurements and page-cited evidence. [Browser architecture, setup and limitations](docs/browser-application.md).
 
-**[GitHub Pages](https://gaganpraveen.github.io/papertrail/) is a static saved report, not a live application.** Public inference is not deployed. The current server is deliberately limited to a local single-user session; it must not be exposed through a public tunnel or used to expose raw Ollama.
+**Local generative application:** run `papertrail web` after the Python setup below. This separate edition uses Ollama for generated briefings and evidence review. It remains a local, single-user service; do not expose it or raw Ollama publicly. The saved reports under `examples/` and `docs/index.html` are historical examples, not interactive applications.
 
 [Architecture](docs/architecture.md) · [Browser guide](docs/web-demo.md) · [Upload verification and limitations](docs/pdf-upload-verification.md) · [Earlier release measurements](docs/release-rescue.md) · [Evaluation](docs/evaluation.md) · [BERT report](examples/rescue-bert/report.html) · [Topic report](examples/rescue-topic/report.html)
 
@@ -13,7 +13,7 @@ PaperTrail turns an uploaded research PDF or arXiv paper into a structured brief
 Requirements: Python **3.12** for the documented setup, [Ollama](https://ollama.com/download), and sufficient memory for `qwen3.5:4b`. This model was tested on an Apple M5 with 16 GB RAM; its download is approximately 3.4 GB. The package declares Python 3.11–3.13 support. Model downloads and arXiv retrieval require internet access; inference and storage run locally without a paid text-generation provider.
 
 ```sh
-git clone --branch codex/pdf-upload https://github.com/Gaganpraveen/papertrail.git
+git clone https://github.com/Gaganpraveen/papertrail.git
 cd papertrail
 python3.12 -m venv .venv
 source .venv/bin/activate
