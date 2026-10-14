@@ -202,7 +202,8 @@ def inspect(ctx: typer.Context, session: str, chunk_id: str):
             raise PaperTrailError("This passage ID does not belong to the session.")
         c = chunks[chunk_id]
         console.print(Panel(c.text, title=f"Page {c.page} · {c.section}"), markup=False)
-        console.print(f"{state.paper.pdf_url}#page={c.page}", markup=False)
+        source = state.paper.pdf_url or str(agent.store.run_dir(state.id) / "paper.pdf")
+        console.print(f"{source}#page={c.page}", markup=False)
 
 
 @app.command()

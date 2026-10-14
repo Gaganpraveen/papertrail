@@ -19,3 +19,6 @@ tmp/
 *.log
 *.ses
 output/*.zip
+web/node_modules/
+web/dist/
+web/public/samples/*.pdf

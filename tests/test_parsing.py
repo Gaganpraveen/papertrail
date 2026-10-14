@@ -116,3 +116,40 @@ def test_single_column_prose_is_not_split_at_normal_word_spaces(tmp_path):
         text, columns = page_text(document.pages[0])
     assert columns is False
     assert all(f"Sentence {row:02d} explains" in text for row in range(20))
+
+
+def test_near_aligned_column_baselines_do_not_interleave(tmp_path):
+    path = tmp_path / "offset-columns.pdf"
+    document = canvas.Canvas(str(path), pagesize=(612, 792))
+    document.setFont("Helvetica", 10)
+    for row in range(20):
+        document.drawString(40, 635 - row * 16, f"Left column row {row:02d} describes the method.")
+        document.drawString(
+            320, 633 - row * 16, f"Right column row {row:02d} describes the result."
+        )
+    document.save()
+    with pdfplumber.open(path) as pdf:
+        text, columns = page_text(pdf.pages[0])
+    assert columns
+    assert text.index("Left column row 19") < text.index("Right column row 00")
+    assert "method. Right" not in text
+
+
+def test_full_width_caption_prefix_below_top_quarter_is_not_split(tmp_path):
+    path = tmp_path / "caption-prefix.pdf"
+    document = canvas.Canvas(str(path), pagesize=(612, 792))
+    document.setFont("Helvetica", 10)
+    caption = "Figure caption spans the page and preserves the complete explanation."
+    document.drawCentredString(306, 520, caption)
+    for row in range(15):
+        document.drawString(40, 460 - row * 16, f"Left column row {row:02d} describes the method.")
+        document.drawString(
+            320, 458 - row * 16, f"Right column row {row:02d} describes the result."
+        )
+    document.save()
+    with pdfplumber.open(path) as pdf:
+        text, columns = page_text(pdf.pages[0])
+    assert columns
+    assert caption in text
+    assert text.index(caption) < text.index("Left column row 00")
+    assert text.index("Left column row 14") < text.index("Right column row 00")

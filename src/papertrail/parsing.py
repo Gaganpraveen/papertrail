@@ -6,11 +6,12 @@ from collections import Counter
 from pathlib import Path
 
 import pdfplumber
+from pdfminer.pdfdocument import PDFEncryptionError, PDFPasswordIncorrect
 
 from papertrail.errors import ParseError
 from papertrail.schema import Chunk, ParsedPaper
 
-PARSER_VERSION = "pdfplumber-sections-v4"
+PARSER_VERSION = "pdfplumber-sections-v5"
 HEADING = re.compile(
     r"^(?:(?:\d+(?:\.\d+)*|[A-Z])\.?\s+[A-Z][A-Za-z][A-Za-z ,:/&()\-]{2,90}|Abstract|References|Bibliography|Acknowledg(?:e)?ments|Appendix(?:\s+.*)?)$",
     re.I,
@@ -32,14 +33,21 @@ def page_text(page) -> tuple[str, bool]:
     # Rotated arXiv stamps are margin metadata, not part of the paper's prose.
     page = page.filter(lambda obj: obj.get("upright", True))
     words = page.extract_words(x_tolerance=2, y_tolerance=3)
-    rows: dict[int, list] = {}
-    for word in words:
-        if 0.12 * page.height < word["top"] < 0.9 * page.height:
-            rows.setdefault(round(word["top"] / 4), []).append(word)
+    rows: list[list] = []
+    # Fixed coordinate buckets split near-aligned column baselines when they
+    # fall on opposite sides of a bucket boundary. Group by actual distance.
+    for word in sorted(words, key=lambda item: item["top"]):
+        if not 0.12 * page.height < word["top"] < 0.9 * page.height:
+            continue
+        if not rows or word["top"] - rows[-1][0]["top"] > 4:
+            rows.append([word])
+        else:
+            rows[-1].append(word)
     wide_rows = 0
     gutter_tops = []
+    prose_tops = []
     mid = page.width / 2
-    for row in rows.values():
+    for row in rows:
         row.sort(key=lambda word: word["x0"])
         if row[-1]["x1"] - row[0]["x0"] < page.width * 0.55:
             continue
@@ -49,14 +57,24 @@ def page_text(page) -> tuple[str, bool]:
             for a, b in zip(row, row[1:], strict=False)
         ):
             gutter_tops.append(min(word["top"] for word in row))
+            sides = (
+                [word for word in row if word["x1"] < mid],
+                [word for word in row if word["x0"] > mid],
+            )
+            if all(
+                sum(bool(re.fullmatch(r"[A-Za-z]{2,}[.,;:]?", w["text"])) for w in side) >= 4
+                for side in sides
+            ):
+                prose_tops.append(min(word["top"] for word in row))
     columns = wide_rows >= 8 and len(gutter_tops) / wide_rows >= 0.6
     if columns:
-        # A title block can span both columns. Preserve only its initial region,
-        # identified by words crossing the otherwise empty central gutter.
+        # Preserve a full-width title/figure/caption prefix before the first
+        # paired prose line. A figure caption can extend below the top quarter.
+        prefix_limit = min(prose_tops) if prose_tops else 0.25 * page.height
         spanning = [
             word["bottom"]
             for word in words
-            if word["top"] < 0.25 * page.height and word["x0"] < mid < word["x1"]
+            if word["top"] < prefix_limit and word["x0"] < mid < word["x1"]
         ]
         header_end = 0
         if spanning:
@@ -112,6 +130,10 @@ def parse_pdf(path: Path, paper_id: str, max_pages: int = 100) -> ParsedPaper:
     raw_pages = []
     try:
         with pdfplumber.open(path) as document:
+            if document.doc.encryption is not None:
+                raise ParseError(
+                    "Encrypted PDFs are not supported, including files that open without a password. Export an unencrypted, text-readable PDF and try again."
+                )
             if not document.pages:
                 raise ParseError("The PDF contains no pages.")
             if len(document.pages) > max_pages:
@@ -132,6 +154,12 @@ def parse_pdf(path: Path, paper_id: str, max_pages: int = 100) -> ParsedPaper:
     except ParseError:
         raise
     except Exception as exc:
+        if isinstance(exc, (PDFPasswordIncorrect, PDFEncryptionError)) or isinstance(
+            exc.__context__, (PDFPasswordIncorrect, PDFEncryptionError)
+        ):
+            raise ParseError(
+                "Encrypted PDFs are not supported. Export an unencrypted, text-readable PDF and try again."
+            ) from exc
         raise ParseError(
             "PDF parsing failed. The file may be damaged or encrypted; no briefing was generated."
         ) from exc
@@ -168,7 +196,7 @@ def parse_pdf(path: Path, paper_id: str, max_pages: int = 100) -> ParsedPaper:
             chunks.extend(chunk_section("\n".join(buffer), paper_id, number, section))
     if not any(section_label(c.section) == "abstract" for c in chunks):
         warnings.append(
-            "No separate Abstract heading detected; the official API abstract remains available in metadata."
+            "No separate Abstract heading detected; opening-page passages are retained for briefing evidence."
         )
     if not any(c.reference for c in chunks):
         warnings.append("No separate References heading detected; section extraction is heuristic.")

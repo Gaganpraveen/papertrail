@@ -99,6 +99,35 @@ def test_limitations_cannot_be_silently_omitted(briefing, chunk):
         validate_briefing(briefing, {chunk.id: chunk})
 
 
+def test_briefing_reports_all_invalid_fields_for_one_bounded_repair(briefing, chunk):
+    uncertain = chunk.model_copy(
+        update={
+            "id": "b" * 16,
+            "text": "The approach may support more reliable retrieval in this setting.",
+        }
+    )
+    briefing.summary = briefing.summary.model_copy(update={"text": "The model scores 99.5 BLEU."})
+    briefing.method[0] = Claim(
+        text="The approach supports more reliable retrieval in this setting.",
+        evidence=[Evidence(chunk_id=uncertain.id, quote=uncertain.text)],
+    )
+    briefing.limitations_note = ""
+    with pytest.raises(GroundingError) as error:
+        validate_briefing(briefing, {chunk.id: chunk, uncertain.id: uncertain})
+    message = str(error.value)
+    assert "summary: Claim contains numeric values missing" in message
+    assert "99.5" in message
+    assert "method[0]: Claim removes an uncertainty qualifier" in message
+    assert "limitations_note: Missing explicit limitations" in message
+    assert len(message) < 700
+
+
+def test_valid_briefing_validation_preserves_claims_and_evidence(briefing, chunk):
+    original = briefing.model_dump()
+    validate_briefing(briefing, {chunk.id: chunk})
+    assert briefing.model_dump() == original
+
+
 @pytest.mark.parametrize(
     "qualifier",
     [
