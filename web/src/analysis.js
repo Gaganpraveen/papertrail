@@ -273,13 +273,17 @@ export function answerEvidence(chunks, vectors, question, queryVector) {
       : "The retrieved passages do not provide enough matching evidence. Try a more specific question or inspect the document.",
   };
 }
+export function measurementProse(text) {
+  // Repeated bare ticks usually come from a chart axis or a flattened table.
+  return !/(?:\d+(?:\.\d+)?\s+){4,}/.test(text);
+}
 export function measurements(chunks) {
   const rows = [];
   const seen = new Set();
   const pattern =
     /\b(\d+(?:\.\d+)?)\s*(%|percent\b|BLEU\b|seconds?\b|minutes?\b|hours?\b|days?\b|milliseconds?\b|ms\b|GB\b|MB\b)/gi;
   for (const c of chunks.filter((c) => c.section !== "References"))
-    for (const sentence of sentences(c.text))
+    for (const sentence of sentences(c.text).filter(measurementProse))
       for (const m of sentence.matchAll(pattern)) {
         const unit = m[2].toLowerCase().replace(/^percent$/, "%");
         const key = `${m[1]}:${unit}:${c.page}`;

@@ -170,3 +170,17 @@ test("two-column abstracts with different line spacing stay in reading order", (
   assert.equal(lines[2], "Left column contains the abstract sentence.");
   assert.equal(lines[22], "Right column contains introduction prose.");
 });
+
+test("chart-axis ticks are not reported as experimental measurements", () => {
+  assert.deepEqual(
+    measurements([
+      {
+        id: "axis",
+        page: 8,
+        section: "Results",
+        text: "The plot displays 80.0 60.0 40.0 20.0 0.0 25.0 50.0 75.0 100.0 % steps in this chart.",
+      },
+    ]),
+    [],
+  );
+});

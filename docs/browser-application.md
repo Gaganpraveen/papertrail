@@ -73,7 +73,7 @@ Checks below are observations on one local machine, not controlled performance b
 - Live topic query `retrieval augmented generation` returned relevant OpenAlex results. Importing *Active Retrieval Augmented Generation* from its publisher was blocked by browser CORS. The application showed the manual-download fallback and preserved the selected result.
 - The first production sample run exposed mixed columns below a figure. A layout regression now covers independent column baselines; source extraction was corrected before release.
 - Repeated file-picker automation later failed in the browser controller. Malformed upload, native drag-and-drop, encrypted/scanned-file rejection and automatic deadline expiry have not been verified through the browser in this release. The existing Python upload tests do not verify the separate browser implementation.
-- Automated checks: 12 browser logic tests; 224 Python regression tests passed in 26.88 s. Python lint/format and browser formatting/build passed. Python server tests require loopback socket permission; the first sandboxed attempt failed during server setup and the permitted rerun passed.
+- Automated checks: 13 browser logic tests; 224 Python regression tests passed in 26.88 s. Python lint/format and browser formatting/build passed. Python server tests require loopback socket permission; the first sandboxed attempt failed during server setup and the permitted rerun passed.
 
 ## Deployment
 
@@ -82,3 +82,5 @@ Checks below are observations on one local machine, not controlled performance b
 Historical reports in `docs/index.html` and `examples/` remain saved examples. They are not the browser application's runtime or evidence of fresh processing.
 
 Final production-build sample check: *Active Retrieval Augmented Generation*, 24 pages, SHA-256 prefix `5536c9136a51`, completed fresh parsing/indexing/briefing in **14.680 s**, with model files cached. The briefing included the proposed FLARE method and page-9 negative results on Wizard of Wikipedia/ELI5. “When does FLARE retrieve information?” returned source passages in **0.020 s**; the page-3 citation opened the original PDF. The research-budget question abstained in **0.021 s**. These are browser-reported operation times, not independent latency benchmarks. The first retrieved quotation was tangential to the timing question, so evidence ranking remains imperfect even when another retrieved passage answers it.
+
+The findings UI was tested by selecting the cited 60% and 50% values on page 8; it rendered a comparison with the explicit warning about different experimental conditions. A detected chart-axis tick was excluded by a regression-tested prose filter.
