@@ -8,6 +8,7 @@ import {
   Layers,
   Lock,
   MessageSquareQuote,
+  Play,
   Search,
   ShieldCheck,
 } from "lucide-react";
@@ -19,7 +20,7 @@ import { ScoreRing, cn } from "@/ui/kit";
 import { store, useStore } from "@/ui/hooks/store";
 import { submitForSurvey, usePendingSurvey } from "@/ui/hooks/usePendingSurvey";
 import { CommandBar } from "@/ui/layout/CommandBar";
-import { DOI_SAMPLE, PAPER_SAMPLES, SURVEY_SAMPLE, TOPIC_SAMPLE } from "./samples";
+import { DEMO_SAMPLE, DOI_SAMPLE, PAPER_SAMPLES, SURVEY_SAMPLE, TOPIC_SAMPLE } from "./samples";
 import { Starfield } from "./Starfield";
 
 const MODEL_MB = Object.values(MODELS).reduce((sum, m) => sum + m.sizeMB, 0);
@@ -81,10 +82,25 @@ function Samples() {
   const pending = usePendingSurvey((s) => s.arxivIds);
   const submit = (input: string) => void store().submit(input);
 
+  const demo = PAPER_SAMPLES.find((s) => s.input === DEMO_SAMPLE) ?? PAPER_SAMPLES[0];
+
   return (
     <div className="mt-5 flex flex-col items-center gap-2.5">
+      <div className="mb-1 flex flex-wrap items-center justify-center gap-x-3 gap-y-1.5">
+        <button
+          onClick={() => submit(demo.input)}
+          className="group inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 text-sm font-medium text-accent-ink shadow-card hover:brightness-110"
+        >
+          <Play className="size-3.5 fill-current" />
+          Try a sample paper
+          <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+        </button>
+        <span className="text-xs text-ink-3">
+          {demo.label}, {demo.hint}. About 40 seconds on your first visit, then much faster.
+        </span>
+      </div>
       <div className="flex flex-wrap items-center justify-center gap-2">
-        <span className="text-[11px] font-medium uppercase tracking-wider text-ink-3">Try</span>
+        <span className="text-[11px] font-medium uppercase tracking-wider text-ink-3">Or try</span>
         {PAPER_SAMPLES.map((s) => (
           <Chip key={s.input} onClick={() => submit(s.input)} title={`${s.hint} · arXiv:${s.input}`}>
             <span className="font-medium">{s.label}</span>

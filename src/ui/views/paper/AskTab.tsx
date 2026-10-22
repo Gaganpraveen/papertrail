@@ -10,6 +10,7 @@ import { ArrowUp, ChevronRight, CircleSlash, MessageSquareText, Microscope, Quot
 import { ABSTAIN_THRESHOLD, QA_NODES, SENTENCE_ABSTAIN_THRESHOLD } from "@/qa/answer";
 import type { Answer, QuestionIntent, RetrievalHit } from "@/types";
 import { Badge, Card, CardBody, CardHeader, EmptyState, Spinner, cn } from "@/ui/kit";
+import { ModelDownload, warmModels } from "@/ui/layout/ModelDownload";
 import { EvidenceChip, evidenceKey, uniqueEvidence } from "./EvidenceChips";
 
 const INTENT_LABEL: Record<QuestionIntent, string> = {
@@ -202,9 +203,10 @@ function PendingCard({ question }: { question: string | null }) {
           <p className="max-w-[85%] rounded-2xl rounded-br-md bg-panel-2 px-3.5 py-2 text-sm text-ink">{question}</p>
         </div>
       )}
+      <ModelDownload keys={["embedder", "reranker", "reader"]} />
       <Card className="flex items-center gap-2.5 px-4 py-3.5 text-sm text-ink-3">
         <Spinner />
-        Retrieving passages, reranking and reading the best candidates…
+        Finding the best passages and reading them for an answer…
       </Card>
     </div>
   );
@@ -256,6 +258,9 @@ export function AskTab({
   const endRef = useRef<HTMLDivElement>(null);
   const asked = new Set(answers.map((a) => a.question));
   const freshSuggestions = suggestions.filter((q) => !asked.has(q)).slice(0, 4);
+
+  // Fetch the answering models as soon as the tab opens, so the first question is quick.
+  useEffect(() => warmModels(["reranker", "reader"]), []);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });

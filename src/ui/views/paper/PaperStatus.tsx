@@ -9,6 +9,21 @@ import { useLibrary } from "@/store/library";
 import type { PaperRecord } from "@/store/types";
 import type { TraceEvent } from "@/types";
 import { Button, Card, Progress, Skeleton, Spinner, cn } from "@/ui/kit";
+import { ModelDownload } from "@/ui/layout/ModelDownload";
+
+/** What each step is doing, in plain words, while the user waits. */
+const STEP_MESSAGES: Record<string, string> = {
+  understand: "Working out what you pasted.",
+  resolve: "Finding the paper's title, authors and PDF.",
+  fetch: "Downloading the PDF.",
+  parse: "Reading the PDF: sections, references and captions.",
+  fallback: "No readable full text, so continuing from the abstract.",
+  segment: "Splitting the text into sentences, keeping page numbers.",
+  zone: "Tagging each sentence as problem, method, result or limitation.",
+  chunk: "Grouping sentences into short passages.",
+  embed: "Indexing the passages so you can search them by meaning.",
+  analyze: "Writing the briefing, critique and charts.",
+};
 
 type StepState = "pending" | "running" | "done" | "error";
 
@@ -84,10 +99,15 @@ export function RunningState({ record }: { record: PaperRecord }) {
             <p className="mt-0.5 text-xs text-ink-3">
               {queued
                 ? "Papers are analysed one at a time so the in-browser models stay responsive."
-                : (current?.description ?? "Preparing the analysis pipeline.")}
+                : current
+                  ? (STEP_MESSAGES[current.name] ?? current.description)
+                  : "Getting ready."}
             </p>
             <Progress value={record.progress} className="mt-3" />
           </div>
+        </div>
+        <div className="mt-4 empty:hidden">
+          <ModelDownload keys={["embedder"]} />
         </div>
         <ol className="mt-4 flex flex-wrap gap-1.5" aria-label="Pipeline steps">
           {steps.map((n) => {

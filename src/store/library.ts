@@ -412,6 +412,8 @@ export const useLibrary = create<LibraryState>()((set, get) => {
       if (!existing) {
         addPaper(id, placeholderMeta(input, id));
         enqueue({ id, input });
+        // Download the search model while the PDF is fetched and parsed.
+        if (typeof Worker !== "undefined") void ml.warmup("embedder").catch(() => undefined);
       } else if (existing.status === "failed") {
         // Submitting a failed paper again means "try again", not just "show it".
         await get().retry(existing.id);

@@ -13,6 +13,9 @@ export const PAPER_SAMPLES: PaperSample[] = [
   { input: "2402.02750", label: "KIVI", hint: "Liu et al., 2024" },
 ];
 
+/** The paper behind the "Try a sample paper" button: short, and tested end to end. */
+export const DEMO_SAMPLE = "2402.02750";
+
 export const TOPIC_SAMPLE = "kv cache compression";
 export const DOI_SAMPLE = { input: "10.18653/v1/N19-1423", label: "BERT (DOI)" };
 
