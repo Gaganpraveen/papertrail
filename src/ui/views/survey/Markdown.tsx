@@ -87,6 +87,10 @@ function renderBlock(block: Block, key: number, cite: CiteProps, inReferences: b
     case "rule":
       return <hr key={key} className="my-4 border-line" />;
     case "reference":
+      // Prose can open with a citation ("[2] stands on its own here…"). Only the
+      // References section holds citation targets; elsewhere it stays prose with
+      // a live chip, so anchor ids stay unique and chips jump to the bibliography.
+      if (!inReferences) return <p key={key}>{inline(`[${block.n}] ${block.text}`)}</p>;
       return (
         <p
           key={key}

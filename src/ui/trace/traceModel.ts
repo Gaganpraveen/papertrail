@@ -5,7 +5,8 @@
  * The graph runtime only emits events (start / end / error / retry / route /
  * log), so status is reconstructed by replaying them in order. A node that
  * never started is "pending" while the run is live and "skipped" once the
- * run has finished, which is exactly how a fallback branch shows up.
+ * run has finished, which is exactly how a fallback branch shows up. A job
+ * with no events at all (restored after a reload) keeps every node pending.
  */
 import type { TraceEvent } from "@/types";
 
@@ -76,7 +77,9 @@ export function deriveNodes(nodes: NodeInfo[], events: TraceEvent[], status: Job
   }
 
   const result = [...views.values()];
-  if (status !== "running") {
+  // Traces are not persisted, so a finished job with no events was restored
+  // from the library: leave its nodes pending rather than claim they were skipped.
+  if (status !== "running" && events.length > 0) {
     for (const view of result) {
       if (view.status === "pending") view.status = "skipped";
       // A run that stopped (error or cancel) leaves no node running.

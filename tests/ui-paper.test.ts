@@ -112,6 +112,10 @@ vi.mock("@/store/library", () => ({
 }));
 vi.mock("@/store/export", () => ({ briefingMarkdown: () => "", download: () => {} }));
 vi.mock("@/pipeline/paper", () => ({ PAPER_NODES: [{ name: "parse", label: "Parse", description: "Parse the PDF" }] }));
+// The trace dock follows whatever job the test sets here, expanded.
+let traceJob: unknown = null;
+vi.mock("@/ui/trace/useActiveJob", () => ({ useActiveJob: () => traceJob }));
+vi.mock("@/ui/hooks/usePersistentState", () => ({ usePersistentState: () => [true, () => {}] }));
 vi.mock("@/qa/answer", () => ({
   ABSTAIN_THRESHOLD: 0.55,
   SENTENCE_ABSTAIN_THRESHOLD: 0.45,
@@ -185,5 +189,78 @@ describe("PaperView renders every tab", () => {
     );
     expect(html).toContain("Parse");
     expect(html).toContain("40%");
+  });
+});
+
+describe("paper tabs", () => {
+  it("scroll on narrow screens and use the short label below sm", async () => {
+    currentTab = "briefing";
+    const { default: PaperView } = await import("@/ui/views/paper/PaperView");
+    const html = renderToStaticMarkup(createElement(PaperView, { id: record.id }));
+    expect(html).toMatch(/role="tablist" class="[^"]*overflow-x-auto/);
+    expect(html).toContain('<span class="sm:hidden">Visuals</span>');
+    expect(html).toContain('<span class="hidden sm:inline">Visual analysis</span>');
+  });
+});
+
+describe("survey markdown", () => {
+  const source = [
+    "## Themes",
+    "### 1. Reasoning",
+    "[2] stands on its own here, distinguished by *prompting*.",
+    "## References",
+    "[1] A. One. *First paper*. 2022.",
+    "[2] B. Two. *Second paper*. 2023.",
+  ].join("\n\n");
+
+  it("keeps citation targets unique to the References section", async () => {
+    const { Markdown } = await import("@/ui/views/survey/Markdown");
+    const html = renderToStaticMarkup(
+      createElement(Markdown, { source, onCite: () => {}, citeTitle: () => undefined, citeColor: () => undefined }),
+    );
+    expect(html.match(/id="survey-ref-2"/g)).toHaveLength(1);
+    expect(html.match(/id="survey-ref-1"/g)).toHaveLength(1);
+    // The theme intro stays prose, and its [2] is a clickable chip.
+    expect(html).toMatch(/<p><span class="whitespace-nowrap"><button[^>]*>2<\/button><\/span> stands on its own here/);
+  });
+});
+
+describe("trace dock after a reload", () => {
+  const nodes = [
+    { name: "parse", label: "Parse", description: "" },
+    { name: "fallback", label: "Abstract fallback", description: "" },
+  ];
+
+  it("keeps nodes pending when a finished job has no events", async () => {
+    const { deriveNodes } = await import("@/ui/trace/traceModel");
+    expect(deriveNodes(nodes, [], "done").map((n) => n.status)).toEqual(["pending", "pending"]);
+    const events = [
+      { type: "node:start" as const, node: "parse", at: 0 },
+      { type: "node:end" as const, node: "parse", at: 40, durationMs: 40 },
+    ];
+    expect(deriveNodes(nodes, events, "done").map((n) => n.status)).toEqual(["done", "skipped"]);
+  });
+
+  it("says the job was restored instead of claiming it took <1 ms", async () => {
+    const { TraceDock } = await import("@/ui/trace/TraceDock");
+    traceJob = { kind: "paper", key: "paper:x", title: "A Test Paper", nodes, events: [], status: "done" };
+    const html = renderToStaticMarkup(createElement(TraceDock));
+    expect(html).toContain("Restored from library");
+    expect(html).toContain("not kept across reloads");
+    expect(html).not.toContain("Completed in");
+    expect(html).not.toContain("skipped");
+    expect(html).not.toContain("Waiting in the queue");
+  });
+
+  it("still times a run that streamed events", async () => {
+    const { TraceDock } = await import("@/ui/trace/TraceDock");
+    const events = [
+      { type: "node:start", node: "parse", at: 0 },
+      { type: "node:end", node: "parse", at: 40_600, durationMs: 40_600 },
+    ];
+    traceJob = { kind: "paper", key: "paper:x", title: "A Test Paper", nodes, events, status: "done" };
+    const html = renderToStaticMarkup(createElement(TraceDock));
+    expect(html).toContain("Completed in 40.6 s");
+    expect(html).toContain("skipped");
   });
 });

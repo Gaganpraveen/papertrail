@@ -3,7 +3,7 @@
  * hand-styling, which keeps spacing, radius and colour consistent.
  */
 import { clsx } from "clsx";
-import type { ButtonHTMLAttributes, HTMLAttributes, ReactNode } from "react";
+import { useEffect, useRef, type ButtonHTMLAttributes, type HTMLAttributes, type ReactNode } from "react";
 import type { Severity, Zone } from "@/types";
 
 export const cn = clsx;
@@ -162,11 +162,36 @@ export function Tabs<T extends string>({
 }: {
   value: T;
   onChange: (value: T) => void;
-  items: { value: T; label: string; icon?: ReactNode; count?: number }[];
+  /** shortLabel replaces label below `sm`, where the row has the least room. */
+  items: { value: T; label: string; shortLabel?: string; icon?: ReactNode; count?: number }[];
   className?: string;
 }) {
+  const listRef = useRef<HTMLDivElement>(null);
+
+  // The row scrolls sideways on narrow screens, so bring the active tab into
+  // view when it changes from elsewhere (asking a question opens "Ask").
+  useEffect(() => {
+    const list = listRef.current;
+    const tab = list?.querySelector<HTMLElement>('[aria-selected="true"]');
+    if (!list || !tab) return;
+    const box = list.getBoundingClientRect();
+    const rect = tab.getBoundingClientRect();
+    const delta = rect.left < box.left ? rect.left - box.left : rect.right > box.right ? rect.right - box.right : 0;
+    if (delta !== 0) list.scrollBy({ left: delta, behavior: "smooth" });
+  }, [value]);
+
+  // Scrolls instead of overflowing the page on phones. The hairline is an
+  // inset shadow rather than a border, so the active underline still sits on
+  // it without poking out of the scroll box.
   return (
-    <div role="tablist" className={cn("flex items-center gap-1 border-b border-line", className)}>
+    <div
+      ref={listRef}
+      role="tablist"
+      className={cn(
+        "flex items-center gap-1 overflow-x-auto shadow-[inset_0_-1px_0_var(--line)] [scrollbar-width:none]",
+        className,
+      )}
+    >
       {items.map((item) => {
         const active = item.value === value;
         return (
@@ -176,12 +201,22 @@ export function Tabs<T extends string>({
             aria-selected={active}
             onClick={() => onChange(item.value)}
             className={cn(
-              "relative -mb-px flex items-center gap-2 px-3 py-2.5 text-sm font-medium transition-colors",
+              "relative flex shrink-0 items-center gap-2 px-3 py-2.5 text-sm font-medium whitespace-nowrap transition-colors",
+              // Inset so the scroll box does not clip the keyboard focus ring.
+              "focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent",
               active ? "text-ink" : "text-ink-3 hover:text-ink-2",
             )}
           >
-            {item.icon}
-            {item.label}
+            {/* Text-only below `sm`, so all tabs fit on a phone without scrolling. */}
+            {item.icon && <span className="hidden sm:contents">{item.icon}</span>}
+            {item.shortLabel ? (
+              <>
+                <span className="sm:hidden">{item.shortLabel}</span>
+                <span className="hidden sm:inline">{item.label}</span>
+              </>
+            ) : (
+              item.label
+            )}
             {item.count !== undefined && (
               <span className="rounded bg-panel-2 px-1 text-[10px] tabular text-ink-3">
                 {item.count}
@@ -189,7 +224,7 @@ export function Tabs<T extends string>({
             )}
             <span
               className={cn(
-                "absolute inset-x-2 -bottom-px h-0.5 rounded-full transition-colors",
+                "absolute inset-x-2 bottom-0 h-0.5 rounded-full transition-colors",
                 active ? "bg-accent" : "bg-transparent",
               )}
             />

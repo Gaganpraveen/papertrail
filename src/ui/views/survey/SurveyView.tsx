@@ -88,8 +88,10 @@ function Section({
   children: ReactNode;
   actions?: ReactNode;
 }) {
+  // min-w-0: below `lg` the chart grids use an auto column, and a card sized by
+  // its SVG would otherwise never let the charts shrink when the viewport does.
   return (
-    <Card id={`survey-${id}`} className="scroll-mt-16">
+    <Card id={`survey-${id}`} className="scroll-mt-16 min-w-0">
       <CardHeader title={title} subtitle={subtitle} icon={icon} actions={actions} />
       <CardBody>{children}</CardBody>
     </Card>

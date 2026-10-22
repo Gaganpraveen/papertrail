@@ -65,6 +65,13 @@ function Attempts({ query, attempts }: { query: string; attempts: string[] }) {
 export default function SearchView() {
   const search = useStore((s) => s.search);
   const [selected, setSelected] = useState<string[]>([]);
+  // The view stays mounted from one search to the next, so start every new
+  // query with an empty selection instead of inheriting the last one's ids.
+  const [selectionQuery, setSelectionQuery] = useState(search?.query);
+  if (search && search.query !== selectionQuery) {
+    setSelectionQuery(search.query);
+    setSelected([]);
+  }
 
   if (!search) {
     return (
@@ -82,13 +89,12 @@ export default function SearchView() {
   const picked = candidates.filter((c) => selected.includes(keyOf(c)));
   const semanticAvailable = candidates.some((c) => c.scores.semantic > 0);
   const toggle = (c: Candidate) =>
-    setSelected((prev) =>
-      prev.includes(keyOf(c))
-        ? prev.filter((k) => k !== keyOf(c))
-        : prev.length >= MAX_SURVEY_PAPERS
-          ? prev
-          : [...prev, keyOf(c)],
-    );
+    setSelected((prev) => {
+      // Only ids among the current candidates count toward the cap, matching `picked`.
+      const live = prev.filter((k) => candidates.some((x) => keyOf(x) === k));
+      if (live.includes(keyOf(c))) return live.filter((k) => k !== keyOf(c));
+      return live.length >= MAX_SURVEY_PAPERS ? live : [...live, keyOf(c)];
+    });
 
   return (
     <div className="mx-auto max-w-4xl px-4 pt-8 pb-28 sm:px-8">
@@ -137,7 +143,7 @@ export default function SearchView() {
                 key={keyOf(c)}
                 candidate={c}
                 selected={selected.includes(keyOf(c))}
-                disabled={selected.length >= MAX_SURVEY_PAPERS}
+                disabled={picked.length >= MAX_SURVEY_PAPERS}
                 semanticAvailable={semanticAvailable}
                 onToggle={() => toggle(c)}
                 onAnalyze={() => void store().analyzeCandidates([c])}

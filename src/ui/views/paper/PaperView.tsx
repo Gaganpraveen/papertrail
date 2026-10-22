@@ -73,7 +73,7 @@ function ReadyContent({
         onChange={onTab}
         items={[
           { value: "briefing", label: "Briefing", icon: <Sparkles className="size-4" /> },
-          { value: "visuals", label: "Visual analysis", icon: <ChartColumn className="size-4" /> },
+          { value: "visuals", label: "Visual analysis", shortLabel: "Visuals", icon: <ChartColumn className="size-4" /> },
           { value: "critique", label: "Critique", icon: <Gavel className="size-4" />, count: concerns },
           {
             value: "ask",

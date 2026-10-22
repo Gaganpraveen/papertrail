@@ -75,7 +75,7 @@ function useNow(active: boolean, intervalMs = 250): number {
   return now;
 }
 
-function NodePill({ node }: { node: NodeView }) {
+function NodePill({ node, restored }: { node: NodeView; restored: boolean }) {
   const tooltip = [node.description, node.message].filter(Boolean).join("\n\n");
   return (
     <div
@@ -97,7 +97,9 @@ function NodePill({ node }: { node: NodeView }) {
           ? formatDuration(node.durationMs)
           : node.status === "running"
             ? "running…"
-            : node.status}
+            : restored
+              ? "not kept"
+              : node.status}
         {node.retries > 0 && <span className="text-warn">· {node.retries} retry</span>}
       </div>
     </div>
@@ -154,6 +156,8 @@ function summary(job: TraceJob, nodes: NodeView[], elapsed: number): string {
     const current = nodes.find((n) => n.status === "running") ?? nodes.find((n) => n.name === job.currentNode);
     return current ? `${current.label} · ${formatDuration(elapsed)}` : `Queued`;
   }
+  // Traces are not persisted, so after a reload there is no run to time.
+  if (job.events.length === 0) return job.status === "failed" ? "Failed" : "Restored from library";
   if (job.status === "failed") {
     const failed = nodes.find((n) => n.status === "failed");
     return failed ? `Failed at ${failed.label}` : "Failed";
@@ -183,6 +187,8 @@ export function TraceDock() {
 
   if (!job) return null;
   const elapsed = elapsedMs(job.events, job.status, now);
+  // A finished job without events was loaded from the library after a reload.
+  const restored = !running && job.events.length === 0;
 
   return (
     <section
@@ -200,11 +206,13 @@ export function TraceDock() {
         </span>
         <span className="hidden h-4 w-px bg-line sm:block" />
         <span className="hidden min-w-0 flex-1 truncate text-xs text-ink-3 sm:block">{job.title}</span>
-        <span className="flex items-center gap-1" aria-hidden>
-          {nodes.map((n) => (
-            <span key={n.name} className={cn("size-1.5 rounded-full", dotStyle[n.status])} />
-          ))}
-        </span>
+        {!restored && (
+          <span className="flex items-center gap-1" aria-hidden>
+            {nodes.map((n) => (
+              <span key={n.name} className={cn("size-1.5 rounded-full", dotStyle[n.status])} />
+            ))}
+          </span>
+        )}
         <span
           className={cn(
             "ml-auto shrink-0 text-xs tabular sm:ml-0",
@@ -222,7 +230,7 @@ export function TraceDock() {
             {nodes.map((node, i) => (
               <div key={node.name} className="flex shrink-0 items-center">
                 {i > 0 && <Connector active={node.status === "done" || node.status === "running"} />}
-                <NodePill node={node} />
+                <NodePill node={node} restored={restored} />
               </div>
             ))}
           </div>
@@ -249,7 +257,9 @@ export function TraceDock() {
             </div>
             <div className="min-w-0 rounded-lg border border-line bg-bg/60 py-1.5">
               {job.events.length === 0 ? (
-                <p className="px-3 py-2 text-xs text-ink-3">Waiting in the queue…</p>
+                <p className="px-3 py-2 text-xs text-ink-3">
+                  {running ? "Waiting in the queue…" : "This run's trace is not kept across reloads."}
+                </p>
               ) : (
                 <EventLog events={job.events} labelOf={labelOf} />
               )}
