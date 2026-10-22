@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>PaperTrail — paper analysis in your browser</title>
+    <meta
+      name="description"
+      content="Reviewer-grade research paper analysis that runs entirely in your browser: briefings, critique, rigor scoring, grounded Q&A and literature surveys from an arXiv ID, DOI or PDF."
+    />
+    <meta name="theme-color" content="#0b0d12" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f6f7f9" media="(prefers-color-scheme: light)" />
+    <meta name="color-scheme" content="dark light" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="PaperTrail" />
+    <meta property="og:title" content="PaperTrail — paper analysis in your browser" />
+    <meta
+      property="og:description"
+      content="Paste an arXiv ID, DOI or PDF and get a briefing, critique, rigor score and evidence-backed answers. No server, no API keys."
+    />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="PaperTrail — paper analysis in your browser" />
+    <meta
+      name="twitter:description"
+      content="Reviewer-grade paper analysis, entirely in your browser."
+    />
+
+    <!-- Apply the saved theme before first paint so there is no light/dark flash. -->
+    <script>
+      (function () {
+        var theme = "dark";
+        try {
+          var saved = localStorage.getItem("papertrail:theme");
+          if (saved === "light" || saved === "dark") theme = saved;
+        } catch (e) {}
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <noscript>PaperTrail runs entirely in your browser and needs JavaScript enabled.</noscript>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

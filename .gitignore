@@ -1,0 +1,13 @@
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+.vite/
+*.log
+.DS_Store
+
+# Generated at install/build time
+public/ort/
+public/models/
+*.tsbuildinfo
