@@ -4,7 +4,7 @@
  * be deep-linked.
  */
 import { useState } from "react";
-import { ChartColumn, ChevronRight, FileQuestion, FileText, Gavel, Info, MessageSquareText, Sparkles } from "lucide-react";
+import { ChartColumn, ChevronRight, FileQuestion, FileText, Gavel, Info, MessageSquareText, ScrollText } from "lucide-react";
 import { useLibrary } from "@/store/library";
 import type { PaperRecord, PaperTab } from "@/store/types";
 import { Button, Card, EmptyState, Tabs } from "@/ui/kit";
@@ -72,7 +72,7 @@ function ReadyContent({
         value={tab}
         onChange={onTab}
         items={[
-          { value: "briefing", label: "Briefing", icon: <Sparkles className="size-4" /> },
+          { value: "briefing", label: "Briefing", icon: <ScrollText className="size-4" /> },
           { value: "visuals", label: "Visual analysis", shortLabel: "Visuals", icon: <ChartColumn className="size-4" /> },
           { value: "critique", label: "Critique", icon: <Gavel className="size-4" />, count: concerns },
           {

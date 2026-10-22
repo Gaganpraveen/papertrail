@@ -79,7 +79,7 @@ function Limitations({ limitations }: { limitations: Briefing["limitations"] }) 
             empty="The authors do not discuss limitations explicitly, which is itself worth noting."
           />
         </div>
-        <div className="bg-panel bg-[linear-gradient(var(--accent-soft),transparent_70%)] px-5 py-4">
+        <div className="bg-panel-2 px-5 py-4">
           <SectionLabel className="mb-3 flex items-center gap-1.5 text-accent">
             <span className="size-1.5 rounded-full bg-accent" />
             Detected by PaperTrail
@@ -123,10 +123,7 @@ export function BriefingTab({ briefing, onAsk }: { briefing: Briefing; onAsk: (q
   return (
     <div className="space-y-4 animate-in">
       <div className="relative overflow-hidden rounded-2xl border border-line bg-panel p-5 shadow-card">
-        <div
-          className="pointer-events-none absolute inset-y-0 left-0 w-1"
-          style={{ background: "linear-gradient(var(--accent), var(--z-contribution))" }}
-        />
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-0.5 bg-ink" />
         <SectionLabel className="mb-2 flex items-center gap-1.5">
           <Lightbulb className="size-3.5" />
           Why it matters

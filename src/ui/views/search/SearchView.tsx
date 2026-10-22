@@ -3,7 +3,7 @@
  * breakdown, multi-select (up to 10) and one-click batch analysis.
  */
 import { useState } from "react";
-import { CircleAlert, Info, Layers, SearchX, Sparkles } from "lucide-react";
+import { CircleAlert, Info, Layers, Search, SearchX } from "lucide-react";
 import { RANK_WEIGHTS } from "@/sources/rank";
 import { MAX_SURVEY_PAPERS } from "@/store/types";
 import type { Candidate } from "@/types";
@@ -50,7 +50,7 @@ function Attempts({ query, attempts }: { query: string; attempts: string[] }) {
   if (broadened.length === 0) return null;
   return (
     <p className="mt-2 flex flex-wrap items-center gap-1.5 text-xs text-ink-3">
-      <Sparkles className="size-3.5 text-accent" />
+      <Search className="size-3.5 text-ink-3" />
       No exact hits, so the query was broadened:
       {attempts.map((a, i) => (
         <span key={i} className="inline-flex items-center gap-1.5">
