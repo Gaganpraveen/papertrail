@@ -1,0 +1,77 @@
+{
+  "description": "Hand-labelled questions over the three fixture papers. `expected` lists acceptable answer substrings (case-insensitive) checked against the parsed text; null marks a plausible question the paper does not answer.",
+  "papers": [
+    {
+      "id": "2201.11903",
+      "title": "Chain-of-Thought Prompting Elicits Reasoning in Large Language Models",
+      "pdf": "tests/fixtures/pdfs/2201.11903.pdf",
+      "questions": [
+        { "id": "cot-01", "category": "dataset", "question": "Which dataset of algebraic word problems is used?", "expected": ["AQuA"] },
+        { "id": "cot-02", "category": "method", "question": "Which sizes of LaMDA models were evaluated?", "expected": ["422M"] },
+        { "id": "cot-03", "category": "number", "question": "Above roughly what model size does chain-of-thought prompting start to yield gains?", "expected": ["100B"] },
+        { "id": "cot-04", "category": "number", "question": "What accuracy does PaLM 540B reach on StrategyQA with chain-of-thought prompting?", "expected": ["75.6%"] },
+        { "id": "cot-05", "category": "number", "question": "What share of the incorrect chains of thought were almost correct?", "expected": ["46%"] },
+        { "id": "cot-06", "category": "method", "question": "Which hardware was used for inference on PaLM 540B?", "expected": ["TPU v4"] },
+        { "id": "cot-07", "category": "number", "question": "What did the external calculator raise the GSM8K solve rate of LaMDA 137B to?", "expected": ["17.3%"] },
+        { "id": "cot-08", "category": "method", "question": "Which decoding strategy is used to sample from the models?", "expected": ["greedy decoding"] },
+        { "id": "cot-09", "category": "baseline", "question": "Which prompting method is the baseline for the arithmetic experiments?", "expected": ["standard few-shot prompting", "standard prompting"] },
+        { "id": "cot-10", "category": "definition", "question": "What is a symbol mapping error?", "expected": ["correct except for the number symbols"] },
+        { "id": "cot-11", "category": "definition", "question": "What is last letter concatenation?", "expected": ["concatenate the last letters of words"] },
+        { "id": "cot-12", "category": "limitation", "question": "Why is chain-of-thought reasoning costly to serve in real-world applications?", "expected": ["only at large model scales"] },
+        { "id": "cot-13", "category": "limitation", "question": "On which datasets did chain-of-thought prompting not help GPT-3?", "expected": ["CSQA and StrategyQA"] },
+        { "id": "cot-u1", "category": "unanswerable", "question": "What accuracy does chain-of-thought prompting reach on the MATH benchmark?", "expected": null },
+        { "id": "cot-u2", "category": "unanswerable", "question": "How many hours did inference on PaLM 540B take?", "expected": null },
+        { "id": "cot-u3", "category": "unanswerable", "question": "What vocabulary size does the LaMDA tokenizer have?", "expected": null },
+        { "id": "cot-u4", "category": "unanswerable", "question": "What BLEU score does chain-of-thought prompting achieve on WMT translation?", "expected": null }
+      ]
+    },
+    {
+      "id": "2210.03629",
+      "title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+      "pdf": "tests/fixtures/pdfs/2210.03629.pdf",
+      "questions": [
+        { "id": "react-01", "category": "method", "question": "Which frozen language model is ReAct mainly prompted with?", "expected": ["PaLM-540B"] },
+        { "id": "react-02", "category": "method", "question": "What does the lookup action return?", "expected": ["next sentence in the page containing string"] },
+        { "id": "react-03", "category": "method", "question": "How many sentences does the search action return from an entity's wiki page?", "expected": ["first 5 sentences"] },
+        { "id": "react-04", "category": "number", "question": "What score does ReAct reach on Fever?", "expected": ["60.9"] },
+        { "id": "react-05", "category": "number", "question": "What share of ReAct's error cases come from non-informative search?", "expected": ["23%"] },
+        { "id": "react-06", "category": "number", "question": "How many trajectories with correct answers are used to finetune the smaller PaLM models?", "expected": ["3,000"] },
+        { "id": "react-07", "category": "dataset", "question": "How many unseen evaluation games are used for ALFWorld?", "expected": ["134"] },
+        { "id": "react-08", "category": "dataset", "question": "How many real-world products does the WebShop environment contain?", "expected": ["1.18M"] },
+        { "id": "react-09", "category": "baseline", "question": "Which imitation learning agent is the ALFWorld baseline?", "expected": ["BUTLER"] },
+        { "id": "react-10", "category": "limitation", "question": "What frequent error pattern is specific to ReAct?", "expected": ["repetitively generates the previous thoughts and actions"] },
+        { "id": "react-11", "category": "limitation", "question": "Why does prompting ReAct perform worst with PaLM-8B and PaLM-62B?", "expected": ["difficulty to learn both reasoning and acting"] },
+        { "id": "react-12", "category": "definition", "question": "What is FEVER?", "expected": ["fact verification benchmark"] },
+        { "id": "react-13", "category": "definition", "question": "What is ALFWorld?", "expected": ["synthetic text-based game"] },
+        { "id": "react-u1", "category": "unanswerable", "question": "What success rate does ReAct achieve on MiniWoB++?", "expected": null },
+        { "id": "react-u2", "category": "unanswerable", "question": "What reward function is used to train ReAct with reinforcement learning?", "expected": null },
+        { "id": "react-u3", "category": "unanswerable", "question": "How many TPU hours did the PaLM-540B experiments use?", "expected": null },
+        { "id": "react-u4", "category": "unanswerable", "question": "What is the average latency per HotpotQA question?", "expected": null }
+      ]
+    },
+    {
+      "id": "2402.02750",
+      "title": "KIVI: A Tuning-Free Asymmetric 2bit Quantization for KV Cache",
+      "pdf": "tests/fixtures/pdfs/2402.02750.pdf",
+      "questions": [
+        { "id": "kivi-01", "category": "number", "question": "How much larger batch size does KIVI enable?", "expected": ["4×"] },
+        { "id": "kivi-02", "category": "number", "question": "What throughput gain does KIVI bring on real LLM inference workloads?", "expected": ["3.47×"] },
+        { "id": "kivi-03", "category": "number", "question": "How much smaller is the per-token quantization error for the value cache than per-channel?", "expected": ["15×"] },
+        { "id": "kivi-04", "category": "dataset", "question": "Which tasks are used in the preliminary quantization study on Llama-2-13B?", "expected": ["CoQA and TruthfulQA"] },
+        { "id": "kivi-05", "category": "dataset", "question": "Which dataset are the efficiency workloads synthesized from?", "expected": ["ShareGPT"] },
+        { "id": "kivi-06", "category": "method", "question": "In which language is the group-wise quantization kernel implemented?", "expected": ["Triton"] },
+        { "id": "kivi-07", "category": "method", "question": "Along which dimension should the key cache be quantized?", "expected": ["per-channel", "channel dimension"] },
+        { "id": "kivi-08", "category": "definition", "question": "What is fake quantization?", "expected": ["simulate the quantization process"] },
+        { "id": "kivi-09", "category": "definition", "question": "What is the residual key cache?", "expected": ["does not have a sufficient number of tokens"] },
+        { "id": "kivi-10", "category": "baseline", "question": "Which baseline is KIVI compared against in the efficiency comparison?", "expected": ["FP16 baseline"] },
+        { "id": "kivi-11", "category": "baseline", "question": "Which prior system uses 4-bit group-wise quantization for both key and value cache?", "expected": ["FlexGen"] },
+        { "id": "kivi-12", "category": "limitation", "question": "Why does 2bit KIVI lose accuracy on Falcon-7B?", "expected": ["multi-query attention", "only has one head"] },
+        { "id": "kivi-13", "category": "limitation", "question": "What happens to performance when the group size reaches 128?", "expected": ["significantly decreases"] },
+        { "id": "kivi-u1", "category": "unanswerable", "question": "What perplexity does KIVI reach on WikiText-2?", "expected": null },
+        { "id": "kivi-u2", "category": "unanswerable", "question": "How many calibration samples does KIVI need?", "expected": null },
+        { "id": "kivi-u3", "category": "unanswerable", "question": "What accuracy does KIVI reach on MMLU?", "expected": null },
+        { "id": "kivi-u4", "category": "unanswerable", "question": "How much energy does KIVI save per generated token?", "expected": null }
+      ]
+    }
+  ]
+}
