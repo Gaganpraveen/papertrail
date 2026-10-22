@@ -1,0 +1,126 @@
+{
+ "data": [
+  {
+   "id": "10.48550/arxiv.1810.04805",
+   "type": "dois",
+   "attributes": {
+    "doi": "10.48550/arxiv.1810.04805",
+    "prefix": "10.48550",
+    "suffix": "arxiv.2402.02750",
+    "identifiers": [
+     {
+      "identifier": "1810.04805",
+      "identifierType": "arXiv"
+     }
+    ],
+    "alternateIdentifiers": [
+     {
+      "alternateIdentifierType": "arXiv",
+      "alternateIdentifier": "1810.04805"
+     }
+    ],
+    "creators": [
+     {
+      "name": "Devlin, Jacob",
+      "givenName": "Jacob",
+      "familyName": "Devlin"
+     },
+     {
+      "name": "Chang, Ming-Wei",
+      "givenName": "Ming-Wei",
+      "familyName": "Chang"
+     },
+     {
+      "name": "Lee, Kenton",
+      "givenName": "Kenton",
+      "familyName": "Lee"
+     },
+     {
+      "name": "Toutanova, Kristina",
+      "givenName": "Kristina",
+      "familyName": "Toutanova"
+     }
+    ],
+    "titles": [
+     {
+      "title": "BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding"
+     }
+    ],
+    "publisher": "arXiv",
+    "container": {},
+    "publicationYear": 2018,
+    "subjects": [
+     {
+      "subject": "Computation and Language (cs.CL)",
+      "subjectScheme": "arXiv"
+     }
+    ],
+    "contributors": [],
+    "dates": [
+     {
+      "date": "2018-10-11",
+      "dateType": "Submitted"
+     }
+    ],
+    "language": null,
+    "types": {
+     "ris": "RPRT",
+     "bibtex": "article",
+     "citeproc": "article-journal",
+     "schemaOrg": "ScholarlyArticle",
+     "resourceType": "Article",
+     "resourceTypeGeneral": "Text"
+    },
+    "relatedIdentifiers": [],
+    "relatedItems": [],
+    "sizes": [],
+    "formats": [],
+    "version": "2",
+    "rightsList": [
+     {
+      "rights": "Creative Commons Attribution 4.0 International",
+      "rightsUri": "https://creativecommons.org/licenses/by/4.0/legalcode",
+      "schemeUri": "https://spdx.org/licenses/",
+      "rightsIdentifier": "cc-by-4.0",
+      "rightsIdentifierScheme": "SPDX"
+     }
+    ],
+    "descriptions": [
+     {
+      "description": "We introduce a new language representation model called BERT, which stands for Bidirectional Encoder Representations from Transformers. Unlike recent language representation models, BERT is designed to pre-train deep bidirectional representations from unlabeled text by jointly conditioning on both left and right context in all layers. As a result, the pre-trained BERT model can be fine-tuned with just one additional output layer to create state-of-the-art models for a wide range of tasks, such as question answering and language inference, without substantial task-specific architecture modifications. BERT is conceptually simple and empirically powerful. It obtains new state-of-the-art results on eleven natural language processing tasks, including pushing the GLUE score to 80.5% (7.7% point absolute improvement), MultiNLI accuracy to 86.7% (4.6% absolute improvement), SQuAD v1.1 question answering Test F1 to 93.2 (1.5 point absolute improvement) and SQuAD v2.0 Test F1 to 83.1 (5.1 point absolute improvement).",
+      "descriptionType": "Abstract"
+     }
+    ],
+    "geoLocations": [],
+    "fundingReferences": [],
+    "xml": "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHJlc291cmNlIHhtbG5zPSJodHRwOi8vZGF0YWNpdGUub3JnL3NjaGVtYS9rZXJuZWwtNCIgeG1sbnM6eHNpPSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL1hNTFNjaGVtYS1pbnN0YW5jZSIgeHNpOnNjaGVtYUxvY2F0aW9uPSJodHRwOi8vZGF0YWNpdGUub3JnL3NjaGVtYS9rZXJuZWwtNCBodHRwOi8vc2NoZW1hLmRhdGFjaXRlLm9yZy9tZXRhL2tlcm5lbC00LjMvbWV0YWRhdGEueHNkIj4KICA8aWRlbnRpZmllciBpZGVudGlmaWVyVHlwZT0iRE9JIj4xMC40ODU1MC9BUlhJVi4yNDAyLjAyNzUwPC9pZGVudGlmaWVyPgogIDxhbHRlcm5hdGVJZGVudGlmaWVycz4KICAgIDxhbHRlcm5hdGVJZGVudGlmaWVyIGFsdGVybmF0ZUlkZW50aWZpZXJUeXBlPSJhclhpdiI+MjQwMi4wMjc1MDwvYWx0ZXJuYXRlSWRlbnRpZmllcj4KICA8L2FsdGVybmF0ZUlkZW50aWZpZXJzPgogIDxjcmVhdG9ycz4KICAgIDxjcmVhdG9yPgogICAgICA8Y3JlYXRvck5hbWUgbmFtZVR5cGU9IlBlcnNvbmFsIj5MaXUsIFppcnVpPC9jcmVhdG9yTmFtZT4KICAgICAgPGdpdmVuTmFtZT5aaXJ1aTwvZ2l2ZW5OYW1lPgogICAgICA8ZmFtaWx5TmFtZT5MaXU8L2ZhbWlseU5hbWU+CiAgICA8L2NyZWF0b3I+CiAgICA8Y3JlYXRvcj4KICAgICAgPGNyZWF0b3JOYW1lIG5hbWVUeXBlPSJQZXJzb25hbCI+WXVhbiwgSmlheWk8L2NyZWF0b3JOYW1lPgogICAgICA8Z2l2ZW5OYW1lPkppYXlpPC9naXZlbk5hbWU+CiAgICAgIDxmYW1pbHlOYW1lPll1YW48L2ZhbWlseU5hbWU+CiAgICA8L2NyZWF0b3I+CiAgICA8Y3JlYXRvcj4KICAgICAgPGNyZWF0b3JOYW1lIG5hbWVUeXBlPSJQZXJzb25hbCI+SmluLCBIb25neWU8L2NyZWF0b3JOYW1lPgogICAgICA8Z2l2ZW5OYW1lPkhvbmd5ZTwvZ2l2ZW5OYW1lPgogICAgICA8ZmFtaWx5TmFtZT5KaW48L2ZhbWlseU5hbWU+CiAgICA8L2NyZWF0b3I+CiAgICA8Y3JlYXRvcj4KICAgICAgPGNyZWF0b3JOYW1lIG5hbWVUeXBlPSJQZXJzb25hbCI+WmhvbmcsIFNoYW9jaGVuPC9jcmVhdG9yTmFtZT4KICAgICAgPGdpdmVuTmFtZT5TaGFvY2hlbjwvZ2l2ZW5OYW1lPgogICAgICA8ZmFtaWx5TmFtZT5aaG9uZzwvZmFtaWx5TmFtZT4KICAgIDwvY3JlYXRvcj4KICAgIDxjcmVhdG9yPgogICAgICA8Y3JlYXRvck5hbWUgbmFtZVR5cGU9IlBlcnNvbmFsIj5YdSwgWmhhb3podW88L2NyZWF0b3JOYW1lPgogICAgICA8Z2l2ZW5OYW1lPlpoYW96aHVvPC9naXZlbk5hbWU+CiAgICAgIDxmYW1pbHlOYW1lPlh1PC9mYW1pbHlOYW1lPgogICAgPC9jcmVhdG9yPgogICAgPGNyZWF0b3I+CiAgICAgIDxjcmVhdG9yTmFtZSBuYW1lVHlwZT0iUGVyc29uYWwiPkJyYXZlcm1hbiwgVmxhZGltaXI8L2NyZWF0b3JOYW1lPgogICAgICA8Z2l2ZW5OYW1lPlZsYWRpbWlyPC9naXZlbk5hbWU+CiAgICAgIDxmYW1pbHlOYW1lPkJyYXZlcm1hbjwvZmFtaWx5TmFtZT4KICAgIDwvY3JlYXRvcj4KICAgIDxjcmVhdG9yPgogICAgICA8Y3JlYXRvck5hbWUgbmFtZVR5cGU9IlBlcnNvbmFsIj5DaGVuLCBCZWlkaTwvY3JlYXRvck5hbWU+CiAgICAgIDxnaXZlbk5hbWU+QmVpZGk8L2dpdmVuTmFtZT4KICAgICAgPGZhbWlseU5hbWU+Q2hlbjwvZmFtaWx5TmFtZT4KICAgIDwvY3JlYXRvcj4KICAgIDxjcmVhdG9yPgogICAgICA8Y3JlYXRvck5hbWUgbmFtZVR5cGU9IlBlcnNvbmFsIj5IdSwgWGlhPC9jcmVhdG9yTmFtZT4KICAgICAgPGdpdmVuTmFtZT5YaWE8L2dpdmVuTmFtZT4KICAgICAgPGZhbWlseU5hbWU+SHU8L2ZhbWlseU5hbWU+CiAgICA8L2NyZWF0b3I+CiAgPC9jcmVhdG9ycz4KICA8dGl0bGVzPgogICAgPHRpdGxlPktJVkk6IEEgVHVuaW5nLUZyZWUgQXN5bW1ldHJpYyAyYml0IFF1YW50aXphdGlvbiBmb3IgS1YgQ2FjaGU8L3RpdGxlPgogIDwvdGl0bGVzPgogIDxwdWJsaXNoZXI+YXJYaXY8L3B1Ymxpc2hlcj4KICA8cHVibGljYXRpb25ZZWFyPjIwMjQ8L3B1YmxpY2F0aW9uWWVhcj4KICA8c3ViamVjdHM+CiAgICA8c3ViamVjdCB4bWw6bGFuZz0iZW4iIHN1YmplY3RTY2hlbWU9ImFyWGl2Ij5Db21wdXRhdGlvbiBhbmQgTGFuZ3VhZ2UgKGNzLkNMKTwvc3ViamVjdD4KICAgIDxzdWJqZWN0IHhtbDpsYW5nPSJlbiIgc3ViamVjdFNjaGVtZT0iYXJYaXYiPk1hY2hpbmUgTGVhcm5pbmcgKGNzLkxHKTwvc3ViamVjdD4KICAgIDxzdWJqZWN0IHhtbDpsYW5nPSJlbiIgc3ViamVjdFNjaGVtZT0iYXJYaXYiPlBlcmZvcm1hbmNlIChjcy5QRik8L3N1YmplY3Q+CiAgICA8c3ViamVjdCBzdWJqZWN0U2NoZW1lPSJGaWVsZHMgb2YgU2NpZW5jZSBhbmQgVGVjaG5vbG9neSAoRk9TKSI+Rk9TOiBDb21wdXRlciBhbmQgaW5mb3JtYXRpb24gc2NpZW5jZXM8L3N1YmplY3Q+CiAgPC9zdWJqZWN0cz4KICA8ZGF0ZXM+CiAgICA8ZGF0ZSBkYXRlVHlwZT0iU3VibWl0dGVkIiBkYXRlSW5mb3JtYXRpb249InYxIj4yMDI0LTAyLTA1VDA2OjA2OjQ3WjwvZGF0ZT4KICAgIDxkYXRlIGRhdGVUeXBlPSJVcGRhdGVkIiBkYXRlSW5mb3JtYXRpb249InYxIj4yMDI0LTAyLTA2VDAxOjQwOjEwWjwvZGF0ZT4KICAgIDxkYXRlIGRhdGVUeXBlPSJTdWJtaXR0ZWQiIGRhdGVJbmZvcm1hdGlvbj0idjIiPjIwMjQtMDctMjVUMDk6MTY6MDVaPC9kYXRlPgogICAgPGRhdGUgZGF0ZVR5cGU9IlVwZGF0ZWQiIGRhdGVJbmZvcm1hdGlvbj0idjIiPjIwMjQtMDctMjZUMDA6MzE6MjZaPC9kYXRlPgogICAgPGRhdGUgZGF0ZVR5cGU9IkF2YWlsYWJsZSIgZGF0ZUluZm9ybWF0aW9uPSJ2MSI+MjAyNC0wMjwvZGF0ZT4KICA8L2RhdGVzPgogIDxyZXNvdXJjZVR5cGUgcmVzb3VyY2VUeXBlR2VuZXJhbD0iVGV4dCI+QXJ0aWNsZTwvcmVzb3VyY2VUeXBlPgogIDxyZWxhdGVkSWRlbnRpZmllcnM+CiAgICA8cmVsYXRlZElkZW50aWZpZXIgcmVsYXRlZElkZW50aWZpZXJUeXBlPSJET0kiIHJlbGF0aW9uVHlwZT0iSXNWZXJzaW9uT2YiPjEwLjEzMTQwL1JHLjIuMi4yODE2Ny4zNzI4MjwvcmVsYXRlZElkZW50aWZpZXI+CiAgPC9yZWxhdGVkSWRlbnRpZmllcnM+CiAgPHZlcnNpb24+MjwvdmVyc2lvbj4KICA8cmlnaHRzTGlzdD4KICAgIDxyaWdodHMgcmlnaHRzVVJJPSJodHRwOi8vY3JlYXRpdmVjb21tb25zLm9yZy9saWNlbnNlcy9ieS80LjAvIiByaWdodHNJZGVudGlmaWVyU2NoZW1lPSJTUERYIiByaWdodHNJZGVudGlmaWVyPSJDQy1CWS00LjAiPkNyZWF0aXZlIENvbW1vbnMgQXR0cmlidXRpb24gNC4wIEludGVybmF0aW9uYWw8L3JpZ2h0cz4KICA8L3JpZ2h0c0xpc3Q+CiAgPGRlc2NyaXB0aW9ucz4KICAgIDxkZXNjcmlwdGlvbiBkZXNjcmlwdGlvblR5cGU9IkFic3RyYWN0Ij5FZmZpY2llbnRseSBzZXJ2aW5nIGxhcmdlIGxhbmd1YWdlIG1vZGVscyAoTExNcykgcmVxdWlyZXMgYmF0Y2hpbmcgb2YgbWFueSByZXF1ZXN0cyB0byByZWR1Y2UgdGhlIGNvc3QgcGVyIHJlcXVlc3QuIFlldCwgd2l0aCBsYXJnZXIgYmF0Y2ggc2l6ZXMgYW5kIGxvbmdlciBjb250ZXh0IGxlbmd0aHMsIHRoZSBrZXktdmFsdWUgKEtWKSBjYWNoZSwgd2hpY2ggc3RvcmVzIGF0dGVudGlvbiBrZXlzIGFuZCB2YWx1ZXMgdG8gYXZvaWQgcmUtY29tcHV0YXRpb25zLCBzaWduaWZpY2FudGx5IGluY3JlYXNlcyBtZW1vcnkgZGVtYW5kcyBhbmQgYmVjb21lcyB0aGUgbmV3IGJvdHRsZW5lY2sgaW4gc3BlZWQgYW5kIG1lbW9yeSB1c2FnZS4gQWRkaXRpb25hbGx5LCB0aGUgbG9hZGluZyBvZiB0aGUgS1YgY2FjaGUgY2F1c2VzIHRoZSBjb21wdXRhdGlvbmFsIGNvcmUgdG8gYmUgaWRsZSwgd2hpY2ggbGltaXRzIHRoZSBpbmZlcmVuY2Ugc3BlZWQuIEEgc3RyYWlnaHRmb3J3YXJkIGFuZCBlZmZlY3RpdmUgc29sdXRpb24gdG8gcmVkdWNlIEtWIGNhY2hlIHNpemUgaXMgcXVhbnRpemF0aW9uLCB3aGljaCBkZWNyZWFzZXMgdGhlIHRvdGFsIGJ5dGVzIHRha2VuIGJ5IEtWIGNhY2hlLiBIb3dldmVyLCB0aGVyZSBpcyBhIGxhY2sgb2YgaW4tZGVwdGggc3R1ZGllcyB0aGF0IGV4cGxvcmUgdGhlIGVsZW1lbnQgZGlzdHJpYnV0aW9uIG9mIEtWIGNhY2hlIHRvIHVuZGVyc3RhbmQgdGhlIGhhcmRuZXNzIGFuZCBsaW1pdGF0aW9uIG9mIEtWIGNhY2hlIHF1YW50aXphdGlvbi4gVG8gZmlsbCB0aGUgZ2FwLCB3ZSBjb25kdWN0ZWQgYSBjb21wcmVoZW5zaXZlIHN0dWR5IG9uIHRoZSBlbGVtZW50IGRpc3RyaWJ1dGlvbiBpbiBLViBjYWNoZSBvZiBwb3B1bGFyIExMTXMuIE91ciBmaW5kaW5ncyBpbmRpY2F0ZSB0aGF0IHRoZSBrZXkgY2FjaGUgc2hvdWxkIGJlIHF1YW50aXplZCBwZXItY2hhbm5lbCwgaS5lLiwgZ3JvdXAgZWxlbWVudHMgYWxvbmcgdGhlIGNoYW5uZWwgZGltZW5zaW9uIGFuZCBxdWFudGl6ZSB0aGVtIHRvZ2V0aGVyLiBJbiBjb250cmFzdCwgdGhlIHZhbHVlIGNhY2hlIHNob3VsZCBiZSBxdWFudGl6ZWQgcGVyLXRva2VuLiBGcm9tIHRoaXMgYW5hbHlzaXMsIHdlIGRldmVsb3BlZCBhIHR1bmluZy1mcmVlIDJiaXQgS1YgY2FjaGUgcXVhbnRpemF0aW9uIGFsZ29yaXRobSBuYW1lZCBLSVZJLiBXaXRoIGhhcmR3YXJlLWZyaWVuZGx5IGltcGxlbWVudGF0aW9uLCBLSVZJIGNhbiBlbmFibGUgTGxhbWEsIEZhbGNvbiwgYW5kIE1pc3RyYWwgbW9kZWxzIHRvIG1haW50YWluIGFsbW9zdCB0aGUgc2FtZSBxdWFsaXR5IHdoaWxlIHVzaW5nICRcbWF0aGJmezIuNlx0aW1lc30kIGxlc3MgcGVhayBtZW1vcnkgKGluY2x1ZGluZyBtb2RlbCB3ZWlnaHQpLiBUaGlzIHJlZHVjdGlvbiBpbiBtZW1vcnkgdXNhZ2UgZW5hYmxlcyB1cCB0byAkXG1hdGhiZns0XHRpbWVzfSQgbGFyZ2VyIGJhdGNoIHNpemUsIGJyaW5naW5nICRcbWF0aGJmezIuMzVcdGltZXMgXHNpbSAzLjQ3XHRpbWVzfSQgdGhyb3VnaHB1dCBvbiByZWFsIExMTSBpbmZlcmVuY2Ugd29ya2xvYWQuIFRoZSBzb3VyY2UgY29kZSBpcyBhdmFpbGFibGUgYXQgaHR0cHM6Ly9naXRodWIuY29tL2p5LXl1YW4vS0lWSS48L2Rlc2NyaXB0aW9uPgogICAgPGRlc2NyaXB0aW9uIGRlc2NyaXB0aW9uVHlwZT0iT3RoZXIiPklDTUwyMDI0PC9kZXNjcmlwdGlvbj4KICA8L2Rlc2NyaXB0aW9ucz4KPC9yZXNvdXJjZT4=",
+    "url": "https://arxiv.org/abs/1810.04805",
+    "contentUrl": null,
+    "metadataVersion": 1,
+    "schemaVersion": "http://datacite.org/schema/kernel-4",
+    "source": "mds",
+    "isActive": true,
+    "state": "findable",
+    "reason": null,
+    "viewCount": 0,
+    "viewsOverTime": [],
+    "downloadCount": 0,
+    "downloadsOverTime": [],
+    "referenceCount": 0,
+    "citationCount": 0,
+    "citationsOverTime": [],
+    "partCount": 0,
+    "partOfCount": 0,
+    "versionCount": 0,
+    "versionOfCount": 1,
+    "created": "2024-02-06T03:16:29.000Z",
+    "registered": "2024-02-06T03:16:29.000Z",
+    "published": "2024",
+    "updated": "2024-07-26T02:03:04.000Z"
+   }
+  }
+ ],
+ "meta": {
+  "total": 1
+ }
+}
