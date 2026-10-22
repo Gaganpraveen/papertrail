@@ -9,7 +9,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
-[**Live demo**](https://gaganpraveen.github.io/papertrail/) · [Architecture](docs/architecture.md) · [Design decisions](docs/design-decisions.md) · [Evaluation](docs/evaluation.md)
+[**Live demo**](https://gaganpraveen.github.io/papertrail/) · [Architecture](docs/architecture.md) · [Design decisions](docs/design-decisions.md) · [Evaluation](docs/evaluation.md) · [Security](SECURITY.md)
 
 ![PaperTrail showing the briefing for the KIVI paper](docs/assets/hero.png)
 
@@ -355,8 +355,17 @@ papertrail/
 ├── eval/questions.json      labelled questions for the retrieval and QA evaluation
 ├── scripts/                fetch-models, copy-ort, inspect-parse, eval
 ├── docs/                   architecture, design decisions, evaluation, screenshots
-└── .github/workflows/      ci.yml (typecheck, tests, build, e2e), deploy.yml (GitHub Pages)
+└── .github/                ci.yml (typecheck, tests, build, e2e), deploy.yml (Pages, then live tests), dependabot.yml
 ```
+
+## Security and privacy
+
+There is no server, database, login or API key, so there is nothing on the
+server side to break into or leak. Papers and analyses stay in the visitor's
+browser. Paper text is always rendered as text, links from paper data must be
+plain `http(s)`, and the built page ships a strict Content Security Policy.
+Dependabot watches the dependencies, and CI runs with read-only permissions.
+The details are in [SECURITY.md](SECURITY.md).
 
 ## Data sources and licensing
 

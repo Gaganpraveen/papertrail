@@ -8,7 +8,7 @@ import { arxivAbsUrl, arxivPdfUrl } from "@/sources/arxiv";
 import { briefingMarkdown, download } from "@/store/export";
 import { useLibrary } from "@/store/library";
 import { MAX_SURVEY_PAPERS, type PaperRecord } from "@/store/types";
-import { Badge, Button, ScoreRing, Skeleton } from "@/ui/kit";
+import { Badge, Button, ScoreRing, Skeleton, safeHref } from "@/ui/kit";
 
 const MAX_AUTHORS = 4;
 
@@ -40,9 +40,11 @@ function exportJson(record: PaperRecord): string {
 }
 
 function ExternalAnchor({ href, icon, children }: { href: string; icon?: ReactNode; children: ReactNode }) {
+  const safe = safeHref(href);
+  if (!safe) return null;
   return (
     <a
-      href={href}
+      href={safe}
       target="_blank"
       rel="noreferrer noopener"
       className="inline-flex items-center gap-1 text-ink-3 transition-colors hover:text-accent"

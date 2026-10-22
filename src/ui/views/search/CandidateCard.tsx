@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Check, ExternalLink, Quote } from "lucide-react";
 import type { Candidate, CandidateScores } from "@/types";
-import { cn } from "@/ui/kit";
+import { cn, safeHref } from "@/ui/kit";
 
 const SCORE_PARTS: { key: keyof Omit<CandidateScores, "final">; label: string; color: string }[] = [
   { key: "lexical", label: "Lexical", color: "var(--c-0)" },
@@ -125,11 +125,11 @@ export function CandidateCard({
               <span className="truncate">{candidate.why}</span>
             </span>
             <span className="ml-auto flex items-center gap-1">
-              {link && (
+              {safeHref(link) && (
                 <a
-                  href={link}
+                  href={safeHref(link)}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noreferrer noopener"
                   className="inline-flex h-7 items-center gap-1 rounded-md px-2 text-xs text-ink-3 hover:bg-panel-2 hover:text-ink"
                 >
                   Source <ExternalLink className="size-3" />

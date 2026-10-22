@@ -45,3 +45,11 @@ test.describe("on a phone", () => {
     await shot(page, "mobile-menu");
   });
 });
+
+test("ships a strict content security policy", async ({ page }) => {
+  await page.goto("./");
+  const policy = await page.locator('meta[http-equiv="Content-Security-Policy"]').getAttribute("content");
+  expect(policy).toContain("script-src 'self'");
+  expect(policy).toContain("object-src 'none'");
+  expect(policy).toContain("frame-src 'none'");
+});

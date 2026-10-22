@@ -1,5 +1,5 @@
 import { Fragment, type ReactNode } from "react";
-import { cn } from "@/ui/kit";
+import { cn, safeHref } from "@/ui/kit";
 import { parseInline, parseMarkdown, type Block, type Inline } from "./markdown";
 
 export const refAnchor = (n: number) => `survey-ref-${n}`;
@@ -31,7 +31,7 @@ function renderInline(nodes: Inline[], cite: CiteProps): ReactNode[] {
         );
       case "link":
         return (
-          <a key={i} href={node.href} target="_blank" rel="noreferrer" className="text-accent hover:underline">
+          <a key={i} href={safeHref(node.href)} target="_blank" rel="noreferrer noopener" className="text-accent hover:underline">
             {renderInline(node.children, cite)}
           </a>
         );

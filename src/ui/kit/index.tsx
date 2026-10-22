@@ -8,6 +8,20 @@ import type { Severity, Zone } from "@/types";
 
 export const cn = clsx;
 
+/**
+ * Returns the URL only if it is a plain http(s) link. Links come from paper
+ * metadata and PDFs, so anything else (javascript:, data:, ...) is dropped.
+ */
+export function safeHref(url: string | undefined | null): string | undefined {
+  if (!url) return undefined;
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "https:" || parsed.protocol === "http:" ? parsed.href : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 // ── Button ────────────────────────────────────────────────────────────────
 
 type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
