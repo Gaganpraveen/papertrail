@@ -78,15 +78,26 @@ the question.
 - The brief's biggest grounding requirement is to not hallucinate.
 - An extractive reader *cannot* invent a fact: every answer is a quote with a page
   number.
-- I set the threshold from measured scores, not by guessing. On a separate labelled
-  set of 51 questions across three papers ([evaluation](evaluation.md)), correct
-  reader answers scored 0.13–0.91 (median 0.66) but unanswerable questions scored
-  0.02–0.70 (median 0.21), so 0.2 is a trade-off rather than a clean gap: it
-  answers 62% of answerable questions correctly but still answers 7 of the 12
-  unanswerable ones.
+- I chose the threshold with a stated rule and checked it on data it wasn't
+  chosen on. The rule maximises accuracy on answerable questions minus the
+  false-answer rate on unanswerable ones. I labelled 51 questions over three
+  papers ([evaluation](evaluation.md)), chose the threshold on two papers and
+  tested it on the third, for each paper in turn. The rule picked 0.45 to 0.55
+  and the held-out papers got 59% of answerable questions right, with 1 false
+  answer out of 12 unanswerable questions. The old threshold, 0.2, got 67%
+  right but answered 3 of the 12. I ship 0.55, the rule's choice on all 51.
+- No threshold separates every case, so two checks sit beside it:
+  - A question that names something the paper never mentions (MMLU,
+    WikiText-2) gets no answer at all.
+  - A "What is X?" question is answered with a sentence shaped like a
+    definition, when the passages read contain one.
 
-**Cost.** The reader can only return a span. "Why" and "compare" questions get the
-best supporting sentence instead of a synthesised answer.
+**Cost.**
+- The reader can only return a span. It can't write an answer to a "why" or
+  "compare" question; the best it can do is a span plus the sentence around it.
+- Abstaining also withholds some right answers: 7 of the 39 answerable
+  questions in the evaluation, 3 more than at 0.2. When it abstains, the app
+  still shows the closest passage, and for those 7 that passage held the answer.
 
 ## 5. A reviewer built from transparent rules
 

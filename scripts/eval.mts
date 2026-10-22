@@ -16,7 +16,12 @@
  *     expected string; unanswerable questions should abstain. The threshold
  *     only gates the last step, so other thresholds can be replayed on the
  *     recorded confidences without re-running the models.
- *  3. Latency of each stage on this machine.
+ *  3. Choosing the threshold. One criterion, accuracy on answerable questions
+ *     minus the false-answer rate on unanswerable ones, picks a threshold on
+ *     two papers and is scored on the third (leave one paper out), which
+ *     estimates how well a threshold chosen this way generalises. The same
+ *     criterion on all questions gives the value to ship.
+ *  4. Latency of each stage on this machine.
  *
  * Tables go to stdout and into docs/evaluation.md between the eval markers,
  * so the hand-written text around them survives a rerun. Source modules load
@@ -48,7 +53,8 @@ const THREADS = Number(process.env.EVAL_THREADS ?? 2);
 const RERANK_DEPTH = 8;
 const READ_DEPTH = 3;
 const RECALL_AT = [1, 3, 5];
-const THRESHOLDS = [0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5];
+/** Reader thresholds replayed in the sweep and searched when choosing one: 0.05, 0.10, ..., 0.80. */
+const THRESHOLDS = Array.from({ length: 16 }, (_, i) => (5 * (i + 1)) / 100);
 
 // ───────────────────────────────── Types ───────────────────────────────────
 
@@ -311,6 +317,58 @@ function answeredAt(r: QuestionResult, t: number): boolean {
   return r.mode === "reader" ? r.answer.confidence >= t : r.answer.status === "answered";
 }
 
+interface Outcome {
+  correct: number;
+  /** Answerable questions answered with the wrong span; the rest of the answerable ones abstained. */
+  wrong: number;
+  answerable: number;
+  falseAnswers: number;
+  unanswerable: number;
+}
+
+function outcomeAt(rs: QuestionResult[], t: number): Outcome {
+  const yes = rs.filter(answerable);
+  const no = rs.filter((r) => !answerable(r));
+  return {
+    correct: yes.filter((r) => answeredAt(r, t) && r.candidateCorrect).length,
+    wrong: yes.filter((r) => answeredAt(r, t) && !r.candidateCorrect).length,
+    answerable: yes.length,
+    falseAnswers: no.filter((r) => answeredAt(r, t)).length,
+    unanswerable: no.length,
+  };
+}
+
+/**
+ * The selection criterion: accuracy on answerable questions minus the
+ * false-answer rate on unanswerable ones (Youden's J, if abstaining is read as
+ * a test for "unanswerable"). Both rates weigh the same, so on a set with 39
+ * answerable and 12 unanswerable questions one false answer costs as much as
+ * about three correct answers.
+ */
+function utility(o: Outcome): number {
+  return o.correct / o.answerable - o.falseAnswers / o.unanswerable;
+}
+
+/** The grid threshold with the highest utility on `rs`; ties go to the lower one, which answers more. */
+function chooseThreshold(rs: QuestionResult[]): number {
+  let best = THRESHOLDS[0];
+  for (const t of THRESHOLDS) if (utility(outcomeAt(rs, t)) > utility(outcomeAt(rs, best)) + 1e-9) best = t;
+  return best;
+}
+
+function sum(outcomes: Outcome[]): Outcome {
+  return outcomes.reduce(
+    (a, o) => ({
+      correct: a.correct + o.correct,
+      wrong: a.wrong + o.wrong,
+      answerable: a.answerable + o.answerable,
+      falseAnswers: a.falseAnswers + o.falseAnswers,
+      unanswerable: a.unanswerable + o.unanswerable,
+    }),
+    { correct: 0, wrong: 0, answerable: 0, falseAnswers: 0, unanswerable: 0 },
+  );
+}
+
 function percentile(values: number[], p: number): number {
   if (values.length === 0) return NaN;
   const sorted = [...values].sort((a, b) => a - b);
@@ -409,25 +467,67 @@ function qaSection(results: QuestionResult[], threshold: number): string {
   return `### Question answering at the shipped threshold (${threshold})\n\nPaths taken: ${modes}.\n\n${summary}\n\n${byCategory}\n\n${sources}`;
 }
 
-function sweepSection(results: QuestionResult[]): string {
-  const yes = results.filter(answerable);
-  const no = results.filter((r) => !answerable(r));
+function sweepSection(results: QuestionResult[], shipped: number): string {
   const rows = THRESHOLDS.map((t) => {
-    const answered = results.filter((r) => answeredAt(r, t));
-    const correct = answered.filter((r) => answerable(r) && r.candidateCorrect).length;
-    const falseAnswers = answered.filter((r) => !answerable(r)).length;
+    const answered = results.filter((r) => answeredAt(r, t)).length;
+    const o = outcomeAt(results, t);
     return [
-      fixed(t),
-      pct(answered.length, results.length),
-      pct(correct, yes.length),
-      pct(correct, answered.length),
-      pct(falseAnswers, no.length),
+      t === shipped ? `**${fixed(t)}** (shipped)` : fixed(t),
+      pct(answered, results.length),
+      pct(o.correct, o.answerable),
+      pct(o.correct, answered),
+      pct(o.falseAnswers, o.unanswerable),
+      fixed(utility(o)),
     ];
   });
   const readerCount = results.filter((r) => r.mode === "reader").length;
   return (
     `### Threshold sweep (replayed on ${readerCount} reader-span questions; the other paths keep their own bar)\n\n` +
-    table(["Threshold", "Coverage (answered / all)", "Accuracy (correct / answerable)", "Precision (correct / answered)", "False answers (/ unanswerable)"], rows)
+    table(
+      ["Threshold", "Coverage (answered / all)", "Accuracy (correct / answerable)", "Precision (correct / answered)", "False answers (/ unanswerable)", "Utility (accuracy − false answers)"],
+      rows,
+    )
+  );
+}
+
+/**
+ * Leave one paper out: choose the threshold on two papers, score the third at
+ * it, and pool the three held-out scores. That pooled score estimates how a
+ * threshold chosen by this criterion does on questions it was not chosen on.
+ */
+function thresholdSection(results: QuestionResult[], papers: PaperSpec[], shipped: number): string {
+  const folds = papers.map((held) => {
+    const t = chooseThreshold(results.filter((r) => r.paperId !== held.id));
+    return { held, t, outcome: outcomeAt(results.filter((r) => r.paperId === held.id), t) };
+  });
+  const describe = (o: Outcome) => [
+    share(o.correct, o.answerable),
+    share(o.wrong, o.answerable),
+    share(o.falseAnswers, o.unanswerable),
+    fixed(utility(o)),
+  ];
+  const pooled = sum(folds.map((f) => f.outcome));
+  const cv = table(
+    ["Held-out paper", "Threshold chosen on the other two", "Answerable: correct", "Answerable: wrong", "Unanswerable: false answers", "Utility"],
+    [
+      ...folds.map((f) => [f.held.id, fixed(f.t), ...describe(f.outcome)]),
+      ["**Pooled held-out estimate**", folds.map((f) => fixed(f.t)).join(" / "), ...describe(pooled)],
+    ],
+  );
+
+  const chosen = chooseThreshold(results);
+  const [correct, wrong, falseAnswers, value] = describe(outcomeAt(results, chosen));
+  const verdict =
+    chosen === shipped
+      ? `The shipped threshold, ${fixed(shipped)}, is this choice.`
+      : `**The shipped threshold, ${fixed(shipped)}, differs from this choice.**`;
+  return (
+    "### Choosing the reader threshold\n\n" +
+    "Criterion: accuracy on answerable questions minus false answers on unanswerable ones, " +
+    `over the sweep's grid (${fixed(THRESHOLDS[0])} to ${fixed(THRESHOLDS[THRESHOLDS.length - 1])}), ties to the lower threshold.\n\n` +
+    `${cv}\n\n` +
+    `On all ${results.length} questions the criterion picks **${fixed(chosen)}**: ` +
+    `${correct} correct, ${wrong} wrong, ${falseAnswers} false answers, utility ${value}. ${verdict}`
   );
 }
 
@@ -541,7 +641,8 @@ async function main(app: App): Promise<void> {
     `_Generated by \`npm run eval\` from ${QUESTIONS_PATH}: ${results.length} questions over ${papers.length} papers._`,
     retrievalSection(results, papers),
     qaSection(results, app.qa.ABSTAIN_THRESHOLD),
-    sweepSection(results),
+    sweepSection(results, app.qa.ABSTAIN_THRESHOLD),
+    thresholdSection(results, papers, app.qa.ABSTAIN_THRESHOLD),
     separationSection(results),
     latencySection(stats, results, loadMs),
     detailsSection(results),

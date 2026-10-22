@@ -287,7 +287,7 @@ flowchart LR
 | `respond` | Returns the span, its full sentence as context, the section, the page and the scored hits. |
 | `abstain` | Returns "The paper does not appear to answer this question", the score it got, and the closest passage as evidence. |
 
-Span answers need 0.20 and sentence answers need 0.45. Every model is optional
+Span answers need 0.55 and sentence answers need 0.45. Two checks run before the threshold: a question that asks for a quantity only accepts spans that contain a number, and a name in the question that never appears in the paper (a dataset or model, such as MMLU) sets every candidate's confidence to 0, so the answer abstains and says which name is missing. Every model is optional
 here. Without the reranker, relevance comes from IDF-weighted term coverage
 blended with embedding similarity. Without the reader, the best sentence is
 quoted. Each fallback adds a note to the answer's explanation, so the reader of

@@ -11,9 +11,12 @@ import {
   buildQAGraph,
   classifyQuestion,
   containsQuantity,
+  definesSubject,
   definitionSubject,
   expectsQuantity,
+  namedTerms,
   rerankRelevance,
+  unmentionedNames,
   type QAContext,
 } from "@/qa/answer";
 
@@ -216,6 +219,22 @@ describe("definitionSubject", () => {
     ["What is this paper's main limitation in practice today?", null],
   ])("%s -> %s", (question, subject) => {
     expect(definitionSubject(question)).toBe(subject);
+  });
+});
+
+describe("definesSubject", () => {
+  // Sentences from the evaluation papers (ReAct, KIVI, Chain-of-Thought).
+  it.each([
+    ["ALFWorld ALFWorld (Shridhar et al., 2020b) (Figure 1(2)) is a synthetic text-based game.", "ALFWorld", true],
+    ["(2) FEVER (Thorne et al., 2018), a fact verification benchmark.", "FEVER", true],
+    ["Here fake quantization means we simulate the quantization process.", "fake quantization", true],
+    ["We define a symbol mapping error as when the chain of thought is correct except for the number symbols.", "symbol mapping error", true],
+    ["Retrieval-augmented generation (RAG) [12] is a way to ground answers.", "retrieval-augmented generation", true],
+    ["In particular, one challenge built into ALFWorld is the need to determine likely locations.", "ALFWorld", false],
+    ["For last letter concatenation, the model only sees exemplars of names with two words.", "last letter concatenation", false],
+    ["Here fake quantization is exactly the same as in Table 1.", "fake quantization", false],
+  ])("%s (%s) -> %s", (sentence, subject, expected) => {
+    expect(definesSubject(sentence, subject)).toBe(expected);
   });
 });
 
@@ -429,5 +448,65 @@ describe("answer-type check", () => {
     expect(containsQuantity("eight A100 GPUs")).toBe(true);
     expect(containsQuantity("GSM8K")).toBe(false);
     expect(containsQuantity("Llama-2-7B")).toBe(true);
+  });
+});
+
+describe("names the paper never mentions", () => {
+  const index = new HybridIndex(chunks, null);
+
+  it("treats words with inner capitals or digits as names, and ordinary words as paraphrasable", () => {
+    expect(namedTerms("What accuracy does KVQ reach on MMLU and WikiText-2?")).toEqual(["KVQ", "MMLU", "WikiText-2"]);
+    expect(namedTerms("Which hardware was used, and what was the gain?")).toEqual([]);
+  });
+
+  it.each([
+    ["What accuracy does KVQ reach on MMLU?", ["MMLU"]],
+    ["What perplexity does KVQ reach on WikiText-2?", ["WikiText-2"]],
+    ["How fast is KVQ on an NVIDIA A100?", []],
+    ["Does it work with Llama2 and LLaMA-2 models?", []], // spelled differently from the paper's "Llama-2"
+    ["Which hardware gives the biggest gain?", []],
+  ])("%s -> %j", (question, missing) => {
+    expect(unmentionedNames(question, index)).toEqual(missing);
+  });
+
+  it("abstains, naming the missing term, even when the reader is confident", async () => {
+    const { answer, visited } = await ask("Which GPU was used for the MMLU experiments?", await denseContext(fullML));
+
+    expect(answer.status).toBe("abstained");
+    expect(answer.confidence).toBe(0);
+    expect(answer.reason).toMatch(/never mentions MMLU/);
+    expect(answer.evidence[0].quote).toContain("NVIDIA A100");
+    expect(visited.at(-1)).toBe("abstain");
+  });
+});
+
+describe("definition questions", () => {
+  // Two passages about the same term: a short sentence that only mentions it
+  // (and so matches the question closely) and the sentence that defines it.
+  const defSentences: ZonedSentence[] = [
+    ["d0", "Results", "results", 6, "Here fake quantization is exactly the same as in Table 1."],
+    ["d1", "Method", "method", 3, "Here fake quantization means we simulate quantization by quantizing the cache and then dequantizing it."],
+  ].map(([sectionId, sectionTitle, sectionKind, page, text], index) => ({
+    id: `${sectionId}:0`,
+    text: text as string,
+    sectionId: sectionId as string,
+    sectionTitle: sectionTitle as string,
+    sectionKind: sectionKind as SectionKind,
+    page: page as number,
+    index,
+    zone: "other" as Zone,
+    confidence: 0.8,
+    scores: Object.fromEntries(ZONES.map((z) => [z, z === "other" ? 1 : 0])) as Record<Zone, number>,
+  }));
+  const defChunks = chunkSentences(PAPER, defSentences, { targetWords: 25, maxWords: 40, overlap: 0 });
+
+  it("quotes the defining sentence over a closer-matching mention in another passage", async () => {
+    const embeddings = await fakeEmbed(defChunks.map(embeddingText));
+    const ctx: QAContext = { paperId: PAPER, index: new HybridIndex(defChunks, embeddings), sentences: defSentences, ml: fullML };
+    const { answer, events } = await ask("What is fake quantization?", ctx);
+
+    expect(answer.status).toBe("answered");
+    expect(answer.answer).toBe(defSentences[1].text);
+    expect(events.some((e) => e.type === "log" && /shaped like a definition/.test(e.message ?? ""))).toBe(true);
   });
 });

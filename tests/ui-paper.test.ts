@@ -113,7 +113,7 @@ vi.mock("@/store/library", () => ({
 vi.mock("@/store/export", () => ({ briefingMarkdown: () => "", download: () => {} }));
 vi.mock("@/pipeline/paper", () => ({ PAPER_NODES: [{ name: "parse", label: "Parse", description: "Parse the PDF" }] }));
 vi.mock("@/qa/answer", () => ({
-  ABSTAIN_THRESHOLD: 0.2,
+  ABSTAIN_THRESHOLD: 0.55,
   SENTENCE_ABSTAIN_THRESHOLD: 0.45,
   QA_NODES: [{ name: "retrieve", label: "Retrieve", description: "Hybrid search" }],
 }));

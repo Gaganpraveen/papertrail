@@ -17,7 +17,8 @@
  *              confidence = relevance × reader probability × sentence support
  *              must clear ABSTAIN_THRESHOLD; otherwise we abstain rather than
  *              guess. "Support" checks that the sentence holding the span is
- *              itself about the question.
+ *              itself about the question. A question that names something the
+ *              paper never mentions ("MMLU" in a paper without it) gets 0.
  *
  * Some questions have no span-shaped answer (yes/no, "What is X?", overviews):
  * those quote the best-matching sentence instead, under a stricter threshold.
@@ -30,7 +31,7 @@
 import { CompiledGraph, END, START, StateGraph, type NodeContext } from "@/agent/graph";
 import type { MLApi } from "@/ml/client";
 import { alignSpan } from "@/ml/models";
-import { splitSentences, tokenize } from "@/nlp/text";
+import { splitSentences, tokenize, words } from "@/nlp/text";
 import { cosine } from "@/nlp/vector";
 import { embeddingText } from "@/retrieval/chunker";
 import type { HybridIndex } from "@/retrieval/hybrid";
@@ -63,17 +64,33 @@ export interface QAContext {
 // (KIVI 2402.02750, Chain-of-Thought 2201.11903, ReAct 2210.03629), mixing
 // answerable questions with off-topic ones ("What is the capital of
 // France?") and plausible-but-absent ones ("What learning rate was used for
-// fine-tuning?" on a paper that never fine-tunes). tests/ml.node.test.ts
-// re-checks the separation on real passages.
+// fine-tuning?" on a paper that never fine-tunes). ABSTAIN_THRESHOLD was
+// later re-chosen on a separate labelled set, as its comment says.
+// tests/ml.node.test.ts re-checks the behaviour on real passages.
 
 /**
  * Minimum relevance × reader probability × support for a span answer.
- * Correct spans scored 0.27–0.91; every unanswerable question scored at most
- * 0.15, so 0.2 sits in the gap. The errors that remain are reader mistakes
- * made with high confidence, which no threshold can separate; that is why
- * every answer ships with its quoted sentence and page.
+ *
+ * Chosen by `npm run eval` on eval/questions.json (51 questions over the same
+ * three papers: 39 answerable, 12 not). The rule: over thresholds 0.05, 0.10,
+ * ..., 0.80, take the one that maximises accuracy on answerable questions
+ * minus the false-answer rate on unanswerable ones; on a tie, the lower one.
+ * On all 51 questions that is 0.55: 23/39 correct, 0/12 false answers.
+ *
+ * That number is optimistic, because it is measured on the questions the
+ * threshold was chosen on. The honest estimate comes from leaving one paper
+ * out: choose on two papers, score the third. The three folds chose 0.45,
+ * 0.55 and 0.55, and the held-out papers together got 23/39 right with 1/12
+ * false answers. With everything else unchanged, the old value, 0.2, gets
+ * 26/39 right but 3/12 false answers; it was not chosen on this set, so that
+ * score is already a held-out one.
+ *
+ * Correct and unanswerable scores overlap (0.13–0.91 against up to 0.54), so
+ * no value separates them, and 0.55 also withholds some right answers.
+ * Confident reader mistakes remain, which is why every answer ships with its
+ * quoted sentence and page.
  */
-export const ABSTAIN_THRESHOLD = 0.2;
+export const ABSTAIN_THRESHOLD = 0.55;
 
 /**
  * Quoting a whole sentence is a weaker claim than extracting a span, and the
@@ -203,13 +220,27 @@ function sentenceModeReason(question: string, intent: QuestionIntent): string | 
   return null;
 }
 
-/** "X is a ...", "X, a ...", "X (Y) refers to ...": the shapes definitions take in papers. */
-function definesSubject(sentence: string, subject: string): boolean {
-  const escaped = subject.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+");
-  const acronym = String.raw`\s*(?:\([^)]*\)\s*)?`; // "Retrieval-augmented generation (RAG) is ..."
-  const definer = String.raw`(?:(?:is|are)\s+(?:an?|the|one)\b|(?:refers to|denotes)\b|,\s*(?:an?|the)\b)`;
-  const pattern = new RegExp(String.raw`\b${escaped}` + acronym + definer, "iu");
-  return pattern.test(sentence);
+/** A term right after one of these is the preposition's object, not the subject of the sentence. */
+const PREPOSITIONS =
+  "about|across|after|against|among|at|before|between|by|during|for|from|in|into|of|on|onto|over|than|through|to|under|unlike|with|within|without";
+
+/**
+ * The shapes definitions take in papers: "X is a ...", "X refers to / denotes /
+ * means ...", "X, a ...", "We define X as ...". Bracketed asides may sit
+ * between the term and the definer, nested one level deep ("ALFWorld
+ * (Shridhar et al., 2020b) (Figure 1(2)) is a ..."). The term must be the
+ * subject: in "one challenge built into ALFWorld is the need to ..." and "For
+ * last letter concatenation, the model ..." it is a preposition's object, and
+ * the sentence is about something else.
+ */
+export function definesSubject(sentence: string, subject: string): boolean {
+  const term = subject.replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace(/\s+/g, "\\s+");
+  const notObject = String.raw`(?<!\b(?:${PREPOSITIONS})\s+)`;
+  const asides = String.raw`(?:\s*(?:\((?:[^()]|\([^()]*\))*\)|\[[^\]]*\]))*\s*`; // "(RAG)", "(Smith et al., 2020)", "[12]"
+  const definer = String.raw`(?:(?:is|are)\s+(?:an?|the|one)\b|(?:refers? to|denotes?|means)\b|,\s*(?:an?|the)\b)`;
+  const shaped = new RegExp(String.raw`${notObject}\b${term}${asides}${definer}`, "iu");
+  const declared = new RegExp(String.raw`\bdefines?\s+(?:an?\s+|the\s+)?${term}\s+as\b`, "iu");
+  return shaped.test(sentence) || declared.test(sentence);
 }
 
 /**
@@ -225,6 +256,49 @@ export function expectsQuantity(question: string): boolean {
 /** A standalone number ("2.6×", "128", "4-bit") or a number word; "GSM8K" does not count. */
 export function containsQuantity(span: string): boolean {
   return /(?:^|[^\p{L}\p{N}])\d|\b(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|twenty|thirty|forty|fifty|hundred|thousand|million|billion|half|double|twice|triple)\b/iu.test(span);
+}
+
+/**
+ * Names in a question: words written with a capital after the first letter,
+ * or mixing letters and digits ("MMLU", "WikiText-2", "MiniWoB++", "GSM8K").
+ * Ordinary words are left out on purpose. A question may say "hardware" where
+ * the paper says "TPU v4", but nobody paraphrases a benchmark's name.
+ */
+export function namedTerms(question: string): string[] {
+  return words(question).filter((w) => /\p{Lu}/u.test(w.slice(1)) || (/\p{N}/u.test(w) && /\p{L}/u.test(w)));
+}
+
+const squash = (token: string) => token.replace(/[-'’]/gu, "");
+
+/** "gpt-3" also as "gpt3", "gpt" and "3", so "GPT3" and "GPT-3", or "PaLM 540B" and "PaLM-540B", match. */
+function wordForms(token: string): string[] {
+  return [token, squash(token), ...token.split("-")];
+}
+
+/** Every word form in the paper's passages (lowercased and stemmed, as `tokenize` gives them), cached per index. */
+const vocabularyCache = new WeakMap<HybridIndex, Set<string>>();
+
+function paperVocabulary(index: HybridIndex): Set<string> {
+  let vocabulary = vocabularyCache.get(index);
+  if (!vocabulary) {
+    vocabulary = new Set(index.chunks.flatMap((chunk) => tokenize(chunk.text).flatMap(wordForms)));
+    vocabularyCache.set(index, vocabulary);
+  }
+  return vocabulary;
+}
+
+/**
+ * Names the question uses that appear nowhere in the paper's passages, the
+ * references included. No passage can answer a question about something it
+ * never mentions, however well the reader scores a span in it.
+ */
+export function unmentionedNames(question: string, index: HybridIndex): string[] {
+  const vocabulary = paperVocabulary(index);
+  const mentioned = (token: string) =>
+    vocabulary.has(token) ||
+    vocabulary.has(squash(token)) ||
+    token.split("-").filter((part) => part.length >= 2).every((part) => vocabulary.has(part));
+  return namedTerms(question).filter((name) => !tokenize(name).every(mentioned));
 }
 
 // ─────────────────────────────── Graph state ──────────────────────────────
@@ -256,6 +330,8 @@ export interface QAState {
   hits: RetrievalHit[];
   proposals: Proposal[];
   best: Proposal | null;
+  /** Names in the question that the paper never mentions (see unmentionedNames). */
+  unmentioned: string[];
   answer: Answer | null;
   /** How the answer was produced, including any model that was unavailable. */
   notes: string[];
@@ -589,33 +665,47 @@ async function bestSentences(state: QAState, top: RetrievalHit[], node: NodeCont
 
   const preferredZone = PREFERRED_ZONES[state.intent];
   const subject = definitionSubject(state.question);
-  const proposals: Proposal[] = [];
+  const candidates: { proposal: Proposal; defines: boolean }[] = [];
   for (const { hit, sentences } of perHit) {
-    let best: { located: Located; score: number } | null = null;
+    let best: { located: Located; score: number; defines: boolean } | null = null;
     for (const located of sentences) {
       // Bonuses rank sentences unclamped (so they still separate perfect lexical
       // matches); the reported score is clamped back to 0..1 below.
       let score = scoreOf.get(located.text) ?? 0;
       if (preferredZone && located.sentence?.zone === preferredZone) score += ZONE_BONUS;
-      if (subject && definesSubject(located.text, subject)) score += DEFINITION_BONUS;
-      if (!best || score > best.score) best = { located, score };
+      const defines = subject !== null && definesSubject(located.text, subject);
+      if (defines) score += DEFINITION_BONUS;
+      // A definition question wants a definition: one beats any sentence that is not one.
+      if (!best || (defines && !best.defines) || (defines === best.defines && score > best.score)) best = { located, score, defines };
     }
     if (!best) continue;
-    proposals.push({
-      hit,
-      span: best.located.text,
-      start: best.located.start,
-      end: best.located.end,
-      mode: "sentence",
-      evidenceScore: clamp01(best.score),
-      // The sentence score already measures relevance; only a cross-encoder adds independent evidence.
-      relevance: hit.rerank !== undefined ? rerankRelevance(hit.rerank) : 1,
-      support: 1,
-      confidence: 0,
+    candidates.push({
+      defines: best.defines,
+      proposal: {
+        hit,
+        span: best.located.text,
+        start: best.located.start,
+        end: best.located.end,
+        mode: "sentence",
+        evidenceScore: clamp01(best.score),
+        // The sentence score already measures relevance; only a cross-encoder adds independent evidence.
+        relevance: hit.rerank !== undefined ? rerankRelevance(hit.rerank) : 1,
+        support: 1,
+        confidence: 0,
+      },
     });
   }
-  node.log(`Sentence matching proposed ${proposals.length} candidates`);
-  return proposals;
+  node.log(`Sentence matching proposed ${candidates.length} candidates`);
+
+  // A definition beats a non-definition across passages too. The bonus alone
+  // cannot do that: clamping caps every strong match at 1, so a short sentence
+  // that merely names the term ("Here fake quantization is exactly the same as
+  // in Table 1.") ties with the definition and wins on passage relevance.
+  const definitions = candidates.filter((c) => c.defines);
+  if (definitions.length > 0 && definitions.length < candidates.length) {
+    node.log(`Kept the ${definitions.length} shaped like a definition of "${subject}"`);
+  }
+  return (definitions.length > 0 ? definitions : candidates).map((c) => c.proposal);
 }
 
 /**
@@ -663,16 +753,21 @@ async function verifyNode(state: QAState, node: NodeContext): Promise<Partial<QA
     p.support = SUPPORT_FLOOR + (1 - SUPPORT_FLOOR) * support[i];
   });
 
+  const unmentioned = unmentionedNames(state.question, state.ctx.index);
+  if (unmentioned.length > 0) node.log(`The paper never mentions ${unmentioned.join(", ")}; no candidate can answer`);
+
   const verified = verbatim
     .map((p) => ({ ...p, confidence: p.relevance * p.evidenceScore * p.support }))
     .sort((a, b) => b.confidence - a.confidence);
+  // Ranked as usual, so the closest passage can still be shown, but none may answer.
+  if (unmentioned.length > 0) for (const p of verified) p.confidence = 0;
   const best = verified[0] ?? null;
   node.log(
     best
       ? `Best candidate ${best.confidence.toFixed(3)} (threshold ${thresholdFor(best.mode)})`
       : "No candidate survived verification",
   );
-  return { proposals: verified, best };
+  return { proposals: verified, best, unmentioned };
 }
 
 function thresholdFor(mode: AnswerMode): number {
@@ -740,7 +835,10 @@ function abstainNode(state: QAState): Partial<QAState> {
       chunkId: chunk.id,
       sentenceId: anchor?.id,
     });
-    detail = `The closest passage scored ${best.confidence.toFixed(2)}, below the ${thresholdFor(best.mode).toFixed(2)} needed to answer; it is shown as the nearest evidence.`;
+    detail =
+      state.unmentioned.length > 0
+        ? `It never mentions ${state.unmentioned.join(" or ")}, which the question asks about; the closest passage is shown as the nearest evidence.`
+        : `The closest passage scored ${best.confidence.toFixed(2)}, below the ${thresholdFor(best.mode).toFixed(2)} needed to answer; it is shown as the nearest evidence.`;
   }
   return {
     answer: {
@@ -805,7 +903,7 @@ export const QA_NODES: { name: string; label: string; description: string }[] = 
   { name: "retrieve", label: "Retrieve", description: "Hybrid BM25 + embedding search over the paper's passages, fused with RRF." },
   { name: "rerank", label: "Rerank", description: "Cross-encoder rescoring of the top passages against the question." },
   { name: "read", label: "Read", description: "Extractive reader proposes an answer span in each top passage." },
-  { name: "verify", label: "Verify", description: "Check the span is verbatim in the paper and its confidence clears the bar." },
+  { name: "verify", label: "Verify", description: "Check the span is verbatim in the paper, the paper mentions what the question names, and the confidence clears the bar." },
   { name: "respond", label: "Respond", description: "Return the span with its sentence, page and section as evidence." },
   { name: "abstain", label: "Abstain", description: "Decline to answer and show the closest passage instead." },
 ];
@@ -856,6 +954,7 @@ export async function answerQuestion(
       hits: [],
       proposals: [],
       best: null,
+      unmentioned: [],
       answer: null,
       notes: [],
     },

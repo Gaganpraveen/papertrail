@@ -332,10 +332,9 @@ describe.skipIf(!modelsPresent)("real models (transformers.js in Node)", () => {
     }, 60_000);
 
     it.each([
-      ["How much less peak memory does KIVI use?", "2.6×"],
-      ["Which GPU was used to measure efficiency?", "A100"],
       ["What group size is used?", "32"],
       ["Which benchmark is used for long context evaluation?", "LongBench"],
+      ["How should the key cache be quantized?", "per-channel"],
     ])("answers %s", async (question, expected) => {
       const answer = await answerQuestion(question, ctx);
       expect(answer.status).toBe("answered");
@@ -344,14 +343,40 @@ describe.skipIf(!modelsPresent)("real models (transformers.js in Node)", () => {
       expect(answer.evidence[0].quote).toContain(answer.answer);
     }, 30_000);
 
+    // The cost of the threshold: on these short passages the reader gives the
+    // right span only 0.4-0.55, so the answer is withheld and its sentence is
+    // shown as the closest evidence instead (docs/evaluation.md measures this).
+    it.each([
+      ["How much less peak memory does KIVI use?", "2.6×"],
+      ["Which GPU was used to measure efficiency?", "A100"],
+    ])("withholds a right but unsure answer to %s, showing its evidence", async (question, expected) => {
+      const answer = await answerQuestion(question, ctx);
+      expect(answer.status).toBe("abstained");
+      expect(answer.confidence).toBeLessThan(ABSTAIN_THRESHOLD);
+      expect(answer.evidence[0].quote).toContain(expected);
+    }, 30_000);
+
+    it("quotes the defining sentence for a definition question", async () => {
+      const answer = await answerQuestion("What is fake quantization?", ctx);
+      expect(answer.status).toBe("answered");
+      expect(answer.answer).toMatch(/^Here fake quantization means we simulate the quantization process/);
+    }, 30_000);
+
     it.each([
       "What is the capital of France?",
       "What learning rate was used to fine-tune the model?",
       "How many layers does the vision encoder have?",
+      "What accuracy does KIVI reach on MMLU?",
     ])("abstains on %s", async (question) => {
       const answer = await answerQuestion(question, ctx);
       expect(answer.status).toBe("abstained");
       expect(answer.confidence).toBeLessThan(ABSTAIN_THRESHOLD);
+    }, 30_000);
+
+    it("names the term it could not find when that is why it abstains", async () => {
+      const answer = await answerQuestion("What accuracy does KIVI reach on MMLU?", ctx);
+      expect(answer.confidence).toBe(0);
+      expect(answer.reason).toMatch(/never mentions MMLU/);
     }, 30_000);
   });
 });

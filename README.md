@@ -134,7 +134,7 @@ encoders, which run through transformers.js.
 | Sentence embeddings | [`ml/worker.ts`](src/ml/worker.ts) | `all-MiniLM-L6-v2`, 384-d, mean pooling + L2 norm, 8-bit. Used for dense retrieval, zoning, keyphrases, LexRank, survey clustering and consensus. |
 | Reciprocal Rank Fusion | [`retrieval/hybrid.ts`](src/retrieval/hybrid.ts) | Fuses the BM25 and dense rankings with Σ 1/(60 + rank) over the top 100 of each. It merges ranks, not scores, so the two scales never need calibrating. Returns the top 20. |
 | Cross-encoder reranking | [`qa/answer.ts`](src/qa/answer.ts) | `ms-marco-MiniLM-L-6-v2` reads (question, passage) pairs jointly for the top 8. The logit becomes a relevance with sigmoid((logit + 3) / 2), calibrated on paper passages. |
-| Extractive QA with abstention | [`qa/answer.ts`](src/qa/answer.ts) | `distilbert-base-cased-distilled-squad` proposes a span in each of the top 3 passages. Confidence = relevance × reader probability × sentence support. Below 0.20 it abstains (0.45 for whole-sentence answers). The span must match the paper verbatim. |
+| Extractive QA with abstention | [`qa/answer.ts`](src/qa/answer.ts) | `distilbert-base-cased-distilled-squad` proposes a span in each of the top 3 passages. Confidence = relevance × reader probability × sentence support. Below 0.55 it abstains (0.45 for whole-sentence answers); a name in the question that never appears in the paper (a dataset, a model) forces an abstention. The span must match the paper verbatim. |
 | LexRank | [`nlp/lexrank.ts`](src/nlp/lexrank.ts), [`analysis/briefing.ts`](src/analysis/briefing.ts) | PageRank over a sentence-similarity graph (damping 0.85). Edges need cosine ≥ 0.3 with MiniLM vectors, or ≥ 0.1 with the TF-IDF fallback. Central sentences become briefing candidates. |
 | Maximal Marginal Relevance | [`nlp/mmr.ts`](src/nlp/mmr.ts) | Greedy relevance-vs-redundancy selection. λ = 0.7 for briefing bullets, 0.65 for method bullets, 0.6 for keyphrases with embeddings, 0.75 for search results. |
 | KeyBERT-style keyphrases | [`nlp/keyphrases.ts`](src/nlp/keyphrases.ts) | 1–3-word noun-phrase candidates scored with a simplified YAKE. The top 48 are re-scored 50/50 by cosine to a document vector (centroid of up to 8 windows of 120 words), merged when they are near-duplicates ("KV cache" / "key-value cache"), then diversified with MMR. |
@@ -215,14 +215,17 @@ The rigor profile shows where the 71 comes from:
 > quantized per-channel and value cache should be quantized per token."
 
 > **Q:** What learning rate was used to fine-tune the model?
-> **Not found in the paper.** The closest passage scored 0.02, below the 0.20
+> **Not found in the paper.** The closest passage scored 0.02, below the 0.55
 > needed to answer. KIVI is tuning-free, so this is the right call. The nearest
 > passage is still shown (Settings, p. 6).
 
-It is not perfect. Asked "What group size does KIVI use?", the reader returned
-"GSM8K" at 0.25. It took the span from an ablation sentence that mentions group
-size, and that cleared the threshold. The quoted sentence makes the mistake easy
-to spot, which is why every answer ships with its evidence.
+It is not perfect. Asked "What group size does KIVI use?", the reader used to
+return "GSM8K" from an ablation sentence that mentions group size. Two checks now
+stop that: the question asks for a quantity and "GSM8K" is not one, and the score
+(0.25) is below the threshold, so PaperTrail abstains and shows that sentence as
+the closest passage. When the reader is wrong with high confidence, the quoted
+sentence still makes the mistake easy to spot, which is why every answer ships
+with its evidence.
 
 I produced this run with the app's own pipeline code and the same quantised
 models, run in Node against the test fixture PDF. ONNX Runtime builds differ
@@ -234,7 +237,26 @@ I measure retrieval quality, answer accuracy and abstention on labelled
 questions over real papers. The method, the full results and the failure cases
 are in [docs/evaluation.md](docs/evaluation.md).
 
-<!-- EVAL_SUMMARY -->
+**Retrieval** (39 answerable questions over 3 papers; where the passage that
+holds the answer ranks):
+
+| Retriever | Recall@1 | MRR |
+| --- | --- | --- |
+| BM25 only | 0.72 | 0.81 |
+| Dense only | 0.46 | 0.64 |
+| Hybrid (RRF) | 0.72 | 0.81 |
+| Hybrid + cross-encoder | 0.82 | 0.90 |
+
+**Question answering** (39 answerable questions, 12 that the paper doesn't
+answer):
+
+| | Answerable: correct | Answerable: wrong | Answerable: abstained | Unanswerable: false answer |
+| --- | --- | --- | --- | --- |
+| Shipped threshold (0.55), all 51 questions | 23/39 (59%) | 4/39 (10%) | 12/39 (31%) | 0/12 (0%) |
+| Held-out estimate (chosen on two papers, tested on the third) | 23/39 (59%) | 4/39 (10%) | 12/39 (31%) | 1/12 (8%) |
+
+How the threshold was chosen, what it costs, and every question with its answer
+are in [docs/evaluation.md](docs/evaluation.md).
 
 ## Quickstart
 
@@ -277,7 +299,8 @@ In short:
   ways. RRF combines them without score calibration, and a cross-encoder
   re-scores only the top 8 because it is the slowest step.
 - **Extractive answers with calibrated abstention.** A span reader cannot invent
-  a fact. I set the 0.20 threshold from measured scores, not by guessing.
+  a fact. I chose the 0.55 threshold with leave-one-paper-out cross-validation
+  on labelled questions, not by guessing.
 - **A reviewer built from transparent rules.** Every finding cites a sentence or
   states what was missing, and every paper is judged by the same rules. Rules
   cannot judge novelty, so the score is a rigor profile, not a quality verdict.
