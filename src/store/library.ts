@@ -5,9 +5,9 @@
  *   single inference worker and the network are never oversubscribed. Each
  *   run's trace events stream into its PaperRecord (current node, progress,
  *   full trace) so the UI can show the agent working live.
- * - Finished records, PDF bytes and passage embeddings are persisted to
- *   IndexedDB and restored on load; retrieval indexes are rebuilt lazily the
- *   first time a question is asked.
+ * - Records (from the moment they are queued), PDF bytes and passage
+ *   embeddings are persisted to IndexedDB and restored on load; retrieval
+ *   indexes are rebuilt lazily the first time a question is asked.
  * - Topic searches and surveys run their own graphs and report into
  *   `search` / `surveys` the same way.
  */
@@ -149,15 +149,53 @@ export const useLibrary = create<LibraryState>()((set, get) => {
 
   const openPaper = (id: string) => set({ view: { kind: "paper", id, tab: "briefing" } });
 
-  const addPaper = (id: string, meta: PaperMeta) =>
+  const addPaper = (id: string, meta: PaperMeta) => {
     set((s) => ({
       papers: { ...s.papers, [id]: newRecord(id, meta) },
       order: [id, ...s.order.filter((x) => x !== id)],
     }));
+    // Stored right away, so a reload shows it as interrupted (with Retry) instead of dropping it.
+    void persistPaper(id);
+  };
 
   const persistPaper = (id: string) => {
     const record = get().papers[id];
     return record ? db.savePaper(record) : Promise.resolve();
+  };
+
+  /** The same paper can arrive by arXiv id, DOI or search result; the arXiv id ties them together. */
+  const findByArxivId = (arxivId: string | undefined, except?: string) =>
+    arxivId ? Object.values(get().papers).find((r) => r.id !== except && r.meta.arxivId === arxivId) : undefined;
+
+  /** Forgets a paper; a view or survey pick that pointed at it moves to `replacement` when given. */
+  const dropPaper = (paperId: string, replacement?: string) => {
+    const queued = queue.findIndex((j) => j.id === paperId);
+    if (queued >= 0) queue.splice(queued, 1);
+    if (active?.id === paperId) active.controller.abort();
+    jobsById.delete(paperId);
+    embeddingCache.delete(paperId);
+    indexCache.delete(paperId);
+
+    set((s) => {
+      const papers = { ...s.papers };
+      delete papers[paperId];
+      const view: View =
+        s.view.kind === "paper" && s.view.id === paperId
+          ? replacement
+            ? { ...s.view, id: replacement }
+            : { kind: "home" }
+          : s.view;
+      return {
+        papers,
+        order: s.order.filter((id) => id !== paperId),
+        surveySelection: replacement
+          ? [...new Set(s.surveySelection.map((id) => (id === paperId ? replacement : id)))]
+          : s.surveySelection.filter((id) => id !== paperId),
+        view,
+        evidence: s.evidence?.paperId === paperId ? null : s.evidence,
+      };
+    });
+    return db.deletePaper(paperId);
   };
 
   // ── Paper queue ──
@@ -204,8 +242,17 @@ export const useLibrary = create<LibraryState>()((set, get) => {
         {
           signal,
           onEvent: onTrace(id),
-          onState: (state) => {
-            if (state.meta) patchPaper(id, { meta: state.meta, mode: state.mode, warnings: state.warnings });
+          onState: (state, node) => {
+            if (!state.meta) return;
+            // A DOI can turn out to be a paper that is already in the library under its arXiv id.
+            const twin = node === "resolve" ? findByArxivId(state.meta.arxivId, id) : undefined;
+            if (twin && twin.status !== "queued" && twin.status !== "failed") {
+              void dropPaper(id, twin.id); // aborts this run
+              return;
+            }
+            patchPaper(id, { meta: state.meta, mode: state.mode, warnings: state.warnings });
+            // A copy that has not run yet, or failed, is superseded by this run.
+            if (twin) void dropPaper(twin.id, id);
           },
         },
       );
@@ -235,6 +282,8 @@ export const useLibrary = create<LibraryState>()((set, get) => {
     } catch (error) {
       if (signal.aborted || !get().papers[id]) return;
       const message = errorMessage(error);
+      // A failed paper cannot be surveyed, and its hidden checkbox would keep holding a slot.
+      set((s) => ({ surveySelection: s.surveySelection.filter((x) => x !== id) }));
       patchPaper(id, { status: "failed", currentNode: undefined, error: message });
       await persistPaper(id);
       get().toast(message, "bad");
@@ -347,18 +396,27 @@ export const useLibrary = create<LibraryState>()((set, get) => {
       const text = raw.trim();
       if (!text) return;
       const input = parseInput(text);
-      if (input.kind === "topic") return startSearch(input.query ?? text);
+      if (input.kind === "topic") {
+        // Not awaited: the search reports through `search`, and callers (the command bar)
+        // must stay free to submit a refined query, which aborts this one.
+        void startSearch(input.query ?? text);
+        return;
+      }
 
       const id = await paperIdFor(input);
       if (!id) {
         get().toast("That input could not be recognised as a paper", "warn");
         return;
       }
-      if (!get().papers[id]) {
+      const existing = get().papers[id] ?? findByArxivId(input.arxivId);
+      if (!existing) {
         addPaper(id, placeholderMeta(input, id));
         enqueue({ id, input });
+      } else if (existing.status === "failed") {
+        // Submitting a failed paper again means "try again", not just "show it".
+        await get().retry(existing.id);
       }
-      openPaper(id);
+      openPaper(existing?.id ?? id);
     },
 
     async submitFiles(files) {
@@ -370,9 +428,19 @@ export const useLibrary = create<LibraryState>()((set, get) => {
           const pdf = await file.arrayBuffer();
           const id = await uploadId(pdf);
           first ??= id;
-          if (get().papers[id]) continue;
-          addPaper(id, { id, title: titleFromFileName(file.name), authors: [], source: "upload" });
-          enqueue({ id, input: { kind: "upload", raw: file.name, fileName: file.name }, file, pdf });
+          const existing = get().papers[id];
+          if (existing && existing.status !== "failed") continue;
+          const job: PaperJob = { id, input: { kind: "upload", raw: file.name, fileName: file.name }, file, pdf };
+          // Kept from the start, so Retry still has the file after a reload.
+          void db.savePdf(id, pdf);
+          if (existing) {
+            // Dropping a failed upload again retries it with the fresh bytes.
+            jobsById.set(id, job);
+            await get().retry(id);
+          } else {
+            addPaper(id, { id, title: titleFromFileName(file.name), authors: [], source: "upload" });
+            enqueue(job);
+          }
         } catch (error) {
           get().toast(`Could not read ${file.name}: ${errorMessage(error)}`, "bad");
         }
@@ -383,10 +451,14 @@ export const useLibrary = create<LibraryState>()((set, get) => {
     async analyzeCandidates(candidates: Candidate[]) {
       const ids: string[] = [];
       for (const { meta } of candidates) {
-        ids.push(meta.id);
-        if (get().papers[meta.id]) continue;
-        addPaper(meta.id, meta);
-        enqueue({ id: meta.id, input: inputFromMeta(meta), meta });
+        const existing = get().papers[meta.id] ?? findByArxivId(meta.arxivId);
+        ids.push(existing?.id ?? meta.id);
+        if (!existing) {
+          addPaper(meta.id, meta);
+          enqueue({ id: meta.id, input: inputFromMeta(meta), meta });
+        } else if (existing.status === "failed") {
+          await get().retry(existing.id);
+        }
       }
       if (ids.length === 0) return;
       // Papers picked together are usually meant to be compared: pre-select them for a survey.
@@ -428,26 +500,7 @@ export const useLibrary = create<LibraryState>()((set, get) => {
     },
 
     async remove(paperId) {
-      const queued = queue.findIndex((j) => j.id === paperId);
-      if (queued >= 0) queue.splice(queued, 1);
-      if (active?.id === paperId) active.controller.abort();
-      jobsById.delete(paperId);
-      embeddingCache.delete(paperId);
-      indexCache.delete(paperId);
-
-      set((s) => {
-        const papers = { ...s.papers };
-        delete papers[paperId];
-        const viewing = s.view.kind === "paper" && s.view.id === paperId;
-        return {
-          papers,
-          order: s.order.filter((id) => id !== paperId),
-          surveySelection: s.surveySelection.filter((id) => id !== paperId),
-          view: viewing ? { kind: "home" } : s.view,
-          evidence: s.evidence?.paperId === paperId ? null : s.evidence,
-        };
-      });
-      await db.deletePaper(paperId);
+      await dropPaper(paperId);
     },
 
     async ask(paperId, question) {

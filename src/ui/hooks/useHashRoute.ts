@@ -2,7 +2,7 @@
  * Keeps the store's view in sync with the URL hash (see routes.ts), so the
  * back button works and views can be linked to.
  */
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import type { LibraryState, View } from "@/store/types";
 import { hashToRoute, viewToHash } from "./routes";
 import { store, useStore } from "./store";
@@ -31,18 +31,24 @@ function applyHash(hash: string): void {
 export function useHashRoute(): void {
   const hydrated = useStore((s) => s.hydrated);
   const view = useStore((s) => s.view);
+  const synced = useRef(false);
 
   // Initial deep link, once the library has been restored from IndexedDB.
+  // A view the user opened while it was loading wins over the URL.
   useEffect(() => {
-    if (hydrated) applyHash(window.location.hash);
+    if (hydrated && store().view.kind === "home") applyHash(window.location.hash);
   }, [hydrated]);
 
-  // View -> URL.
+  // View -> URL. Reads the live view: the deep link above may have changed it
+  // in this same commit, and the rendered `view` would still be the old one.
   useEffect(() => {
     if (!hydrated) return;
-    const next = viewToHash(view);
+    const next = viewToHash(store().view);
+    const first = !synced.current;
+    synced.current = true;
     if (next === window.location.hash) return;
-    if (window.location.hash === "" || window.location.hash === "#") {
+    // The first write replaces the URL the page was opened with, so Back leaves instead of landing on it.
+    if (first || window.location.hash === "" || window.location.hash === "#") {
       window.history.replaceState(null, "", next);
     } else {
       window.history.pushState(null, "", next);

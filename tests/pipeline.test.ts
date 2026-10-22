@@ -18,11 +18,13 @@ import {
 } from "@/pipeline/paper";
 import { buildSearchGraph, MAX_SEARCH_ATTEMPTS, runTopicSearch, SEARCH_NODES } from "@/pipeline/search";
 import { runSurveyPipeline, SURVEY_NODES } from "@/pipeline/survey";
-import { packEmbeddings, unpackEmbeddings } from "@/store/db";
+import { loadPapers, loadPdf, packEmbeddings, unpackEmbeddings } from "@/store/db";
 import { useLibrary } from "@/store/library";
 import { briefingMarkdown } from "@/store/export";
 import type { PaperRecord } from "@/store/types";
+import { intentProgress, submitForSurvey, usePendingSurvey } from "@/ui/hooks/usePendingSurvey";
 import type {
+  Candidate,
   EmbedFn,
   MLStatus,
   PaperAnalysis,
@@ -602,11 +604,16 @@ describe("library store", () => {
   });
 
   it("routes topics to the search agent", async () => {
-    mockedSearch.mockResolvedValue([META]);
+    let finish!: (results: PaperMeta[]) => void;
+    mockedSearch.mockReturnValue(new Promise((resolve) => (finish = resolve)));
+    // submit returns while the search runs, so the command bar can take the next entry.
     await useLibrary.getState().submit("kv cache compression");
-    const search = useLibrary.getState().search!;
     expect(useLibrary.getState().view).toEqual({ kind: "search" });
-    expect(search.status).toBe("ready");
+    expect(useLibrary.getState().search?.status).toBe("searching");
+
+    finish([META]);
+    await vi.waitFor(() => expect(useLibrary.getState().search?.status).toBe("ready"));
+    const search = useLibrary.getState().search!;
     expect(search.candidates).toHaveLength(1);
     expect(search.trace.length).toBeGreaterThan(0);
   });
@@ -621,5 +628,79 @@ describe("library store", () => {
     await useLibrary.getState().remove("arxiv:2501.00001");
     expect(useLibrary.getState().papers["arxiv:2501.00001"]).toBeUndefined();
     expect(useLibrary.getState().view).toEqual({ kind: "home" });
+  });
+
+  it("stores papers while queued and re-runs a failed one when it is submitted again", async () => {
+    let fail!: (error: Error) => void;
+    mockedArxiv.mockReturnValueOnce(new Promise((_, reject) => (fail = reject)));
+    mockedDownload.mockRejectedValue(new SourceError("PDF returned 404", "not-found"));
+    await useLibrary.getState().submit("2501.00002");
+    expect(await loadPapers()).toContainEqual(expect.objectContaining({ id: "arxiv:2501.00002", status: "queued" }));
+
+    fail(new SourceError("No arXiv paper found for 2501.00002", "not-found"));
+    await vi.waitFor(() => expect(useLibrary.getState().papers["arxiv:2501.00002"]?.status).toBe("failed"));
+    mockedDownload.mockResolvedValue(new ArrayBuffer(2048));
+    await useLibrary.getState().submit("2501.00002");
+    await waitReady("arxiv:2501.00002");
+  });
+
+  it("keeps an uploaded file from the moment it is queued", async () => {
+    let parsed!: (doc: ParsedDocument) => void;
+    mockedParse.mockReturnValueOnce(new Promise((resolve) => (parsed = resolve)));
+    const file = new File([new Uint8Array([37, 80, 68, 70, 1, 2, 3])], "kivi.pdf", { type: "application/pdf" });
+    await useLibrary.getState().submitFiles([file]);
+    const id = useLibrary.getState().order[0];
+    expect(id).toMatch(/^upload:/);
+    expect(await loadPdf(id)).toBeInstanceOf(ArrayBuffer);
+    parsed(goodDoc());
+    await waitReady(id);
+  });
+
+  it("drops a paper that fails from the survey selection", async () => {
+    useLibrary.getState().clearSurveySelection();
+    mockedDownload.mockRejectedValue(new SourceError("PDF returned 404", "not-found"));
+    const meta: PaperMeta = {
+      id: "arxiv:2501.00003",
+      title: "No open copy",
+      authors: [],
+      arxivId: "2501.00003",
+      pdfUrl: "https://arxiv.org/pdf/2501.00003",
+      source: "datacite",
+    };
+    await useLibrary.getState().analyzeCandidates([{ meta } as Candidate]);
+    expect(useLibrary.getState().surveySelection).toEqual(["arxiv:2501.00003"]);
+    await vi.waitFor(() => expect(useLibrary.getState().papers["arxiv:2501.00003"]?.status).toBe("failed"));
+    expect(useLibrary.getState().surveySelection).toEqual([]);
+  });
+
+  it("keeps one record when a DOI and an arXiv id name the same paper", async () => {
+    // The DOI resolves to a paper already analysed under its arXiv id.
+    mockedDoi.mockResolvedValue({ ...META, doi: "10.1000/kivi" });
+    await useLibrary.getState().submit("10.1000/kivi");
+    await vi.waitFor(() => expect(useLibrary.getState().papers["doi:10.1000/kivi"]).toBeUndefined());
+    expect(useLibrary.getState().view).toMatchObject({ kind: "paper", id: "arxiv:2402.02750" });
+    expect((await loadPapers()).map((p) => p.id)).not.toContain("doi:10.1000/kivi");
+
+    // The other way round: an arXiv id already analysed under its DOI opens that record.
+    mockedDoi.mockResolvedValue({ ...META, id: "arxiv:2501.00004", arxivId: "2501.00004", doi: "10.1000/other" });
+    await useLibrary.getState().submit("10.1000/other");
+    await waitReady("doi:10.1000/other");
+    await useLibrary.getState().submit("2501.00004");
+    expect(useLibrary.getState().papers["arxiv:2501.00004"]).toBeUndefined();
+    expect(useLibrary.getState().view).toMatchObject({ id: "doi:10.1000/other" });
+  });
+
+  it("re-queues failed papers for a pending survey and settles when one is removed", async () => {
+    let release!: (pdf: ArrayBuffer) => void;
+    mockedDownload.mockReturnValueOnce(new Promise((resolve) => (release = resolve)));
+    // arxiv:2501.00003 failed above; the intent must wait for its new run.
+    await submitForSurvey(["2402.02750", "2501.00003"]);
+    const ids = usePendingSurvey.getState().arxivIds!;
+    expect(intentProgress(useLibrary.getState().papers, ids)).toMatchObject({ ready: 1, failed: 0, settled: false });
+
+    await useLibrary.getState().remove("arxiv:2501.00003");
+    expect(intentProgress(useLibrary.getState().papers, ids)).toMatchObject({ ready: 1, failed: 1, settled: true });
+    usePendingSurvey.getState().cancel();
+    release(new ArrayBuffer(2048));
   });
 });

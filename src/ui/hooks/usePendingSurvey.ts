@@ -48,15 +48,18 @@ export function intentProgress(
 ): SurveyIntentProgress {
   const records = arxivIds.map((id) => findArxivRecord(papers, id));
   const ready = records.filter((r) => r?.status === "ready").length;
-  const failed = records.filter((r) => r?.status === "failed").length;
+  // A paper removed from the library will never finish: count it as failed so the intent still settles.
+  const failed = records.filter((r) => !r || r.status === "failed").length;
   return { total: arxivIds.length, ready, failed, settled: ready + failed === arxivIds.length };
 }
 
 /** Submits the papers (sequentially, so the queue keeps their order) and arms the intent. */
 export async function submitForSurvey(arxivIds: string[]): Promise<void> {
-  usePendingSurvey.getState().start(arxivIds);
   const { submit } = store();
   for (const id of arxivIds) await submit(id);
+  // Armed only now: every record exists, and failed ones from an earlier try are queued again,
+  // so the runner cannot settle on stale statuses and cancel the survey straight away.
+  usePendingSurvey.getState().start(arxivIds);
   // Each submit opens its paper; land on the first one, which the queue processes first.
   const first = findArxivRecord(store().papers, arxivIds[0]);
   if (first) store().setView({ kind: "paper", id: first.id, tab: "briefing" });

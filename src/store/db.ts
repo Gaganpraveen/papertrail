@@ -9,7 +9,8 @@
  *   survey:<id>  SurveyRecord without its trace
  *
  * When IndexedDB is unavailable (private browsing, tests) everything falls
- * back to an in-memory map, so the app keeps working for the session.
+ * back to an in-memory map, so the app keeps working for the session. A single
+ * failed write (e.g. a PDF over quota) keeps only that item in memory.
  */
 import { createStore, del, delMany, get, getMany, keys, set, type UseStore } from "idb-keyval";
 import type { PaperRecord, SurveyRecord } from "./types";
@@ -53,6 +54,8 @@ function memoryBackend(): Backend {
 }
 
 let backend: Backend | null = null;
+/** Items whose IndexedDB write failed, kept for this session only. */
+const overlay = memoryBackend();
 
 /** Opened lazily: idb-keyval opens the database as soon as the store is created. */
 function db(): Backend {
@@ -62,23 +65,47 @@ function db(): Backend {
   return backend;
 }
 
-/** Runs a write; on quota or permission errors, switches to memory so the session continues. */
-async function write(op: (b: Backend) => Promise<void>): Promise<void> {
+/**
+ * Writes one item; on quota or permission errors keeps just that item in memory
+ * so the session continues. Swapping the whole backend would hide everything
+ * already stored and send later saves and deletes nowhere.
+ */
+async function put(key: string, value: unknown): Promise<void> {
   try {
-    await op(db());
+    await db().set(key, value);
+    await overlay.del([key]);
   } catch (error) {
-    console.warn("Local storage failed; keeping data in memory for this session", error);
-    backend = memoryBackend();
-    await op(backend);
+    console.warn("Local storage failed; keeping this item in memory for this session", error);
+    await overlay.set(key, value);
   }
 }
 
-async function read<T>(op: (b: Backend) => Promise<T>, fallback: T): Promise<T> {
+async function remove(list: string[]): Promise<void> {
+  await overlay.del(list);
   try {
-    return await op(db());
+    await db().del(list);
+  } catch (error) {
+    console.warn("Local storage delete failed", error);
+  }
+}
+
+/** Reads see items held in memory first, then IndexedDB. */
+const layered: Pick<Backend, "get" | "getMany" | "keys"> = {
+  get: async <T>(key: string) => (await overlay.get<T>(key)) ?? (await db().get<T>(key)),
+  getMany: async <T>(list: string[]) => {
+    const [held, stored] = await Promise.all([overlay.getMany<T>(list), db().getMany<T>(list)]);
+    return list.map((_, i) => held[i] ?? stored[i]);
+  },
+  keys: async () => [...new Set([...(await overlay.keys()), ...(await db().keys())])],
+};
+
+async function read<T>(op: (b: typeof layered) => Promise<T>, fallback: T): Promise<T> {
+  try {
+    return await op(layered);
   } catch (error) {
     console.warn("Local storage read failed", error);
-    return fallback;
+    // IndexedDB itself is unreadable: what this session saved is still in memory.
+    return op(overlay).catch(() => fallback);
   }
 }
 
@@ -104,18 +131,18 @@ export function loadPapers(): Promise<PaperRecord[]> {
 /** Live-only fields (trace, pending flags) are not persisted. */
 export function savePaper(record: PaperRecord): Promise<void> {
   const stored: PaperRecord = { ...record, trace: [], qaPending: false, currentNode: undefined };
-  return write((b) => b.set(paperKey(record.id), stored));
+  return put(paperKey(record.id), stored);
 }
 
 export function deletePaper(id: string): Promise<void> {
-  return write((b) => b.del([paperKey(id), pdfKey(id), embKey(id)]));
+  return remove([paperKey(id), pdfKey(id), embKey(id)]);
 }
 
 // ─────────────────────────────── PDF bytes ─────────────────────────────────
 
 export function savePdf(id: string, bytes: ArrayBuffer): Promise<void> {
   // Store a copy: the caller's buffer may later be transferred or detached.
-  return write((b) => b.set(pdfKey(id), bytes.slice(0)));
+  return put(pdfKey(id), bytes.slice(0));
 }
 
 export function loadPdf(id: string): Promise<ArrayBuffer | null> {
@@ -138,7 +165,7 @@ export function unpackEmbeddings(packed: PackedEmbeddings): Float32Array[] {
 }
 
 export function saveEmbeddings(id: string, vectors: Float32Array[]): Promise<void> {
-  return write((b) => b.set(embKey(id), packEmbeddings(vectors)));
+  return put(embKey(id), packEmbeddings(vectors));
 }
 
 export function loadEmbeddings(id: string): Promise<Float32Array[] | null> {
@@ -155,9 +182,9 @@ export function loadSurveys(): Promise<SurveyRecord[]> {
 }
 
 export function saveSurvey(record: SurveyRecord): Promise<void> {
-  return write((b) => b.set(surveyKey(record.id), { ...record, trace: [] }));
+  return put(surveyKey(record.id), { ...record, trace: [] });
 }
 
 export function deleteSurvey(id: string): Promise<void> {
-  return write((b) => b.del([surveyKey(id)]));
+  return remove([surveyKey(id)]);
 }

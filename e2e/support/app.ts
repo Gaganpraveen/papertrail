@@ -38,9 +38,15 @@ export async function submit(page: Page, input: string): Promise<void> {
   await box.press("Enter");
 }
 
-/** Waits until the paper view shows a finished briefing. */
+/**
+ * Waits until the paper view shows a finished briefing. Export is enabled only
+ * for a finished analysis; the home page also mentions "Why it matters", so
+ * that text alone is not proof the paper is done.
+ */
 export async function waitForBriefing(page: Page, timeout = 180_000): Promise<void> {
-  await expect(page.getByText(/why it matters/i).first()).toBeVisible({ timeout });
+  await expect(page.getByRole("button", { name: "Export Markdown" })).toBeEnabled({ timeout });
+  await expect(page.getByRole("tab", { name: /Briefing/ })).toBeVisible();
+  await expect(page.getByText(/why it matters/i).first()).toBeVisible();
 }
 
 export async function openTab(page: Page, name: RegExp): Promise<void> {
