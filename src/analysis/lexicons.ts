@@ -508,9 +508,12 @@ export const SEEDS_RE = new RegExp(
   "i",
 );
 
-/** Hardware, accelerator time and energy. Case-sensitive on purpose (see header). */
+/**
+ * Hardware, accelerator time and energy. Case-sensitive on purpose (see header). "Trained for"
+ * counts only with a duration: "trained for 3 epochs" is a hyperparameter, not a compute budget.
+ */
 export const COMPUTE_RE =
-  /\b(?:A100|H100|H800|A800|V100|P100|K80|T4|A6000|A40|A10G?|L40S?|L4|RTX ?\d{4}|TITAN ?[A-Z]\w*|TPU ?v\d\w*|MI250X?|MI300X?|Gaudi\d?)\b|\b(?:\d+|one|two|four|eight|sixteen|single|a single) (?:NVIDIA |Nvidia )?(?:GPUs?|TPUs?|TPU cores|GPU nodes|nodes)\b|\b(?:GPU|TPU)[- ](?:hours?|days?|years?)\b|\b(?:petaflops?|PF-days|zettaFLOPs|FLOPs budget|compute budget)\b|\b(?:[Tt]raining|[Pp]re-?training) (?:took|takes|lasted|time was|required)\b|\b[Tt]rained for (?:\d+|about|approximately|roughly)\b|\b[Ww]all-?clock\b|\b[Cc]arbon (?:footprint|emissions?)\b|\btCO2(?:eq)?\b|\b[kM]Wh\b/u;
+  /\b(?:A100|H100|H800|A800|V100|P100|K80|T4|A6000|A40|A10G?|L40S?|L4|RTX ?\d{4}|TITAN ?[A-Z]\w*|TPU ?v\d\w*|MI250X?|MI300X?|Gaudi\d?)\b|\b(?:\d+|one|two|four|eight|sixteen|single|a single) (?:NVIDIA |Nvidia )?(?:GPUs?|TPUs?|TPU cores|GPU nodes|nodes)\b|\b(?:GPU|TPU)[- ](?:hours?|days?|years?)\b|\b(?:petaflops?|PF-days|zettaFLOPs|FLOPs budget|compute budget)\b|\b(?:[Tt]raining|[Pp]re-?training) (?:took|takes|lasted|time was|required)\b|\b[Tt]rained for (?:(?:about|approximately|roughly|around|~) ?)?(?:\d[\d,.]*|an?|one|two|three|four|five|six|seven|several) ?(?:hours?|days?|weeks?|months?)\b|\b[Ww]all-?clock\b|\b[Cc]arbon (?:footprint|emissions?)\b|\btCO2(?:eq)?\b|\b[kM]Wh\b/u;
 
 /** Optimisation and decoding settings that a replication needs. */
 export const HYPERPARAMETER_RE =
@@ -530,9 +533,12 @@ export const SOTA_RE =
 
 export const OWN_WORK_RE = /\b(?:we|our|ours|this (?:paper|work|method|approach))\b/i;
 
-/** Human judgement in the evaluation. */
+/**
+ * Human judgement in the evaluation. Bare "human preferences" and "human labelers" usually describe
+ * training data or an alignment goal (RLHF), so preference wording needs an evaluation noun.
+ */
 export const HUMAN_EVAL_RE =
-  /\bhuman (?:evaluations?|evaluators?|judges?|judgments?|judgements?|raters?|annotators?|stud(?:y|ies)|preferences?|assessments?|ratings?|labell?ers?|participants|subjects)\b|\buser stud(?:y|ies)\b|\bcrowd-?(?:workers?|sourc\w+)\b|\bMechanical Turk\b|\bMTurk\b|\bProlific\b|\bLikert\b|\bexpert annotat\w+|\binter-?annotator\b|\binter-?rater\b|\bCohen'?s kappa\b|\bKrippendorff/i;
+  /\bhuman (?:evaluations?|evaluators?|judges?|judgments?|judgements?|raters?|annotators?|stud(?:y|ies)|assessments?|ratings?|participants|subjects)\b|\bhuman preference (?:evaluations?|stud(?:y|ies)|judg\w+|ratings?)\b|\buser stud(?:y|ies)\b|\bcrowd-?(?:workers?|sourc\w+)\b|\bMechanical Turk\b|\bMTurk\b|\bProlific\b|\bLikert\b|\bexpert annotat\w+|\binter-?annotator\b|\binter-?rater\b|\bCohen'?s kappa\b|\bKrippendorff/i;
 
 /** Text-generation tasks where automatic metrics are known to be weak proxies for quality. */
 export const GENERATION_TASK_RE =
@@ -581,9 +587,13 @@ export const DATA_HOST_RE =
 
 export const URL_RE = /\bhttps?:\/\/[^\s<>"')\]]+|\b(?:www\.)?(?:github\.com|huggingface\.co|gitlab\.com)\/[^\s<>"')\]]+/gi;
 
-/** Statements that code or models are (or will be) released. */
+/**
+ * Statements that code or models are (or will be) released. Negations ("no pre-trained model is
+ * available", "the model is not publicly available") say the opposite, so a "no/not/never" shortly
+ * before the subject or among the words after the verb rejects the match.
+ */
 export const CODE_STATEMENT_RE =
-  /\b(?:code|implementation|source code|models?|weights|checkpoints)(?: and (?:\w+ ){0,2}(?:code|data|models?|weights|checkpoints))? (?:is|are|will be|has been|have been) (?:\w+ ){0,2}(?:publicly |freely |openly )?(?:available|released|open-?sourced?)\b|\b(?:we|our team) (?:will )?(?:release|open-?source|publicly release|make (?:\w+ ){0,3}available)\b[^.]{0,60}\b(?:code|implementation|models?|weights|checkpoints|data(?:set)?s?)\b/i;
+  /\b(?<!\b(?:no|not|never)\b[^.;]{0,30})(?:code|implementation|source code|models?|weights|checkpoints)(?: and (?:\w+ ){0,2}(?:code|data|models?|weights|checkpoints))? (?:is|are|will be|has been|have been) (?:(?!not\b|never\b|no\b)\w+ ){0,2}(?:publicly |freely |openly )?(?:available|released|open-?sourced?)\b|\b(?:we|our team) (?:will )?(?:release|open-?source|publicly release|make (?:\w+ ){0,3}available)\b[^.]{0,60}\b(?:code|implementation|models?|weights|checkpoints|data(?:set)?s?)\b/i;
 
 // ────────────────────────────── Evaluation sizes ────────────────────────────
 
@@ -610,9 +620,12 @@ export const LIMITATION_CUE_RE =
 export const CONCESSION_RE =
   /\b(?:while|although|though) (?:we|our|this)\b[^.]{0,80}\b(?:only|up to|limited|restricted|small|single|few)\b|\bwe (?:only|have only) (?:\w+ ){0,3}(?:evaluate|evaluated|test|tested|consider|considered|explore|explored)\b/i;
 
-/** Section titles that announce a limitations discussion. */
-export const LIMITATIONS_TITLE_RE = /\blimitations?\b|\bweakness(?:es)?\b|\bshortcomings?\b|\bfailure modes?\b/i;
+/**
+ * Section titles that announce a limitations discussion. "Failure modes" is left out: such sections
+ * are error analyses (often of the baselines), a separate signal, not the authors' own admissions.
+ */
+export const LIMITATIONS_TITLE_RE = /\blimitations?\b|\bweakness(?:es)?\b|\bshortcomings?\b/i;
 
-export const RELATED_TITLE_RE = /\brelated work\b|\bprior work\b|\bliterature review\b|\bbackground and related\b/i;
+export const RELATED_TITLE_RE = /\brelated works?\b|\bprior works?\b|\bliterature review\b|\bbackground and related\b/i;
 
 export const ABLATION_TITLE_RE = /\bablat/i;

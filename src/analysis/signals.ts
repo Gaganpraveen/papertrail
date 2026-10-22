@@ -192,6 +192,17 @@ const FUTURE_RE = /\bfuture (?:work|research|directions?|studies|investigation)\
 /** Reproducibility-checklist lines ("[Yes] Did you describe the limitations?") are forms, not admissions. */
 export const CHECKLIST_RE = /\[(?:Yes|No|N\/A|TODO)\]|\?\s*$/i;
 
+/**
+ * Venue checklists name every good practice ("Did you report error bars?"), so their questions and
+ * guideline bullets would match the rigor lexicons whatever the paper did. Covers the 2021-23 NeurIPS
+ * form ("[Yes]", questions) and the 2024+ one ("Question:", "Guidelines:", "The answer NA means").
+ * A question elsewhere asserts nothing about what was done, so it is no evidence either.
+ */
+const isChecklist = (s: Sentence) =>
+  CHECKLIST_RE.test(s.text) ||
+  /checklist/i.test(s.sectionTitle) ||
+  /\b(?:Question|Answer|Justification|Guidelines):|\bThe answer NA means\b/.test(s.text);
+
 /** Words that make a "limitation"-zoned sentence an actual deficiency rather than an assumption or definition. */
 const DEFICIENCY_RE =
   /\b(?:limit\w*|cannot|can't|unable|only|restrict\w*|fail\w*|lack\w*|not|no longer|difficult|costly|expensive|slower|sensitiv\w*|degrad\w*|unreliable|weakness\w*|drawbacks?)\b/i;
@@ -463,7 +474,7 @@ function sampleSizes(input: AnalyzeInput, sentences: ZonedSentence[]): SampleSiz
 export function extractSignals(input: AnalyzeInput): PaperSignals {
   const { doc, meta } = input;
   const all = input.sentences;
-  const own = all.filter((s) => !isPriorWork(s));
+  const own = all.filter((s) => !isPriorWork(s) && !isChecklist(s));
   const claims = own.filter(isClaimSentence);
   const sections = doc?.sections ?? [];
 

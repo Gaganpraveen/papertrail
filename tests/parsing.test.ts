@@ -247,6 +247,23 @@ describe("buildDocument", () => {
     expect(section("Method")).toMatchObject({ pageStart: 2, pageEnd: 2 });
   });
 
+  it("classifies plural related-work headings and failure analyses by what they hold", () => {
+    const page = layoutPage(1, [
+      { text: "A Study of Streaming Caches", size: 17, bold: true, y: 90 },
+      heading("1 Introduction"),
+      "Long inputs dominate real deployments such as dialogue systems and agents in practice.",
+      heading("2 Related Works"),
+      "Earlier systems compress the cache with quantization, eviction and low-rank projection.",
+      heading("3 Experiments"),
+      "We evaluate perplexity on four million tokens of book text with several model families.",
+      heading("3.1 Success and Failure Modes Analysis", 10),
+      "The window baseline loses the topic once the cache slides past the first few tokens.",
+    ]);
+    const kinds = Object.fromEntries(buildDocument(page, 1, 1).sections.map((s) => [s.title, s.kind]));
+    expect(kinds["Related Works"]).toBe("related");
+    expect(kinds["Success and Failure Modes Analysis"]).toBe("results");
+  });
+
   it("keeps a body sentence that starts with a number inside its section", () => {
     expect(section("Introduction")?.text).toContain("3 of the 32 layers attend almost exclusively");
   });

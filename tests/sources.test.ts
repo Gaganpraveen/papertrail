@@ -139,6 +139,10 @@ describe("parseInput", () => {
     ["https://www.arxiv.org/abs/2402.02750#S3", "2402.02750"],
     ["https://huggingface.co/papers/2402.02750", "2402.02750"],
     ["<https://arxiv.org/abs/2402.02750>", "2402.02750"],
+    // Pasted from prose with the sentence's punctuation.
+    ["https://arxiv.org/abs/2402.02750v2.", "2402.02750", "v2"],
+    ["https://arxiv.org/abs/2402.02750),", "2402.02750"],
+    ["https://arxiv.org/pdf/2402.02750.pdf.", "2402.02750"],
     ["10.48550/arXiv.2402.02750", "2402.02750"],
   ];
 

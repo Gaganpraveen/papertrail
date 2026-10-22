@@ -7,11 +7,12 @@
  * curated lexicons matched against the paper's own sentences (outside related
  * work, where other people's benchmarks are merely mentioned), the problem
  * and headline result are verbatim sentences picked by zone and evidence
- * density, and rigor and limitations come from the single-paper analysis.
+ * density, and rigor, limitations and code availability come from the
+ * single-paper analysis.
  * Also home to the quoting helpers the survey uses to cite sentences cleanly.
  */
 import type { Evidence, Sentence, SectionKind, SurveyPaperInput, SurveyResult, ZonedSentence } from "@/types";
-import { CODE_HOST_RE, CODE_STATEMENT_RE, DATASET_MATCHERS, METRICS } from "@/analysis/lexicons";
+import { DATASET_MATCHERS, METRICS } from "@/analysis/lexicons";
 import { extractMetrics } from "@/nlp/numbers";
 import { splitSentences } from "@/nlp/text";
 
@@ -191,11 +192,13 @@ export function detectMetrics(texts: string[]): string[] {
   return rankByMentions(counts, MAX_METRICS);
 }
 
-/** A code-hosting link or an explicit release statement anywhere in the text, or a critique strength saying so. */
+/**
+ * The paper's own critique verdict, so the survey never contradicts the paper's card. That rule only
+ * counts repositories presented as the authors' own; a raw text scan would also pick up links to
+ * baselines and datasets, and a promise without a link is not released code.
+ */
 export function hasCode(input: SurveyPaperInput): boolean {
-  const texts = [...input.sentences.map((s) => s.text), ...input.chunks.map((c) => c.text)];
-  if (texts.some((t) => CODE_HOST_RE.test(t) || CODE_STATEMENT_RE.test(t))) return true;
-  return input.analysis.critique.findings.some((f) => f.severity === "strength" && /\bcode\b/i.test(f.title));
+  return input.analysis.critique.findings.some((f) => f.id === "code-released");
 }
 
 // ─────────────────────────── Representative sentences ───────────────────────

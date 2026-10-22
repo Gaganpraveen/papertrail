@@ -94,10 +94,8 @@ export function arxivIdFromUrl(rawUrl: string): ArxivRef | null {
   const isHfPaper = (host === "huggingface.co" || host === "www.huggingface.co") && segments[0] === "papers";
   const isArxivPath = ARXIV_HOSTS.has(host) && ARXIV_PATH_KINDS.has(segments[0] ?? "");
   if (!isHfPaper && !isArxivPath) return null;
-  const idPart = segments
-    .slice(1)
-    .join("/")
-    .replace(/\.pdf$/i, "");
+  // URLs pasted from prose often carry the sentence's "." or ")"; trim before dropping ".pdf".
+  const idPart = trimTrailingPunctuation(segments.slice(1).join("/")).replace(/\.pdf$/i, "");
   return parseArxivId(idPart);
 }
 

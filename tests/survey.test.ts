@@ -155,7 +155,10 @@ const SPECS: PaperSpec[] = [
       { raw: "Xiao et al. Efficient streaming language models with attention sinks", arxivId: "2309.17453v2" },
       { raw: "Frantar et al. GPTQ", title: "GPTQ: Accurate Post-Training Quantization for Generative Pre-trained Transformers" },
     ],
-    findings: [{ id: "f1", category: "statistics", severity: "major", title: "No variance across runs", rationale: "", evidence: [] }],
+    findings: [
+      { id: "f1", category: "statistics", severity: "major", title: "No variance across runs", rationale: "", evidence: [] },
+      { id: "code-released", category: "reproducibility", severity: "strength", title: "Code is linked", rationale: "", evidence: [] },
+    ],
     rigor: 72,
   },
   {
@@ -429,6 +432,17 @@ describe("comparison", () => {
     expect(other.code).toBe(false);
     expect(other.datasets).toContain("WikiText-2");
     expect(other.metrics).toContain("perplexity");
+  });
+
+  it("agrees with the paper's own critique about code, whatever links the text holds", async () => {
+    const [kvquant] = await corpus(null, [
+      {
+        ...SPECS[1],
+        lines: [...SPECS[1].lines, ["method", "We run the GPTQ baseline from https://github.com/IST-DASLab/gptq with its defaults.", "experiments"]],
+        findings: [{ id: "no-code", category: "reproducibility", severity: "moderate", title: "No code or model release found", rationale: "", evidence: [] }],
+      },
+    ]);
+    expect(compareRow(kvquant).code).toBe(false);
   });
 });
 

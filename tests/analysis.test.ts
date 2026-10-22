@@ -2,6 +2,7 @@ import { fileURLToPath } from "node:url";
 import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { analyzePaper, extractSignals, stripCitations, type AnalyzeInput } from "@/analysis";
+import { CODE_STATEMENT_RE, COMPUTE_RE, HUMAN_EVAL_RE, LIMITATIONS_TITLE_RE } from "@/analysis/lexicons";
 import { buildRigor, credit, grade } from "@/analysis/rigor";
 import { proportionMargin } from "@/analysis/critique";
 import { segmentAbstract, segmentDocument } from "@/nlp/segment";
@@ -420,6 +421,59 @@ describe("helpers", () => {
     const rigor = buildRigor({ ...signals, datasets: [], metrics: [], resultSentences: 0 });
     expect(rigor.grade).toBe("D");
     expect(rigor.axes.every((a) => a.explanation.length > 20)).toBe(true);
+  });
+});
+
+describe("text that must not count as the paper's own evidence", () => {
+  it("treats a section titled Related Works as other people's work", async () => {
+    const specs = WEAK_SECTIONS.map((s) => (s.kind === "related" ? { ...s, title: "Extended Related Works", kind: "appendix" as const } : s));
+    const signals = extractSignals(await fullInput(specs));
+    expect(signals.relatedWorkSection).toBe(true);
+    // "three random seeds with standard deviations" there describes other papers.
+    expect(signals.seedsOrRuns).toHaveLength(0);
+    expect(signals.statistics).toHaveLength(0);
+  });
+
+  it("ignores reproducibility-checklist questions and guidelines", async () => {
+    const checklist =
+      "(c) Did you report error bars (e.g., with respect to the random seed after running experiments multiple times)? [Yes] " +
+      "If you used crowdsourcing or conducted research with human subjects, include the instructions given to participants.";
+    const guidelines = "Guidelines: The authors should report standard deviations and the number of random seeds.";
+    const signals = extractSignals(
+      await fullInput([
+        ...WEAK_SECTIONS,
+        { title: "Checklist", kind: "other", page: 4, text: checklist },
+        { title: "Experiment Statistical Significance", number: "7", kind: "other", page: 4, text: guidelines },
+      ]),
+    );
+    expect(signals.statistics).toHaveLength(0);
+    expect(signals.seedsOrRuns).toHaveLength(0);
+    expect(signals.humanEval).toHaveLength(0);
+  });
+
+  it("does not read negated availability as a code release", () => {
+    expect(CODE_STATEMENT_RE.test("In this setting, no pre-trained SFT model is available, so we fine-tune one.")).toBe(false);
+    expect(CODE_STATEMENT_RE.test("We cannot compare with it, since the model is not publicly available.")).toBe(false);
+    expect(CODE_STATEMENT_RE.test("Our code and models are publicly available at https://github.com/example/repo.")).toBe(true);
+    expect(CODE_STATEMENT_RE.test("The source code is available at https://github.com/jy-yuan/KIVI.")).toBe(true);
+  });
+
+  it("needs an evaluation, not preference training data, to count as human evaluation", () => {
+    expect(HUMAN_EVAL_RE.test("The policy is then aligned with human preferences to produce helpful outputs.")).toBe(false);
+    expect(HUMAN_EVAL_RE.test("Comparisons were collected from human labelers for reward modelling.")).toBe(false);
+    expect(HUMAN_EVAL_RE.test("A human preference study confirms the win rates.")).toBe(true);
+    expect(HUMAN_EVAL_RE.test("We also run a human evaluation of 200 summaries.")).toBe(true);
+  });
+
+  it("does not take a failure-modes analysis for a limitations section", () => {
+    expect(LIMITATIONS_TITLE_RE.test("E.1 Success and Failure Modes Analysis")).toBe(false);
+    expect(LIMITATIONS_TITLE_RE.test("6 Limitations and Failure Modes")).toBe(true);
+  });
+
+  it("counts training time, not epochs, as compute", () => {
+    expect(COMPUTE_RE.test("The reward model is trained for 3 epochs on the preference datasets.")).toBe(false);
+    expect(COMPUTE_RE.test("The largest model was trained for about 2 days.")).toBe(true);
+    expect(COMPUTE_RE.test("Each model is trained for roughly a week.")).toBe(true);
   });
 });
 

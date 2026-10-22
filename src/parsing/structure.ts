@@ -573,9 +573,10 @@ const KIND_RULES: [SectionKind, RegExp][] = [
   ["references", /\b(references|bibliography|works cited)\b/i],
   ["acknowledgments", /\backnowledge?ments?\b|\bfunding\b/i],
   ["appendix", /\b(appendix|appendices|supplementary)\b/i],
-  ["limitations", /\b(limitations?|weakness(es)?|failure (cases|modes))\b/i],
+  // Failure-case sections are error analyses (often of the baselines), not the authors' own limitations.
+  ["limitations", /\b(limitations?|weakness(es)?)\b/i],
   ["conclusion", /\b(conclusions?|concluding|future work)\b/i],
-  ["related", /\b(related work|prior work|literature)\b/i],
+  ["related", /\b(related works?|prior works?|literature)\b/i],
   ["background", /\b(background|preliminar(y|ies)|problem (setup|setting|formulation|statement)|notation)\b/i],
   ["introduction", /\b(introduction|motivation)\b/i],
   ["discussion", /\b(discussion|broader impacts?|ethic(s|al)|societal|impact statement)\b/i],
