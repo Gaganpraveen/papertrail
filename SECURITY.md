@@ -24,8 +24,8 @@ not apply. This file lists what I did to keep the rest safe.
   one hashed inline script that sets the theme), blocks plugins and frames, and
   only makes HTTPS requests.
 - **Locked dependencies.** `package-lock.json` pins every package, CI installs
-  with `npm ci`, and Dependabot checks npm packages and GitHub Actions every
-  week.
+  with `npm ci`, and Dependabot opens a pull request when an npm package or
+  GitHub Action has a known vulnerability.
 - **Least-privilege CI.** Workflows can only read the repository. Only the
   Pages deploy job may publish, and it can't push code.
 

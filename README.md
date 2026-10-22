@@ -364,7 +364,7 @@ There is no server, database, login or API key, so there is nothing on the
 server side to break into or leak. Papers and analyses stay in the visitor's
 browser. Paper text is always rendered as text, links from paper data must be
 plain `http(s)`, and the built page ships a strict Content Security Policy.
-Dependabot watches the dependencies, and CI runs with read-only permissions.
+Dependabot flags vulnerable dependencies, and CI runs with read-only permissions.
 The details are in [SECURITY.md](SECURITY.md).
 
 ## Data sources and licensing

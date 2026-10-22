@@ -1,14 +1,15 @@
+# Security updates only: routine version bumps are left to me, so this never
+# opens upgrade pull requests on its own. Dependabot still opens a pull
+# request when a dependency has a known vulnerability.
 version: 2
 updates:
   - package-ecosystem: npm
     directory: /
     schedule:
       interval: weekly
-    open-pull-requests-limit: 5
-    groups:
-      minor-and-patch:
-        update-types: [minor, patch]
+    open-pull-requests-limit: 0
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
+    open-pull-requests-limit: 0
