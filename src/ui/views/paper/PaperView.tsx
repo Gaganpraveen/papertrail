@@ -84,7 +84,7 @@ function ReadyContent({
         ]}
         className="sticky top-0 z-20 -mx-1 bg-bg/90 px-1 backdrop-blur"
       />
-      <div role="tabpanel">
+      <div role="tabpanel" key={tab} className="animate-in">
         {tab === "briefing" && <BriefingTab briefing={analysis.briefing} onAsk={onAsk} />}
         {tab === "visuals" && <VisualsTab analysis={analysis} meta={record.meta} sentences={record.sentences} />}
         {tab === "critique" && <CritiqueTab critique={analysis.critique} rigor={analysis.rigor} />}

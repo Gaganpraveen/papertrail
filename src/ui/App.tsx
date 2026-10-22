@@ -5,6 +5,7 @@
  */
 import { useCallback, useEffect, useState } from "react";
 import { cn } from "@/ui/kit";
+import { Intro } from "@/ui/layout/Intro";
 import { store, useStore } from "@/ui/hooks/store";
 import { useFileDrop } from "@/ui/hooks/useFileDrop";
 import { useHashRoute } from "@/ui/hooks/useHashRoute";
@@ -106,6 +107,7 @@ export default function App() {
       <EvidenceDrawer />
       <Toasts />
       {dragging && <DropOverlay />}
+      <Intro />
     </div>
   );
 }

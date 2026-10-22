@@ -17,8 +17,8 @@
   --ink: #0f1012;
   --ink-2: #484c55;
   --ink-3: #777c87;
-  --accent: #121316;
-  --accent-soft: #eff0f2;
+  --accent: #1f6feb;
+  --accent-soft: #e8f0fe;
   --accent-ink: #ffffff;
   --good: #0f8a5f;
   --warn: #b26b05;
@@ -50,24 +50,24 @@
 }
 
 [data-theme="dark"] {
-  --bg: #08090a;
-  --panel: #0f1012;
-  --panel-2: #151619;
-  --line: #1f2024;
-  --line-strong: #2c2e33;
-  --ink: #f7f8f8;
-  --ink-2: #c3c7ce;
-  --ink-3: #8a8f98;
-  --accent: #eceef0;
-  --accent-soft: #1b1c20;
-  --accent-ink: #08090a;
+  --bg: #0a0b0d;
+  --panel: #16181c;
+  --panel-2: #1e2126;
+  --line: #2a2d33;
+  --line-strong: #3b3f47;
+  --ink: #f5f6f7;
+  --ink-2: #c9cdd4;
+  --ink-3: #8f95a0;
+  --accent: #6aa6ff;
+  --accent-soft: #15243b;
+  --accent-ink: #07111f;
   --good: #4cc59a;
   --warn: #e0b057;
   --bad: #ef7b8a;
   --good-soft: #0e231c;
   --warn-soft: #251e0f;
   --bad-soft: #2a1318;
-  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 12px 32px -16px rgb(0 0 0 / 0.7);
+  --shadow: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 1px 2px rgb(0 0 0 / 0.45), 0 16px 36px -18px rgb(0 0 0 / 0.8);
 
   --z-background: #8b93a1;
   --z-problem: #e5788a;
@@ -203,7 +203,99 @@ h3 {
   animation: pt-rise 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
+/* Cards ease in as they scroll into view (scroll-driven, no JavaScript). */
+@supports (animation-timeline: view()) {
+  .pt-card {
+    animation: pt-card-in linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 35%;
+  }
+}
+
+@keyframes pt-card-in {
+  from {
+    opacity: 0.2;
+    transform: translateY(18px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Soft light that follows the pointer across a card ([data-spot]). */
+.spot {
+  position: relative;
+  isolation: isolate;
+}
+.spot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 0%), color-mix(in oklab, var(--accent) 14%, transparent), transparent 70%);
+}
+.spot:hover::before {
+  opacity: 1;
+}
+
+/* Tactile press on every button. */
+button:not(:disabled):active {
+  transform: scale(0.97);
+}
+button {
+  transition-property: color, background-color, border-color, opacity, transform, box-shadow;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Opening intro: the three pages of the logo slide into place, then the
+   curtain lifts. Shown once per session. */
+@keyframes pt-page-in {
+  from {
+    opacity: 0;
+    transform: translate(-10px, 10px);
+  }
+  to {
+    opacity: var(--o, 1);
+    transform: none;
+  }
+}
+@keyframes pt-word-in {
+  from {
+    opacity: 0;
+    letter-spacing: 0.12em;
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    letter-spacing: -0.02em;
+    filter: none;
+  }
+}
+@keyframes pt-curtain {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+.pt-intro {
+  animation: pt-curtain 0.45s cubic-bezier(0.7, 0, 0.3, 1) 1.15s both;
+}
+.pt-intro .pt-page {
+  animation: pt-page-in 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.pt-intro .pt-word {
+  animation: pt-word-in 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) 0.35s both;
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .pt-card {
+    animation: none;
+  }
   .reveal {
     opacity: 1;
   }

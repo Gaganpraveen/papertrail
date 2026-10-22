@@ -57,7 +57,7 @@ export function CommandBar({ variant = "compact" }: { variant?: "hero" | "compac
       onSubmit={onSubmit}
       className={cn(
         "group relative flex w-full items-center gap-2 border bg-panel transition-all",
-        "border-line focus-within:border-line-strong focus-within:shadow-[0_0_0_4px_var(--accent-soft)]",
+        "border-line focus-within:border-accent/60 focus-within:shadow-[0_0_0_4px_var(--accent-soft)]",
         hero ? "h-14 rounded-2xl pr-2 pl-4 shadow-card" : "h-9 rounded-xl pr-1 pl-3",
       )}
     >

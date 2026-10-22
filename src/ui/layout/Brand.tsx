@@ -8,7 +8,7 @@ export function BrandMark({ className }: { className?: string }) {
       <rect x="8.5" y="6.5" width="15" height="19" rx="3" fill="currentColor" opacity="0.5" />
       <path
         d="M4 13a3 3 0 0 1 3-3h7.6L19 14.4V26a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3V13Z"
-        fill="currentColor"
+        fill="var(--accent)"
       />
       <path d="M14.6 10v2.4a2 2 0 0 0 2 2H19" stroke="var(--bg)" strokeWidth="1.4" strokeLinejoin="round" />
     </svg>

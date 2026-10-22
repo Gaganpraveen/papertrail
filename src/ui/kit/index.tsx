@@ -14,7 +14,7 @@ type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 type ButtonSize = "sm" | "md" | "lg";
 
 const buttonVariants: Record<ButtonVariant, string> = {
-  primary: "bg-accent text-accent-ink hover:opacity-90 shadow-sm",
+  primary: "bg-accent text-accent-ink hover:brightness-110 shadow-sm",
   secondary: "bg-panel border border-line text-ink hover:bg-panel-2 hover:border-line-strong",
   ghost: "text-ink-2 hover:text-ink hover:bg-panel-2",
   danger: "text-bad hover:bg-bad-soft",
@@ -74,7 +74,7 @@ export function Card({
 }: HTMLAttributes<HTMLDivElement> & { children?: ReactNode }) {
   return (
     <div
-      className={cn("rounded-2xl border border-line bg-panel shadow-card", className)}
+      className={cn("pt-card rounded-2xl border border-line bg-panel shadow-card transition-colors hover:border-line-strong", className)}
       {...props}
     >
       {children}
@@ -224,8 +224,8 @@ export function Tabs<T extends string>({
             )}
             <span
               className={cn(
-                "absolute inset-x-2 bottom-0 h-0.5 rounded-full transition-colors",
-                active ? "bg-accent" : "bg-transparent",
+                "absolute inset-x-2 bottom-0 h-0.5 origin-center rounded-full bg-accent transition-transform duration-300 ease-out",
+                active ? "scale-x-100" : "scale-x-0",
               )}
             />
           </button>

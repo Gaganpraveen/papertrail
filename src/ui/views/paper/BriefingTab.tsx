@@ -122,8 +122,8 @@ function Keyphrases({ phrases }: { phrases: Briefing["keyphrases"] }) {
 export function BriefingTab({ briefing, onAsk }: { briefing: Briefing; onAsk: (question: string) => void }) {
   return (
     <div className="space-y-4 animate-in">
-      <div className="relative overflow-hidden rounded-2xl border border-line bg-panel p-5 shadow-card">
-        <div className="pointer-events-none absolute inset-y-0 left-0 w-0.5 bg-ink" />
+      <div className="pt-card relative overflow-hidden rounded-2xl border border-line bg-panel p-5 shadow-card">
+        <div className="pointer-events-none absolute inset-y-0 left-0 w-1 bg-accent" />
         <SectionLabel className="mb-2 flex items-center gap-1.5">
           <Lightbulb className="size-3.5" />
           Why it matters
